@@ -1,0 +1,16 @@
+[Unit]
+Description=apwatch - TL-XDR5480 无线 AP 只读观测
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+ExecStart=/opt/apwatch/apwatch --listen 0.0.0.0:9093 --data-dir /opt/apwatch/data
+Restart=on-failure
+RestartSec=30
+# 守住资源上限：实测常驻约 3MB，给足余量
+MemoryMax=128M
+CPUQuota=20%
+Nice=10
+
+[Install]
+WantedBy=multi-user.target

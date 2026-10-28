@@ -1,0 +1,16 @@
+Interface ath0
+        ifindex 23
+        wdev 0x2
+        addr 02:00:00:00:00:23
+        type AP
+        wiphy 0
+        channel 1 (2412 MHz), width: 40 MHz, center1: 2422 MHz
+        txpower 30.00 dBm
+Interface ath1
+        ifindex 29
+        wdev 0x100000002
+        addr 02:00:00:00:00:20
+        type AP
+        wiphy 1
+        channel 36 (5180 MHz), width: 160 MHz, center1: 5250 MHz
+        txpower 33.00 dBm

@@ -1,0 +1,149 @@
+# 交叉编译多架构静态二进制（musl）。
+# - 推送到 main：全部架构成功才发一个 Release。
+# - 推送到其他分支 / 手动运行：只编译并上传构建产物，不发 Release（在 main 上手动运行并勾选 release 才发）。
+# 本地复现某个架构：rustup target add <target>，再 cargo zigbuild --locked --release --target <target>
+name: build-release
+
+on:
+  push:
+    branches: ["**"]
+    paths-ignore:
+      - "**.md"
+      - ".gitignore"
+  workflow_dispatch:
+    inputs:
+      release:
+        description: "编译后发 Release（仅 main 分支生效）"
+        type: boolean
+        default: false
+
+permissions:
+  contents: write
+
+concurrency:
+  group: build-release-${{ github.ref }}
+  cancel-in-progress: false
+
+env:
+  ZIG_VERSION: "0.14.1"
+  CARGO_ZIGBUILD_VERSION: "v0.23.4"
+  CARGO_TERM_COLOR: always
+
+jobs:
+  test:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install Rust (version from rust-toolchain.toml)
+        run: |
+          tc=$(sed -n 's/^channel *= *"\(.*\)"/\1/p' rust-toolchain.toml)
+          rustup toolchain install "$tc" --profile minimal --component clippy
+      - uses: Swatinem/rust-cache@v2
+      - run: cargo test --locked
+      - run: cargo clippy --locked -- -D warnings
+
+  build:
+    name: build ${{ matrix.name }}
+    needs: test
+    runs-on: ubuntu-24.04
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          # file_arch：`file` 输出里应匹配的架构（扩展正则），用来核对产物
+          - { name: x86_64, target: x86_64-unknown-linux-musl, file_arch: "x86-64" }
+          - { name: x86_64-v3, target: x86_64-unknown-linux-musl, rustflags: "-C target-cpu=x86-64-v3", file_arch: "x86-64" }
+          - { name: aarch64, target: aarch64-unknown-linux-musl, file_arch: "ARM aarch64" }
+          - { name: armv7, target: armv7-unknown-linux-musleabihf, file_arch: "ARM, EABI5" }
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Rust (version from rust-toolchain.toml)
+        run: |
+          tc=$(sed -n 's/^channel *= *"\(.*\)"/\1/p' rust-toolchain.toml)
+          test -n "$tc"
+          rustup toolchain install "$tc" --profile minimal --target ${{ matrix.target }}
+          rustc --version
+
+      - name: Install zig and cargo-zigbuild
+        run: |
+          mkdir -p "$RUNNER_TEMP/tools"
+          cd "$RUNNER_TEMP/tools"
+          curl -fsSL "https://ziglang.org/download/${ZIG_VERSION}/zig-x86_64-linux-${ZIG_VERSION}.tar.xz" | tar xJ
+          echo "$PWD/zig-x86_64-linux-${ZIG_VERSION}" >> "$GITHUB_PATH"
+          curl -fsSL "https://github.com/rust-cross/cargo-zigbuild/releases/download/${CARGO_ZIGBUILD_VERSION}/cargo-zigbuild-x86_64-unknown-linux-musl.tar.xz" | tar xJ
+          echo "$PWD/cargo-zigbuild-x86_64-unknown-linux-musl" >> "$GITHUB_PATH"
+
+      - uses: Swatinem/rust-cache@v2
+        with:
+          key: ${{ matrix.name }}
+
+      - name: Build
+        env:
+          RUSTFLAGS: ${{ matrix.rustflags }}
+        run: cargo zigbuild --locked --release --target ${{ matrix.target }}
+
+      - name: Package and check
+        run: |
+          mkdir -p dist
+          out="dist/apwatch-linux-${{ matrix.name }}"
+          cp "target/${{ matrix.target }}/release/apwatch" "$out"
+          info=$(file -b "$out")
+          echo "$info"
+          grep -Eq "${{ matrix.file_arch }}" <<<"$info" || { echo "::error::架构不符，期望 ${{ matrix.file_arch }}"; exit 1; }
+          grep -Eq "statically linked|static-pie linked" <<<"$info" || { echo "::error::不是静态链接"; exit 1; }
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: apwatch-linux-${{ matrix.name }}
+          path: dist/apwatch-linux-${{ matrix.name }}
+          if-no-files-found: error
+
+  release:
+    needs: build
+    if: >-
+      github.ref == 'refs/heads/main' &&
+      (github.event_name == 'push' || inputs.release)
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: apwatch-linux-*
+          path: dist
+          merge-multiple: true
+
+      - name: Checksums
+        working-directory: dist
+        run: |
+          chmod +x apwatch-linux-*
+          sha256sum apwatch-linux-* > SHA256SUMS
+          cat SHA256SUMS
+
+      - name: Publish release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+        run: |
+          short=${GITHUB_SHA::8}
+          tag="build-$(TZ=Asia/Shanghai date +%Y%m%d-%H%M)-$short"
+          existing=$(gh release list --limit 100 --json tagName --jq ".[].tagName | select(endswith(\"-$short\"))" | head -n1)
+          if [ -n "$existing" ]; then
+            gh release upload "$existing" dist/* --clobber
+            echo "updated $existing"
+            exit 0
+          fi
+          {
+            echo "提交: ${GITHUB_SHA}"
+            echo
+            echo "静态链接（musl），下载对应架构的文件即可运行。"
+            echo
+            echo '```'
+            cat dist/SHA256SUMS
+            echo '```'
+          } > notes.md
+          gh release create "$tag" dist/* \
+            --target "$GITHUB_SHA" \
+            --title "apwatch $tag" \
+            --notes-file notes.md \
+            --latest
+          echo "created $tag"

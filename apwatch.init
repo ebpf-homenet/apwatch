@@ -1,0 +1,18 @@
+#!/bin/sh /etc/rc.common
+# apwatch：无线 AP 观测、报表与少量控制（主路由 procd 服务）。
+# 程序与数据在 /ebpf-homenet/apwatch，日志进 logread（内存）。
+# 资源上限：地址空间 256MB、单文件 16MB；1 小时内崩溃 5 次后不再拉起。
+START=99
+STOP=01
+USE_PROCD=1
+
+start_service() {
+	procd_open_instance
+	procd_set_param command /ebpf-homenet/apwatch/apwatch --listen 10.10.10.1:9083 --data-dir /ebpf-homenet/apwatch/data
+	procd_set_param respawn 3600 5 5
+	procd_set_param env NO_COLOR=1
+	procd_set_param limits as="268435456 268435456" fsize="16777216 16777216"
+	procd_set_param stdout 1
+	procd_set_param stderr 1
+	procd_close_instance
+}

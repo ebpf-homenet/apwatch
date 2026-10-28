@@ -1,0 +1,12 @@
+Thermal config for wifi1
+  enable: 1, dc: 100, dc_per_event: 2
+  level: 0, low thresold: -100, high thresold: 106, dcoffpercent: 0, queue priority 7, policy; 1
+  level: 1, low thresold: 103, high thresold: 109, dcoffpercent: 40, queue priority 7, policy; 1
+  level: 2, low thresold: 106, high thresold: 112, dcoffpercent: 70, queue priority 7, policy; 1
+  level: 3, low thresold: 109, high thresold: 120, dcoffpercent: 90, queue priority 7, policy; 1
+Thermal stats for wifi1
+  sensor temperature: 62, current level: 0
+  level: 0, entry count: 0, duty cycle spent: 5180140
+  level: 1, entry count: 0, duty cycle spent: 0
+  level: 2, entry count: 0, duty cycle spent: 0
+  level: 3, entry count: 0, duty cycle spent: 0

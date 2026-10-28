@@ -1,0 +1,60 @@
+Radio Level Stats: wifi0
+Tx Data Packets                 = 95907865
+Tx Data Bytes                   = 68448256787
+Rx Data Packets                 = 56570051
+Rx Data Bytes                   = 20302807016
+Tx Unicast Data Packets         = 57451679
+Tx Multi/Broadcast Data Packets = 38456186
+Tx Data Packets per AC:
+ Best effort                    = 113117958
+ Background                     = 485792
+ Video                          = 212620
+ Voice                          = 1303382
+Rx Data Packets per AC:
+ Best effort                    = 316681248
+ Background                     = 327668
+ Video                          = 6060982
+ Voice                          = 10148332
+Channel Utilization (0-255)     = <DISABLED>
+Tx Beacon Frames                = 50604061
+Tx Mgmt Frames                  = 979634
+Rx Mgmt Frames                  = 37336
+Rx Mgmt Frames dropped(RSSI too low) = 0
+Tx Ctl Frames                   = 0
+Rx Ctl Frames                   = 0
+Rx RSSI                         = 33
+Rx PHY errors                   = 8631680
+Rx CRC errors                   = 0
+Rx MIC errors                   = 0
+Rx Decryption errors            = 14
+Rx errors                       = 28
+Tx failures                     = 48996
+Tx Dropped                      = 0
+Connections refuse Radio limit  = 0
+Connections refuse Vap limit    = 0
+802.11 Auth Attempts            = 12696
+802.11 Auth Success             = 7283
+MLME Authorize Attempts         = 5644
+MLME Authorize Success          = 5219
+Self BSS chan util              = 9
+OBSS chan util                  = 8
+lithium_cycle_counts:
+lithium_cycle_cnt: Chan NF (BDF averaged NF_dBm) = -100
+lithium_cycle_cnt: Tx Frame Cnt = 823326640
+lithium_cycle_cnt: Rx Frame Cnt = 3834253409
+lithium_cycle_cnt: Rx Clear Cnt = 3863366417
+lithium_cycle_cnt: Cycle Cnt    = 3888269107
+lithium_cycle_cnt: Phy Err Cnt  = 8631680
+lithium_cycle_cnt: Chan Tx Pwr  = 60
+Current profile periodicity     = <DISABLED>
+Number of Active Vaps           = 1
+TX Vap ID                       = <DISABLED>
+Throughput (kbps)               = <DISABLED>
+PER over configured period (%)  = <DISABLED>
+Total PER (%)                   = 0
+Co-located RNR stats:
+ Created vap:                   = 0
+ Active vap:                    = 0
+ RNR count:                     = 0
+ 6GHz SoC status:               = 0
+

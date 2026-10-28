@@ -1,0 +1,5 @@
+02:00:00:00:00:1f    1   36 1921M     65M  -74     -75     -71    0      0   65535   EPR  EBOI NULL    0          b        2401900            AWPS              gG 00:57:40     RSN WME IEEE80211_MODE_11AXA_HE160  2 2   1  
+02:00:00:00:00:11    2   36 480M    195M  -67     -80     -42   20      0   65535   EPR   BOI NULL    0          b        1201000            AWPS              gG 00:57:40     RSN WME IEEE80211_MODE_11AXA_HE80  2 2   1  
+02:00:00:00:00:22    3   36 1297M    432M  -75     -76     -72    2      0   65535  EPsR  EBQO NULL    0          b        2401900           AWPSM           gGTRs 00:57:39     RSN WME IEEE80211_MODE_11AXA_HE160  2 2   0  
+02:00:00:00:00:16    4   36 1201M   1201M  -58     -60     -50    0      0   65535   EPR   cBO NULL    0          b        1201000          AWPGSM          LgGTRs 00:56:48     RSN WME IEEE80211_MODE_11AXA_HE80  2 2   1  
+02:00:00:00:00:21    5   36 585M    866M  -61     -69     -58    0      0   65535   EPs    WB NULL    0          b         866700            AWPS            gGTR 00:01:00     RSN WME IEEE80211_MODE_11AC_VHT80  2 2   0  

@@ -1,0 +1,2477 @@
+[4845211.684309] do_stat_set_ctl|944: can't find entry: 02:00:00:00:00:00
+[4845218.695617] wlan: [0:I:ANY] [UNSPECIFIED] vap-0(ath0): 
+[4845218.695617] 
+[4845218.695617] _wpaSetPtk: ******** set PTK status: 0, key_type=3, macaddr=02:00:00:00:00:00, key_len=16
+[4845218.695617] 
+[4845218.695617] 
+[4845292.272648] do_stat_set_ctl|944: can't find entry: 02:00:00:00:00:00
+[4845368.403989] do_stat_set_ctl|944: can't find entry: 02:00:00:00:00:01
+[4845368.534912] wlan: [0:I:ANY] [UNSPECIFIED] vap-0(ath0): 
+[4845368.534912] 
+[4845368.534912] _wpaSetPtk: ******** set PTK status: 0, key_type=3, macaddr=02:00:00:00:00:01, key_len=16
+[4845368.534912] 
+[4845368.534912] 
+[4845569.031644] wlan: [0:I:ANY] [UNSPECIFIED] vap-0(ath0): 
+[4845569.031644] 
+[4845569.031644] _wpaSetPtk: ******** set PTK status: 0, key_type=3, macaddr=02:00:00:00:00:02, key_len=16
+[4845569.031644] 
+[4845569.031644] 
+[4845682.509047] do_stat_set_ctl|944: can't find entry: 02:00:00:00:00:01
+[4845947.288559] wlan: [0:I:ANY] [UNSPECIFIED] vap-0(ath0): 
+[4845947.288559] 
+[4845947.288559] _wpaSetPtk: ******** set PTK status: 0, key_type=3, macaddr=02:00:00:00:00:01, key_len=16
+[4845947.288559] 
+[4845947.288559] 
+[4846077.011246] do_stat_set_ctl|944: can't find entry: 02:00:00:00:00:01
+[4847439.604791] wlan: [0:I:ANY] [UNSPECIFIED] vap-0(ath0): 
+[4847439.604791] 
+[4847439.604791] _wpaSetPtk: ******** set PTK status: 0, key_type=3, macaddr=02:00:00:00:00:03, key_len=16
+[4847439.604791] 
+[4847439.604791] 
+[4847629.324272] do_stat_set_ctl|944: can't find entry: 02:00:00:00:00:03
+[4847717.269012] do_stat_set_ctl|944: can't find entry: 02:00:00:00:00:02
+[4848105.360993] wlan: [0:I:ANY] [UNSPECIFIED] vap-0(ath0): 
+[4848105.360993] 
+[4848105.360993] _wpaSetPtk: ******** set PTK status: 0, key_type=3, macaddr=02:00:00:00:00:01, key_len=16
+[4848105.360993] 
+[4848105.360993] 
+[4848418.598369] do_stat_set_ctl|944: can't find entry: 02:00:00:00:00:01
+[4848694.674259] wlan: [0:I:ANY] [UNSPECIFIED] vap-0(ath0): 
+[4848694.674259] 
+[4848694.674259] _wpaSetPtk: ******** set PTK status: 0, key_type=3, macaddr=02:00:00:00:00:03, key_len=16
+[4848694.674259] 
+[4848694.674259] 
+[4848909.410216] wlan: [0:I:ANY] [UNSPECIFIED] vap-0(ath0): 
+[4848909.410216] 
+[4848909.410216] _wpaSetPtk: ******** set PTK status: 0, key_type=3, macaddr=02:00:00:00:00:02, key_len=16
+[4848909.410216] 
+[4848909.410216] 
+[4849231.587681] do_stat_set_ctl|944: can't find entry: 02:00:00:00:00:04
+[4849242.513803] wlan: [0:I:ANY] [UNSPECIFIED] vap-0(ath0): 
+[4849242.513803] 
+[4849242.513803] _wpaSetPtk: ******** set PTK status: 0, key_type=3, macaddr=02:00:00:00:00:04, key_len=16
+[4849242.513803] 
+[4849242.513803] 
+[4849377.274283] wlan: [0:I:ANY] [UNSPECIFIED] vap-0(ath0): 
+[4849377.274283] 
+[4849377.274283] _wpaSetPtk: ******** set PTK status: 0, key_type=3, macaddr=02:00:00:00:00:02, key_len=16
+[4849377.274283] 
+[4849377.274283] 
+[4849396.037967] do_stat_set_ctl|944: can't find entry: 02:00:00:00:00:05
+[4849396.040576] do_stat_set_ctl|944: can't find entry: 02:00:00:00:00:06
+[4849421.982420] do_stat_set_ctl|944: can't find entry: 02:00:00:00:00:07
+[4849425.846304] do_stat_set_ctl|944: can't find entry: 02:00:00:00:00:08
+[4849516.945079] wlan: [0:I:ANY] [UNSPECIFIED] vap-0(ath0): 
+[4849516.945079] 
+[4849516.945079] _wpaSetPtk: ******** set PTK status: 0, key_type=3, macaddr=02:00:00:00:00:01, key_len=16
+[4849516.945079] 
+[4849516.945079] 
+[4849551.768261] wlan: [0:I:ANY] [UNSPECIFIED] vap-0(ath0): 
+[4849551.768261] 
+[4849551.768261] _wpaSetPtk: ******** set PTK status: 0, key_type=3, macaddr=02:00:00:00:00:00, key_len=16
+[4849551.768261] 
+[4849551.768261] 
+[4849580.067799] do_stat_set_ctl|944: can't find entry: 02:00:00:00:00:09
+[4849583.617250] do_stat_set_ctl|944: can't find entry: 02:00:00:00:00:03
+[4849706.216643] do_stat_set_ctl|944: can't find entry: 02:00:00:00:00:01
+[4849965.740217] do_stat_set_ctl|944: can't find entry: 02:00:00:00:00:02
+[4849983.799338] do_stat_set_ctl|944: can't find entry: 02:00:00:00:00:04
+[4851917.513344] wlan: [0:I:ANY] [UNSPECIFIED] vap-0(ath0): 
+[4851917.513344] 
+[4851917.513344] _wpaSetPtk: ******** set PTK status: 0, key_type=3, macaddr=02:00:00:00:00:02, key_len=16
+[4851917.513344] 
+[4851917.513344] 
+[4851986.837849] do_stat_set_ctl|944: can't find entry: 02:00:00:00:00:02
+[4856577.619886] do_stat_set_ctl|944: can't find entry: 02:00:00:00:00:0A
+[4859205.565938] wlan: [0:I:ANY] [UNSPECIFIED] vap-0(ath0): 
+[4859205.565938] 
+[4859205.565938] _wpaSetPtk: ******** set PTK status: 0, key_type=3, macaddr=02:00:00:00:00:00, key_len=16
+[4859205.565938] 
+[4859205.565938] 
+[4869099.440459] wlan: [0:I:ANY] [UNSPECIFIED] vap-0(ath0): 
+[4869099.440459] 
+[4869099.440459] _wpaSetPtk: ******** set PTK status: 0, key_type=3, macaddr=02:00:00:00:00:00, key_len=16
+[4869099.440459] 
+[4869099.440459] 
+[4869106.213272] wlan: [0:I:ANY] [UNSPECIFIED] vap-0(ath0): 
+[4869106.213272] 
+[4869106.213272] _wpaSetPtk: ******** set PTK status: 0, key_type=3, macaddr=02:00:00:00:00:00, key_len=16
+[4869106.213272] 
+[4869106.213272] 
+[4869168.926997] do_stat_set_ctl|944: can't find entry: 02:00:00:00:00:00
+[4869465.697999] wlan: [0:I:ANY] [UNSPECIFIED] vap-0(ath0): 
+[4869465.697999] 
+[4869465.697999] _wpaSetPtk: ******** set PTK status: 0, key_type=3, macaddr=02:00:00:00:00:0b, key_len=16
+[4869465.697999] 
+[4869465.697999] 
+[4881434.883051] wlan: [0:I:ANY] [UNSPECIFIED] vap-0(ath0): 
+[4881434.883051] 
+[4881434.883051] _wpaSetPtk: ******** set PTK status: 0, key_type=3, macaddr=02:00:00:00:00:0c, key_len=16
+[4881434.883051] 
+[4881434.883051] 
+[4881435.037840] wlan: [0:I:ANY] [UNSPECIFIED] vap-0(ath0): 
+[4881435.037840] 
+[4881435.037840] _wpaSetPtk: ******** set PTK status: 0, key_type=3, macaddr=02:00:00:00:00:0d, key_len=16
+[4881435.037840] 
+[4881435.037840] 
+[4881435.079888] wlan: [0:I:ANY] [UNSPECIFIED] vap-0(ath0): 
+[4881435.079888] 
+[4881435.079888] _wpaSetPtk: ******** set PTK status: 0, key_type=3, macaddr=02:00:00:00:00:0e, key_len=16
+[4881435.079888] 
+[4881435.079888] 
+[4883991.525058] wlan: [0:I:ANY] [UNSPECIFIED] vap-0(ath1): 
+[4883991.525058] 
+[4883991.525058] _wpaSetPtk: ******** set PTK status: 0, key_type=3, macaddr=02:00:00:00:00:0a, key_len=16
+[4883991.525058] 
+[4883991.525058] 
+[4884426.966753] wlan: [0:I:ANY] [UNSPECIFIED] vap-0(ath0): 
+[4884426.966753] 
+[4884426.966753] _wpaSetPtk: ******** set PTK status: 0, key_type=3, macaddr=02:00:00:00:00:00, key_len=16
+[4884426.966753] 
+[4884426.966753] 
+[4884530.009148] do_stat_set_ctl|944: can't find entry: 02:00:00:00:00:00
+[4884589.269707] do_stat_set_ctl|944: can't find entry: 02:00:00:00:00:0C
+[4884589.360399] do_stat_set_ctl|944: can't find entry: 02:00:00:00:00:0D
+[4884590.224268] do_stat_set_ctl|944: can't find entry: 02:00:00:00:00:0E
+[4886689.538407] wlan: [0:I:ANY] [UNSPECIFIED] vap-0(ath0): 
+[4886689.538407] 
+[4886689.538407] _wpaSetPtk: ******** set PTK status: 0, key_type=3, macaddr=02:00:00:00:00:09, key_len=16
+[4886689.538407] 
+[4886689.538407] 
+[4886690.629333] wlan: [0:I:ANY] [UNSPECIFIED] vap-0(ath0): 
+[4886690.629333] 
+[4886690.629333] _wpaSetPtk: ******** set PTK status: 0, key_type=3, macaddr=02:00:00:00:00:07, key_len=16
+[4886690.629333] 
+[4886690.629333] 
+[4886690.873410] wlan: [0:I:ANY] [UNSPECIFIED] vap-0(ath0): 
+[4886690.873410] 
+[4886690.873410] _wpaSetPtk: ******** set PTK status: 0, key_type=3, macaddr=02:00:00:00:00:06, key_len=16
+[4886690.873410] 
+[4886690.873410] 
+[4886690.952026] wlan: [0:I:ANY] [UNSPECIFIED] vap-0(ath0): 
+[4886690.952026] 
+[4886690.952026] _wpaSetPtk: ******** set PTK status: 0, key_type=3, macaddr=02:00:00:00:00:08, key_len=16
+[4886690.952026] 
+[4886690.952026] 
+[4886693.013827] wlan: [0:I:ANY] [UNSPECIFIED] vap-0(ath0): 
+[4886693.013827] 
+[4886693.013827] _wpaSetPtk: ******** set PTK status: 0, key_type=3, macaddr=02:00:00:00:00:05, key_len=16
+[4886693.013827] 
+[4886693.013827] 
+[4886982.158077] wlan: [0:I:ANY] [UNSPECIFIED] vap-0(ath0): 
+[4886982.158077] 
+[4886982.158077] _wpaSetPtk: ******** set PTK status: 0, key_type=3, macaddr=02:00:00:00:00:0e, key_len=16
+[4886982.158077] 
+[4886982.158077] 
+[4886982.265162] wlan: [0:I:ANY] [UNSPECIFIED] vap-0(ath0): 
+[4886982.265162] 
+[4886982.265162] _wpaSetPtk: ******** set PTK status: 0, key_type=3, macaddr=02:00:00:00:00:0c, key_len=16
+[4886982.265162] 
+[4886982.265162] 
+[4886982.403439] wlan: [0:I:ANY] [UNSPECIFIED] vap-0(ath0): 
+[4886982.403439] 
+[4886982.403439] _wpaSetPtk: ******** set PTK status: 0, key_type=3, macaddr=02:00:00:00:00:0d, key_len=16
+[4886982.403439] 
+[4886982.403439] 
+[4887891.468784] do_stat_set_ctl|944: can't find entry: 02:00:00:00:00:0C
+[4887891.517051] do_stat_set_ctl|944: can't find entry: 02:00:00:00:00:0D
+[4887892.409730] do_stat_set_ctl|944: can't find entry: 02:00:00:00:00:0E
+[4888605.016990] wlan: [0:I:ANY] [UNSPECIFIED] vap-0(ath0): 
+[4888605.016990] 
+[4888605.016990] _wpaSetPtk: ******** set PTK status: 0, key_type=3, macaddr=02:00:00:00:00:00, key_len=16
+[4888605.016990] 
+[4888605.016990] 
+[4888659.973746] wlan: [0:I:ANY] [UNSPECIFIED] vap-0(ath0): 
+[4888659.973746] 
+[4888659.973746] _wpaSetPtk: ******** set PTK status: 0, key_type=3, macaddr=02:00:00:00:00:0f, key_len=16
+[4888659.973746] 
+[4888659.973746] 
+[4888689.761862] do_stat_set_ctl|944: can't find entry: 02:00:00:00:00:00
+[4888909.627221] do_stat_set_ctl|944: can't find entry: 02:00:00:00:00:0A
+[4888945.528205] do_stat_set_ctl|944: can't find entry: 02:00:00:00:00:10
+[4888966.321806] do_stat_set_ctl|944: can't find entry: 02:00:00:00:00:0F
+[4889655.917232] wlan: [0:I:ANY] [UNSPECIFIED] vap-0(ath0): 
+[4889655.917232] 
+[4889655.917232] _wpaSetPtk: ******** set PTK status: 0, key_type=3, macaddr=02:00:00:00:00:00, key_len=16
+[4889655.917232] 
+[4889655.917232] 
+[4889794.042263] do_stat_set_ctl|944: can't find entry: 02:00:00:00:00:00
+[4890008.483658] wlan: [0:I:ANY] [UNSPECIFIED] vap-0(ath0): 
+[4890008.483658] 
+[4890008.483658] _wpaSetPtk: ******** set PTK status: 0, key_type=3, macaddr=02:00:00:00:00:00, key_len=16
+[4890008.483658] 
+[4890008.483658] 
+[4890092.316962] do_stat_set_ctl|944: can't find entry: 02:00:00:00:00:00
+[4890190.762552] do_stat_set_ctl|944: can't find entry: 02:00:00:00:00:07
+[4890219.763056] do_stat_set_ctl|944: can't find entry: 02:00:00:00:00:06
+[4890219.773310] do_stat_set_ctl|944: can't find entry: 02:00:00:00:00:08
+[4890241.846065] do_stat_set_ctl|944: can't find entry: 02:00:00:00:00:05
+[4890263.747323] do_stat_set_ctl|944: can't find entry: 02:00:00:00:00:09
+[4892236.817868] wlan: [0:I:ANY] [UNSPECIFIED] vap-0(ath0): 
+[4892236.817868] 
+[4892236.817868] _wpaSetPtk: ******** set PTK status: 0, key_type=3, macaddr=02:00:00:00:00:00, key_len=16
+[4892236.817868] 
+[4892236.817868] 
+[4901443.918705] wlan: [0:I:ANY] [UNSPECIFIED] vap-0(ath0): 
+[4901443.918705] 
+[4901443.918705] _wpaSetPtk: ******** set PTK status: 0, key_type=3, macaddr=02:00:00:00:00:00, key_len=16
+[4901443.918705] 
+[4901443.918705] 
+[4901539.062863] do_stat_set_ctl|944: can't find entry: 02:00:00:00:00:00
+[4903355.422203] wlan: [0:I:ANY] [UNSPECIFIED] vap-0(ath0): 
+[4903355.422203] 
+[4903355.422203] _wpaSetPtk: ******** set PTK status: 0, key_type=3, macaddr=02:00:00:00:00:00, key_len=16
+[4903355.422203] 
+[4903355.422203] 
+[4903824.505872] wlan: [0:I:ANY] [UNSPECIFIED] vap-0(ath0): 
+[4903824.505872] 
+[4903824.505872] _wpaSetPtk: ******** set PTK status: 0, key_type=3, macaddr=02:00:00:00:00:00, key_len=16
+[4903824.505872] 
+[4903824.505872] 
+[4903931.236540] do_stat_set_ctl|944: can't find entry: 02:00:00:00:00:00
+[4906229.958951] wlan: [0:I:ANY] [UNSPECIFIED] vap-0(ath0): 
+[4906229.958951] 
+[4906229.958951] _wpaSetPtk: ******** set PTK status: 0, key_type=3, macaddr=02:00:00:00:00:00, key_len=16
+[4906229.958951] 
+[4906229.958951] 
+[4906332.729289] do_stat_set_ctl|944: can't find entry: 02:00:00:00:00:00
+[4911572.208271] wlan: [0:I:ANY] [UNSPECIFIED] vap-0(ath0): 
+[4911572.208271] 
+[4911572.208271] _wpaSetPtk: ******** set PTK status: 0, key_type=3, macaddr=02:00:00:00:00:00, key_len=16
+[4911572.208271] 
+[4911572.208271] 
+[4911709.824445] do_stat_set_ctl|944: can't find entry: 02:00:00:00:00:00
+[4912520.540716] wlan: [0:I:ANY] [UNSPECIFIED] vap-0(ath0): 
+[4912520.540716] 
+[4912520.540716] _wpaSetPtk: ******** set PTK status: 0, key_type=3, macaddr=02:00:00:00:00:00, key_len=16
+[4912520.540716] 
+[4912520.540716] 
+[4912731.782032] wlan: [0:I:ANY] [UNSPECIFIED] vap-0(ath0): 
+[4912731.782032] 
+[4912731.782032] _wpaSetPtk: ******** set PTK status: 0, key_type=3, macaddr=02:00:00:00:00:00, key_len=16
+[4912731.782032] 
+[4912731.782032] 
+[4913456.131248] wlan: [0:I:ANY] [UNSPECIFIED] vap-0(ath0): 
+[4913456.131248] 
+[4913456.131248] _wpaSetPtk: ******** set PTK status: 0, key_type=3, macaddr=02:00:00:00:00:00, key_len=16
+[4913456.131248] 
+[4913456.131248] 
+[4914655.872062] wlan: [0:I:ANY] [UNSPECIFIED] vap-0(ath0): 
+[4914655.872062] 
+[4914655.872062] _wpaSetPtk: ******** set PTK status: 0, key_type=3, macaddr=02:00:00:00:00:00, key_len=16
+[4914655.872062] 
+[4914655.872062] 
+[4914999.407681] wlan: [0:I:ANY] [UNSPECIFIED] vap-0(ath0): 
+[4914999.407681] 
+[4914999.407681] _wpaSetPtk: ******** set PTK status: 0, key_type=3, macaddr=02:00:00:00:00:00, key_len=16
+[4914999.407681] 
+[4914999.407681] 
+[4915024.487243] wlan: [0:I:ANY] [UNSPECIFIED] vap-0(ath1): 
+[4915024.487243] 
+[4915024.487243] _wpaSetPtk: ******** set PTK status: 0, key_type=3, macaddr=02:00:00:00:00:11, key_len=16
+[4915024.487243] 
+[4915024.487243] 
+[4915072.313080] do_stat_set_ctl|944: can't find entry: 02:00:00:00:00:00
+[4915510.042822] wlan: [0:I:ANY] [UNSPECIFIED] vap-0(ath0): 
+[4915510.042822] 
+[4915510.042822] _wpaSetPtk: ******** set PTK status: 0, key_type=3, macaddr=02:00:00:00:00:00, key_len=16
+[4915510.042822] 
+[4915510.042822] 
+[4915738.321370] wlan: [0:I:ANY] [UNSPECIFIED] vap-0(ath0): 
+[4915738.321370] 
+[4915738.321370] _wpaSetPtk: ******** set PTK status: 0, key_type=3, macaddr=02:00:00:00:00:00, key_len=16
+[4915738.321370] 
+[4915738.321370] 
+[4916297.658262] wlan: [0:I:ANY] [UNSPECIFIED] vap-0(ath0): 
+[4916297.658262] 
+[4916297.658262] _wpaSetPtk: ******** set PTK status: 0, key_type=3, macaddr=02:00:00:00:00:00, key_len=16
+[4916297.658262] 
+[4916297.658262] 
+[4916363.053237] do_stat_set_ctl|944: can't find entry: 02:00:00:00:00:00
+[4916368.738681] wlan: [0:I:ANY] [UNSPECIFIED] vap-0(ath0): 
+[4916368.738681] 
+[4916368.738681] _wpaSetPtk: ******** set PTK status: 0, key_type=3, macaddr=02:00:00:00:00:00, key_len=16
+[4916368.738681] 
+[4916368.738681] 
+[4916431.206473] do_stat_set_ctl|944: can't find entry: 02:00:00:00:00:00
+[4920629.575869] do_stat_set_ctl|944: can't find entry: 02:00:00:00:00:12
+[4920734.938705] wlan: [0:I:ANY] [UNSPECIFIED] vap-0(ath0): 
+[4920734.938705] 
+[4920734.938705] _wpaSetPtk: ******** set PTK status: 0, key_type=3, macaddr=02:00:00:00:00:00, key_len=16
+[4920734.938705] 
+[4920734.938705] 
+[4920968.072543] do_stat_set_ctl|944: can't find entry: 02:00:00:00:00:13
+[4921482.735734] do_stat_set_ctl|944: can't find entry: 02:00:00:00:00:12
+[4922550.145660] do_stat_set_ctl|944: can't find entry: 02:00:00:00:00:12
+[4923214.112338] wlan: [0:I:ANY] [UNSPECIFIED] vap-0(ath0): 
+[4923214.112338] 
+[4923214.112338] _wpaSetPtk: ******** set PTK status: 0, key_type=3, macaddr=02:00:00:00:00:09, key_len=16
+[4923214.112338] 
+[4923214.112338] 
+[4923214.584840] wlan: [0:I:ANY] [UNSPECIFIED] vap-0(ath0): 
+[4923214.584840] 
+[4923214.584840] _wpaSetPtk: ******** set PTK status: 0, key_type=3, macaddr=02:00:00:00:00:05, key_len=16
+[4923214.584840] 
+[4923214.584840] 
+[4923214.589338] wlan: [0:I:ANY] [UNSPECIFIED] vap-0(ath0): 
+[4923214.589338] 
+[4923214.589338] _wpaSetPtk: ******** set PTK status: 0, key_type=3, macaddr=02:00:00:00:00:07, key_len=16
+[4923214.589338] 
+[4923214.589338] 
+[4923214.733720] wlan: [0:I:ANY] [UNSPECIFIED] vap-0(ath0): 
+[4923214.733720] 
+[4923214.733720] _wpaSetPtk: ******** set PTK status: 0, key_type=3, macaddr=02:00:00:00:00:06, key_len=16
+[4923214.733720] 
+[4923214.733720] 
+[4923214.740095] wlan: [0:I:ANY] [UNSPECIFIED] vap-0(ath0): 
+[4923214.740095] 
+[4923214.740095] _wpaSetPtk: ******** set PTK status: 0, key_type=3, macaddr=02:00:00:00:00:08, key_len=16
+[4923214.740095] 
+[4923214.740095] 
+[4923611.715810] do_stat_set_ctl|944: can't find entry: 02:00:00:00:00:12
+[4923672.260899] do_stat_set_ctl|944: can't find entry: 02:00:00:00:00:12
+[4923711.923888] wlan: [0:I:ANY] [UNSPECIFIED] vap-0(ath0): 
+[4923711.923888] 
+[4923711.923888] _wpaSetPtk: ******** set PTK status: 0, key_type=3, macaddr=02:00:00:00:00:00, key_len=16
+[4923711.923888] 
+[4923711.923888] 
+[4923767.664588] wlan: [0:I:ANY] [UNSPECIFIED] vap-0(ath0): 
+[4923767.664588] 
+[4923767.664588] _wpaSetPtk: ******** set PTK status: 0, key_type=3, macaddr=02:00:00:00:00:13, key_len=16
+[4923767.664588] 
+[4923767.664588] 
+[4923800.869646] do_stat_set_ctl|944: can't find entry: 02:00:00:00:00:00
+[4923894.791335] do_stat_set_ctl|944: can't find entry: 02:00:00:00:00:12
+[4924071.206850] do_stat_set_ctl|944: can't find entry: 02:00:00:00:00:12
+[4924620.654378] wlan: [0:I:ANY] [UNSPECIFIED] vap-0(ath0): 
+[4924620.654378] 
+[4924620.654378] _wpaSetPtk: ******** set PTK status: 0, key_type=3, macaddr=02:00:00:00:00:00, key_len=16
+[4924620.654378] 
+[4924620.654378] 
+[4924625.481376] wlan: [0:I:ANY] [UNSPECIFIED] vap-0(ath1): 
+[4924625.481376] 
+[4924625.481376] _wpaSetPtk: ******** set PTK status: 0, key_type=3, macaddr=02:00:00:00:00:10, key_len=16
+[4924625.481376] 
+[4924625.481376] 
+[4924671.676726] wlan: [0:I:ANY] [UNSPECIFIED] vap-0(ath0): 
+[4924671.676726] 
+[4924671.676726] _wpaSetPtk: ******** set PTK status: 0, key_type=3, macaddr=02:00:00:00:00:0e, key_len=16
+[4924671.676726] 
+[4924671.676726] 
+[4924671.756187] wlan: [0:I:ANY] [UNSPECIFIED] vap-0(ath0): 
+[4924671.756187] 
+[4924671.756187] _wpaSetPtk: ******** set PTK status: 0, key_type=3, macaddr=02:00:00:00:00:0c, key_len=16
+[4924671.756187] 
+[4924671.756187] 
+[4924671.956569] wlan: [0:I:ANY] [UNSPECIFIED] vap-0(ath0): 
+[4924671.956569] 
+[4924671.956569] _wpaSetPtk: ******** set PTK status: 0, key_type=3, macaddr=02:00:00:00:00:0d, key_len=16
+[4924671.956569] 
+[4924671.956569] 
+[4924685.212405] do_stat_set_ctl|944: can't find entry: 02:00:00:00:00:00
+[4924706.122067] wlan: [0:I:ANY] [UNSPECIFIED] vap-0(ath0): 
+[4924706.122067] 
+[4924706.122067] _wpaSetPtk: ******** set PTK status: 0, key_type=3, macaddr=02:00:00:00:00:04, key_len=16
+[4924706.122067] 
+[4924706.122067] 
+[4924707.132882] wlan: [0:I:ANY] [UNSPECIFIED] vap-0(ath0): 
+[4924707.132882] 
+[4924707.132882] _wpaSetPtk: ******** set PTK status: 0, key_type=3, macaddr=02:00:00:00:00:00, key_len=16
+[4924707.132882] 
+[4924707.132882] 
+[4924744.261650] wlan: [0:I:ANY] [UNSPECIFIED] vap-0(ath1): 
+[4924744.261650] 
+[4924744.261650] _wpaSetPtk: ******** set PTK status: 0, key_type=3, macaddr=02:00:00:00:00:0a, key_len=16
+[4924744.261650] 
+[4924744.261650] 
+[4924769.621689] do_stat_set_ctl|944: can't find entry: 02:00:00:00:00:00
+[4924774.289442] wlan: [0:I:ANY] [UNSPECIFIED] vap-0(ath0): 
+[4924774.289442] 
+[4924774.289442] _wpaSetPtk: ******** set PTK status: 0, key_type=3, macaddr=02:00:00:00:00:01, key_len=16
+[4924774.289442] 
+[4924774.289442] 
+[4924932.931420] do_stat_set_ctl|944: can't find entry: 02:00:00:00:00:14
+[4924980.475669] do_stat_set_ctl|944: can't find entry: 02:00:00:00:00:0E
+[4924980.479276] do_stat_set_ctl|944: can't find entry: 02:00:00:00:00:0C
+[4924981.357772] do_stat_set_ctl|944: can't find entry: 02:00:00:00:00:0D
+[4925011.068250] do_stat_set_ctl|944: can't find entry: 02:00:00:00:00:04
+[4925086.318593] do_stat_set_ctl|944: can't find entry: 02:00:00:00:00:01
+[4925668.222892] wlan: [0:I:ANY] [UNSPECIFIED] vap-0(ath0): 
+[4925668.222892] 
+[4925668.222892] _wpaSetPtk: ******** set PTK status: 0, key_type=3, macaddr=02:00:00:00:00:00, key_len=16
+[4925668.222892] 
+[4925668.222892] 
+[4925809.740012] do_stat_set_ctl|944: can't find entry: 02:00:00:00:00:00
+[4926031.817636] do_stat_set_ctl|944: can't find entry: 02:00:00:00:00:10
+[4926492.791078] wlan: [0:I:ANY] [UNSPECIFIED] vap-0(ath0): 
+[4926492.791078] 
+[4926492.791078] _wpaSetPtk: ******** set PTK status: 0, key_type=3, macaddr=02:00:00:00:00:02, key_len=16
+[4926492.791078] 
+[4926492.791078] 
+[4927522.005558] do_stat_set_ctl|944: can't find entry: 02:00:00:00:00:02
+[4927625.826141] wlan: [0:I:ANY] [UNSPECIFIED] vap-0(ath0): 
+[4927625.826141] 
+[4927625.826141] _wpaSetPtk: ******** set PTK status: 0, key_type=3, macaddr=02:00:00:00:00:00, key_len=16
+[4927625.826141] 
+[4927625.826141] 
+[4927698.942814] do_stat_set_ctl|944: can't find entry: 02:00:00:00:00:00
+[4928060.932736] wlan: [0:I:ANY] [UNSPECIFIED] vap-0(ath0): 
+[4928060.932736] 
+[4928060.932736] _wpaSetPtk: ******** set PTK status: 0, key_type=3, macaddr=02:00:00:00:00:02, key_len=16
+[4928060.932736] 
+[4928060.932736] 
+[4928139.153614] wlan: [0:I:ANY] [UNSPECIFIED] vap-0(ath0): 
+[4928139.153614] 
+[4928139.153614] _wpaSetPtk: ******** set PTK status: 0, key_type=3, macaddr=02:00:00:00:00:01, key_len=16
+[4928139.153614] 
+[4928139.153614] 
+[4928149.503511] wlan: [0:I:ANY] [UNSPECIFIED] vap-0(ath0): 
+[4928149.503511] 
+[4928149.503511] _wpaSetPtk: ******** set PTK status: 0, key_type=3, macaddr=02:00:00:00:00:00, key_len=16
+[4928149.503511] 
+[4928149.503511] 
+[4928152.600099] wlan: [0:I:ANY] [UNSPECIFIED] vap-0(ath1): 
+[4928152.600099] 
+[4928152.600099] _wpaSetPtk: ******** set PTK status: 0, key_type=3, macaddr=02:00:00:00:00:10, key_len=16
+[4928152.600099] 
+[4928152.600099] 
+[4928214.636020] do_stat_set_ctl|944: can't find entry: 02:00:00:00:00:00
+[4928239.960539] wlan: [0:I:ANY] [UNSPECIFIED] vap-0(ath0): 
+[4928239.960539] 
+[4928239.960539] _wpaSetPtk: ******** set PTK status: 0, key_type=3, macaddr=02:00:00:00:00:00, key_len=16
+[4928239.960539] 
+[4928239.960539] 
+[4928257.221322] wlan: [0:I:ANY] [UNSPECIFIED] vap-0(ath0): 
+[4928257.221322] 
+[4928257.221322] _wpaSetPtk: ******** set PTK status: 0, key_type=3, macaddr=02:00:00:00:00:04, key_len=16
+[4928257.221322] 
+[4928257.221322] 
+[4928302.449117] do_stat_set_ctl|944: can't find entry: 02:00:00:00:00:00
+[4928306.464452] do_stat_set_ctl|944: can't find entry: 02:00:00:00:00:04
+[4928306.632524] wlan: [0:I:ANY] [UNSPECIFIED] vap-0(ath0): 
+[4928306.632524] 
+[4928306.632524] _wpaSetPtk: ******** set PTK status: 0, key_type=3, macaddr=02:00:00:00:00:04, key_len=16
+[4928306.632524] 
+[4928306.632524] 
+[4928351.539837] do_stat_set_ctl|944: can't find entry: 02:00:00:00:00:01
+[4928351.657138] wlan: [0:I:ANY] [UNSPECIFIED] vap-0(ath0): 
+[4928351.657138] 
+[4928351.657138] _wpaSetPtk: ******** set PTK status: 0, key_type=3, macaddr=02:00:00:00:00:01, key_len=16
+[4928351.657138] 
+[4928351.657138] 
+[4928368.416887] wlan: [0:I:ANY] [UNSPECIFIED] vap-0(ath0): 
+[4928368.416887] 
+[4928368.416887] _wpaSetPtk: ******** set PTK status: 0, key_type=3, macaddr=02:00:00:00:00:00, key_len=16
+[4928368.416887] 
+[4928368.416887] 
+[4928424.408310] do_stat_set_ctl|944: can't find entry: 02:00:00:00:00:02
+[4928450.792497] do_stat_set_ctl|944: can't find entry: 02:00:00:00:00:00
+[4928493.968777] wlan: [0:I:ANY] [UNSPECIFIED] vap-0(ath0): 
+[4928493.968777] 
+[4928493.968777] _wpaSetPtk: ******** set PTK status: 0, key_type=3, macaddr=02:00:00:00:00:04, key_len=16
+[4928493.968777] 
+[4928493.968777] 
+[4928513.485956] do_stat_set_ctl|944: can't find entry: 02:00:00:00:00:10
+[4928677.248245] do_stat_set_ctl|944: can't find entry: 02:00:00:00:00:01
+[4928705.239777] wlan: [0:I:ANY] [UNSPECIFIED] vap-0(ath1): 
+[4928705.239777] 
+[4928705.239777] _wpaSetPtk: ******** set PTK status: 0, key_type=3, macaddr=02:00:00:00:00:10, key_len=16
+[4928705.239777] 
+[4928705.239777] 
+[4928708.391831] wlan: [0:I:ANY] [UNSPECIFIED] vap-0(ath0): 
+[4928708.391831] 
+[4928708.391831] _wpaSetPtk: ******** set PTK status: 0, key_type=3, macaddr=02:00:00:00:00:00, key_len=16
+[4928708.391831] 
+[4928708.391831] 
+[4928778.773387] do_stat_set_ctl|944: can't find entry: 02:00:00:00:00:00
+[4928800.852154] wlan: [0:I:ANY] [UNSPECIFIED] vap-0(ath0): 
+[4928800.852154] 
+[4928800.852154] _wpaSetPtk: ******** set PTK status: 0, key_type=3, macaddr=02:00:00:00:00:03, key_len=16
+[4928800.852154] 
+[4928800.852154] 
+[4929092.628654] do_stat_set_ctl|944: can't find entry: 02:00:00:00:00:04
+[4929095.476134] wlan: [0:I:ANY] [UNSPECIFIED] vap-0(ath0): 
+[4929095.476134] 
+[4929095.476134] _wpaSetPtk: ******** set PTK status: 0, key_type=3, macaddr=02:00:00:00:00:00, key_len=16
+[4929095.476134] 
+[4929095.476134] 
+[4929124.970454] wlan: [0:I:ANY] [UNSPECIFIED] vap-0(ath0): 
+[4929124.970454] 
+[4929124.970454] _wpaSetPtk: ******** set PTK status: 0, key_type=3, macaddr=02:00:00:00:00:0e, key_len=16
+[4929124.970454] 
+[4929124.970454] 
+[4929125.056154] wlan: [0:I:ANY] [UNSPECIFIED] vap-0(ath0): 
+[4929125.056154] 
+[4929125.056154] _wpaSetPtk: ******** set PTK status: 0, key_type=3, macaddr=02:00:00:00:00:0c, key_len=16
+[4929125.056154] 
+[4929125.056154] 
+[4929125.188535] wlan: [0:I:ANY] [UNSPECIFIED] vap-0(ath0): 
+[4929125.188535] 
+[4929125.188535] _wpaSetPtk: ******** set PTK status: 0, key_type=3, macaddr=02:00:00:00:00:0d, key_len=16
+[4929125.188535] 
+[4929125.188535] 
+[4929155.838316] do_stat_set_ctl|944: can't find entry: 02:00:00:00:00:03
+[4929178.001892] wlan: [0:I:ANY] [UNSPECIFIED] vap-0(ath0): 
+[4929178.001892] 
+[4929178.001892] _wpaSetPtk: ******** set PTK status: 0, key_type=3, macaddr=02:00:00:00:00:04, key_len=16
+[4929178.001892] 
+[4929178.001892] 
+[4929233.205318] do_stat_set_ctl|944: can't find entry: 02:00:00:00:00:00
+[4929367.785823] do_stat_set_ctl|944: can't find entry: 02:00:00:00:00:12
+[4929451.095912] do_stat_set_ctl|944: can't find entry: 02:00:00:00:00:13
+[4929473.772017] do_stat_set_ctl|944: can't find entry: 02:00:00:00:00:10
+[4930051.041118] wlan: [0:I:ANY] [UNSPECIFIED] vap-0(ath1): 
+[4930051.041118] 
+[4930051.041118] _wpaSetPtk: ******** set PTK status: 0, key_type=3, macaddr=02:00:00:00:00:10, key_len=16
+[4930051.041118] 
+[4930051.041118] 
+[4930052.762882] wlan: [0:I:ANY] [UNSPECIFIED] vap-0(ath0): 
+[4930052.762882] 
+[4930052.762882] _wpaSetPtk: ******** set PTK status: 0, key_type=3, macaddr=02:00:00:00:00:00, key_len=16
+[4930052.762882] 
+[4930052.762882] 
+[4930117.009750] do_stat_set_ctl|944: can't find entry: 02:00:00:00:00:00
+[4930119.056328] wlan: [0:I:ANY] [UNSPECIFIED] vap-0(ath0): 
+[4930119.056328] 
+[4930119.056328] _wpaSetPtk: ******** set PTK status: 0, key_type=3, macaddr=02:00:00:00:00:01, key_len=16
+[4930119.056328] 
+[4930119.056328] 
+[4930175.404851] wlan: [0:I:ANY] [UNSPECIFIED] vap-0(ath0): 
+[4930175.404851] 
+[4930175.404851] _wpaSetPtk: ******** set PTK status: 0, key_type=3, macaddr=02:00:00:00:00:00, key_len=16
+[4930175.404851] 
+[4930175.404851] 
+[4930248.956919] do_stat_set_ctl|944: can't find entry: 02:00:00:00:00:01
+[4930271.843156] wlan: [0:D:dfs] WLAN_DEBUG_DFS_ALWAYS : dfs_process_radar_ind_on_home_chan: Radar found on second segment.Radarfound Freq=5267 MHz.Secondary Chan cfreq=5290 MHz.
+[4930271.844461] wlan: [0:I:ANY] wlan_scan_update_channel_list: num_chan: 13
+[4930271.857759] wlan: [0:I:ANY] ieee80211_dfs_action: Changing to HT80 non-DFS channel 40 (5200 MHz)
+[4930271.864589] wlan: [0:E:CMN_MLME] wlan_pdev_mlme_vdev_sm_notify_radar_ind: Starting MVR for Pdev 0
+[4930271.873467] wlan: [0:I:CMN_MLME] mlme_dfs_is_cac_required: des chan(40) is non-dfs, CAC not needed
+[4930271.873467] 
+[4930271.882381] wlan: [0:I:CMN_MLME] mlme_dfs_is_cac_required: des chan(40) is non-dfs, CAC not needed
+[4930271.882381] 
+[4930271.908648] wlan: [0:W:ANY] ol_ath_vdev_beacon_template_update: Channel switch is ON - Ignore Template update
+[4930272.419461] wlan: [0:I:MBSSIE] ol_ath_pdev_csa_status_event_handler: vdev_id: 0
+[4930272.419510] wlan: [0:I:CMN_MLME] mlme_dfs_is_cac_required: des chan(40) is non-dfs, CAC not needed
+[4930272.419510] 
+[4930272.425942] wlan: [0:E:CMN_MLME] mlme_multivdev_restart: Sending MVR for Pdev 0
+[4930272.436520] wlan: [0:E:CMN_MLME] mlme_vdev_multivdev_restart_fw_send_cb: (vdev-id:0) des chan(40)
+[4930272.444180] wlan: [0:I:CMN_MLME] phymode for mvr: 10
+[4930272.935017] wlan: [0:I:ANY] mlme_vdev_start_continue_cb: phy changed, set ic_phy_changed=1
+[4930272.935671] wlan: [0:I:ANY] mlme_vdev_notify_up_complete_cb: clear ic_phy_changed=0, send phy change event
+[4930272.944798] [MESH]meshIoctlGetHandle: Unsuported MESH get command: 4046 
+[4930273.077851] wlan: [0:I:ANY] [UNSPECIFIED] vap-0(ath1): 
+[4930273.077851] 
+[4930273.077851] _wpaSetPtk: ******** set PTK status: 0, key_type=3, macaddr=02:00:00:00:00:15, key_len=16
+[4930273.077851] 
+[4930273.077851] 
+[4930292.186356] wlan: [0:I:ANY] [UNSPECIFIED] vap-0(ath1): 
+[4930292.186356] 
+[4930292.186356] _wpaSetPtk: ******** set PTK status: 0, key_type=3, macaddr=02:00:00:00:00:15, key_len=16
+[4930292.186356] 
+[4930292.186356] 
+[4930298.935816] do_stat_set_ctl|944: can't find entry: 02:00:00:00:00:12
+[4930345.970642] do_stat_set_ctl|944: can't find entry: 02:00:00:00:00:00
+[4930427.279970] do_stat_set_ctl|944: can't find entry: 02:00:00:00:00:16
+[4930430.510573] wlan: [0:I:ANY] [UNSPECIFIED] vap-0(ath1): 
+[4930430.510573] 
+[4930430.510573] _wpaSetPtk: ******** set PTK status: 0, key_type=3, macaddr=02:00:00:00:00:16, key_len=16
+[4930430.510573] 
+[4930430.510573] 
+[4930453.968267] do_stat_set_ctl|944: can't find entry: 02:00:00:00:00:11
+[4930453.990197] wlan: [0:I:ANY] [UNSPECIFIED] vap-0(ath1): 
+[4930453.990197] 
+[4930453.990197] _wpaSetPtk: ******** set PTK status: 0, key_type=3, macaddr=02:00:00:00:00:11, key_len=16
+[4930453.990197] 
+[4930453.990197] 
+[4930736.375496] do_stat_set_ctl|944: can't find entry: 02:00:00:00:00:15
+[4930770.077720] wlan: [0:I:ANY] [UNSPECIFIED] vap-0(ath1): 
+[4930770.077720] 
+[4930770.077720] _wpaSetPtk: ******** set PTK status: 0, key_type=3, macaddr=02:00:00:00:00:15, key_len=16
+[4930770.077720] 
+[4930770.077720] 
+[4930805.078060] wlan: [0:I:ANY] [UNSPECIFIED] vap-0(ath1): 
+[4930805.078060] 
+[4930805.078060] _wpaSetPtk: ******** set PTK status: 0, key_type=3, macaddr=02:00:00:00:00:11, key_len=16
+[4930805.078060] 
+[4930805.078060] 
+[4930914.854130] wlan: [0:I:ANY] [UNSPECIFIED] vap-0(ath0): 
+[4930914.854130] 
+[4930914.854130] _wpaSetPtk: ******** set PTK status: 0, key_type=3, macaddr=02:00:00:00:00:00, key_len=16
+[4930914.854130] 
+[4930914.854130] 
+[4930977.320091] do_stat_set_ctl|944: can't find entry: 02:00:00:00:00:00
+[4931040.040640] wlan: [0:I:ANY] [UNSPECIFIED] vap-0(ath0): 
+[4931040.040640] 
+[4931040.040640] _wpaSetPtk: ******** set PTK status: 0, key_type=3, macaddr=02:00:00:00:00:00, key_len=16
+[4931040.040640] 
+[4931040.040640] 
+[4931050.626793] wlan: [0:I:ANY] [UNSPECIFIED] vap-0(ath0): 
+[4931050.626793] 
+[4931050.626793] _wpaSetPtk: ******** set PTK status: 0, key_type=3, macaddr=02:00:00:00:00:17, key_len=16
+[4931050.626793] 
+[4931050.626793] 
+[4931062.081883] do_stat_set_ctl|944: can't find entry: 02:00:00:00:00:17
+[4931113.713980] do_stat_set_ctl|944: can't find entry: 02:00:00:00:00:00
+[4931119.958319] wlan: [0:I:ANY] [UNSPECIFIED] vap-0(ath1): 
+[4931119.958319] 
+[4931119.958319] _wpaSetPtk: ******** set PTK status: 0, key_type=3, macaddr=02:00:00:00:00:11, key_len=16
+[4931119.958319] 
+[4931119.958319] 
+[4931312.725763] do_stat_set_ctl|944: can't find entry: 02:00:00:00:00:04
+[4931313.553387] wlan: [0:I:ANY] [UNSPECIFIED] vap-0(ath0): 
+[4931313.553387] 
+[4931313.553387] _wpaSetPtk: ******** set PTK status: 0, key_type=3, macaddr=02:00:00:00:00:04, key_len=16
+[4931313.553387] 
+[4931313.553387] 
+[4931347.517052] do_stat_set_ctl|944: can't find entry: 02:00:00:00:00:04
+[4931356.508483] do_stat_set_ctl|944: can't find entry: 02:00:00:00:00:15
+[4931385.983593] wlan: [0:I:ANY] [UNSPECIFIED] vap-0(ath0): 
+[4931385.983593] 
+[4931385.983593] _wpaSetPtk: ******** set PTK status: 0, key_type=3, macaddr=02:00:00:00:00:00, key_len=16
+[4931385.983593] 
+[4931385.983593] 
+[4931397.697332] wlan: [0:I:ANY] [UNSPECIFIED] vap-0(ath1): 
+[4931397.697332] 
+[4931397.697332] _wpaSetPtk: ******** set PTK status: 0, key_type=3, macaddr=02:00:00:00:00:11, key_len=16
+[4931397.697332] 
+[4931397.697332] 
+[4931489.458900] do_stat_set_ctl|944: can't find entry: 02:00:00:00:00:00
+[4931550.206429] wlan: [0:I:ANY] [UNSPECIFIED] vap-0(ath0): 
+[4931550.206429] 
+[4931550.206429] _wpaSetPtk: ******** set PTK status: 0, key_type=3, macaddr=02:00:00:00:00:01, key_len=16
+[4931550.206429] 
+[4931550.206429] 
+[4931567.857890] wlan: [0:I:ANY] [UNSPECIFIED] vap-0(ath0): 
+[4931567.857890] 
+[4931567.857890] _wpaSetPtk: ******** set PTK status: 0, key_type=3, macaddr=02:00:00:00:00:13, key_len=16
+[4931567.857890] 
+[4931567.857890] 
+[4931568.191453] wlan: [0:I:ANY] [UNSPECIFIED] vap-0(ath0): 
+[4931568.191453] 
+[4931568.191453] _wpaSetPtk: ******** set PTK status: 0, key_type=3, macaddr=02:00:00:00:00:00, key_len=16
+[4931568.191453] 
+[4931568.191453] 
+[4931643.383123] wlan: [0:I:ANY] [UNSPECIFIED] vap-0(ath0): 
+[4931643.383123] 
+[4931643.383123] _wpaSetPtk: ******** set PTK status: 0, key_type=3, macaddr=02:00:00:00:00:02, key_len=16
+[4931643.383123] 
+[4931643.383123] 
+[4931666.798453] do_stat_set_ctl|944: can't find entry: 02:00:00:00:00:00
+[4931680.000308] do_stat_set_ctl|944: can't find entry: 02:00:00:00:00:01
+[4931700.034406] do_stat_set_ctl|944: can't find entry: 02:00:00:00:00:02
+[4931705.745095] wlan: [0:I:ANY] [UNSPECIFIED] vap-0(ath0): 
+[4931705.745095] 
+[4931705.745095] _wpaSetPtk: ******** set PTK status: 0, key_type=3, macaddr=02:00:00:00:00:04, key_len=16
+[4931705.745095] 
+[4931705.745095] 
+[4931714.659037] wlan: [0:I:ANY] [UNSPECIFIED] vap-0(ath0): 
+[4931714.659037] 
+[4931714.659037] _wpaSetPtk: ******** set PTK status: 0, key_type=3, macaddr=02:00:00:00:00:02, key_len=16
+[4931714.659037] 
+[4931714.659037] 
+[4931719.316847] do_stat_set_ctl|944: can't find entry: 02:00:00:00:00:04
+[4931720.495411] wlan: [0:I:ANY] [UNSPECIFIED] vap-0(ath0): 
+[4931720.495411] 
+[4931720.495411] _wpaSetPtk: ******** set PTK status: 0, key_type=3, macaddr=02:00:00:00:00:01, key_len=16
+[4931720.495411] 
+[4931720.495411] 
+[4931850.252734] do_stat_set_ctl|944: can't find entry: 02:00:00:00:00:01
+[4931904.329359] do_stat_set_ctl|944: can't find entry: 02:00:00:00:00:02
+[4931934.412786] wlan: [0:I:ANY] [UNSPECIFIED] vap-0(ath0): 
+[4931934.412786] 
+[4931934.412786] _wpaSetPtk: ******** set PTK status: 0, key_type=3, macaddr=02:00:00:00:00:04, key_len=16
+[4931934.412786] 
+[4931934.412786] 
+[4931984.700990] wlan: [0:I:ANY] [UNSPECIFIED] vap-0(ath1): 
+[4931984.700990] 
+[4931984.700990] _wpaSetPtk: ******** set PTK status: 0, key_type=3, macaddr=02:00:00:00:00:11, key_len=16
+[4931984.700990] 
+[4931984.700990] 
+[4932028.689989] wlan: [0:I:ANY] [UNSPECIFIED] vap-0(ath0): 
+[4932028.689989] 
+[4932028.689989] _wpaSetPtk: ******** set PTK status: 0, key_type=3, macaddr=02:00:00:00:00:00, key_len=16
+[4932028.689989] 
+[4932028.689989] 
+[4932078.544786] wlan: [0:I:ANY] wlan_scan_update_channel_list: num_chan: 13
+[4932078.546099] wlan: [0:I:ANY] wlan_scan_update_channel_list: num_chan: 13
+[4932078.551794] wlan: [0:I:ANY] wlan_scan_update_channel_list: num_chan: 13
+[4932078.558619] wlan: [0:I:ANY] wlan_scan_update_channel_list: num_chan: 13
+[4932078.564221] wlan: [0:D:dfs] WLAN_DEBUG_DFS_AGILE : dfs_agile_sm_print_state_event: [DFS_AGILE]INIT, EV_AGILE_START
+[4932078.570933] wlan: [0:D:dfs] WLAN_DEBUG_DFS_AGILE : dfs_agile_sm_print_state: ->[DFS_AGILE] RUNNING
+[4932091.162842] do_stat_set_ctl|944: can't find entry: 02:00:00:00:00:00
+[4932123.988001] wlan: [0:I:ANY] [UNSPECIFIED] vap-0(ath0): 
+[4932123.988001] 
+[4932123.988001] _wpaSetPtk: ******** set PTK status: 0, key_type=3, macaddr=02:00:00:00:00:00, key_len=16
+[4932123.988001] 
+[4932123.988001] 
+[4932138.581447] wlan: [0:D:dfs] WLAN_DEBUG_DFS_ALWAYS : dfs_process_ocac_complete: PreCAC timer Completed for agile freq: 5290 0
+[4932138.581485] wlan: [0:D:dfs] WLAN_DEBUG_DFS_AGILE : dfs_agile_sm_print_state_event: [DFS_AGILE]RUNNING, EV_AGILE_DONE
+[4932138.592267] wlan: [0:E:CMN_MLME] wlan_pdev_mlme_vdev_sm_csa_restart: Starting MVR for Pdev 0
+[4932138.602796] wlan: [0:D:dfs] WLAN_DEBUG_DFS_AGILE : dfs_agile_sm_print_state: ->[DFS_AGILE] INIT
+[4932139.156548] wlan: [0:I:MBSSIE] ol_ath_pdev_csa_status_event_handler: vdev_id: 0
+[4932139.156621] wlan: [0:E:CMN_MLME] mlme_multivdev_restart: Sending MVR for Pdev 0
+[4932139.163015] wlan: [0:E:CMN_MLME] mlme_vdev_multivdev_restart_fw_send_cb: (vdev-id:0) des chan(40)
+[4932139.170507] wlan: [0:I:CMN_MLME] phymode for mvr: 15
+[4932139.208969] wlan: [0:I:ANY] mlme_vdev_start_continue_cb: phy changed, set ic_phy_changed=1
+[4932139.209627] wlan: [0:I:ANY] mlme_vdev_notify_up_complete_cb: clear ic_phy_changed=0, send phy change event
+[4932139.218106] [MESH]meshIoctlGetHandle: Unsuported MESH get command: 4046 do_stat_set_ctl|944: can't find entry: 02:00:00:00:00:00
+[4932247.109307] do_stat_set_ctl|944: can't find entry: 02:00:00:00:00:04
+[4932458.167179] do_stat_set_ctl|944: can't find entry: 02:00:00:00:00:10
+[4932466.838505] do_stat_set_ctl|944: can't find entry: 02:00:00:00:00:13
+[4932571.365931] wlan: [0:I:ANY] [UNSPECIFIED] vap-0(ath1): 
+[4932571.365931] 
+[4932571.365931] _wpaSetPtk: ******** set PTK status: 0, key_type=3, macaddr=02:00:00:00:00:11, key_len=16
+[4932571.365931] 
+[4932571.365931] 
+[4933158.291216] wlan: [0:I:ANY] [UNSPECIFIED] vap-0(ath1): 
+[4933158.291216] 
+[4933158.291216] _wpaSetPtk: ******** set PTK status: 0, key_type=3, macaddr=02:00:00:00:00:11, key_len=16
+[4933158.291216] 
+[4933158.291216] 
+[4933745.763638] wlan: [0:I:ANY] [UNSPECIFIED] vap-0(ath1): 
+[4933745.763638] 
+[4933745.763638] _wpaSetPtk: ******** set PTK status: 0, key_type=3, macaddr=02:00:00:00:00:11, key_len=16
+[4933745.763638] 
+[4933745.763638] 
+[4933807.188701] wlan: [0:I:ANY] [UNSPECIFIED] vap-0(ath1): 
+[4933807.188701] 
+[4933807.188701] _wpaSetPtk: ******** set PTK status: 0, key_type=3, macaddr=02:00:00:00:00:11, key_len=16
+[4933807.188701] 
+[4933807.188701] 
+[4934117.922965] wlan: [0:I:ANY] [UNSPECIFIED] vap-0(ath1): 
+[4934117.922965] 
+[4934117.922965] _wpaSetPtk: ******** set PTK status: 0, key_type=3, macaddr=02:00:00:00:00:11, key_len=16
+[4934117.922965] 
+[4934117.922965] 
+[4934262.951410] wlan: [0:I:ANY] [UNSPECIFIED] vap-0(ath0): 
+[4934262.951410] 
+[4934262.951410] _wpaSetPtk: ******** set PTK status: 0, key_type=3, macaddr=02:00:00:00:00:00, key_len=16
+[4934262.951410] 
+[4934262.951410] 
+[4934268.481731] wlan: [0:I:ANY] [UNSPECIFIED] vap-0(ath1): 
+[4934268.481731] 
+[4934268.481731] _wpaSetPtk: ******** set PTK status: 0, key_type=3, macaddr=02:00:00:00:00:10, key_len=16
+[4934268.481731] 
+[4934268.481731] 
+[4934357.980178] wlan: [0:I:ANY] [UNSPECIFIED] vap-0(ath0): 
+[4934357.980178] 
+[4934357.980178] _wpaSetPtk: ******** set PTK status: 0, key_type=3, macaddr=02:00:00:00:00:13, key_len=16
+[4934357.980178] 
+[4934357.980178] 
+[4934368.969844] wlan: [0:I:ANY] [UNSPECIFIED] vap-0(ath0): 
+[4934368.969844] 
+[4934368.969844] _wpaSetPtk: ******** set PTK status: 0, key_type=3, macaddr=02:00:00:00:00:02, key_len=16
+[4934368.969844] 
+[4934368.969844] 
+[4934405.577880] do_stat_set_ctl|944: can't find entry: 02:00:00:00:00:00
+[4934602.027801] wlan: [0:I:ANY] [UNSPECIFIED] vap-0(ath0): 
+[4934602.027801] 
+[4934602.027801] _wpaSetPtk: ******** set PTK status: 0, key_type=3, macaddr=02:00:00:00:00:03, key_len=16
+[4934602.027801] 
+[4934602.027801] 
+[4934615.237347] wlan: [0:I:ANY] [UNSPECIFIED] vap-0(ath0): 
+[4934615.237347] 
+[4934615.237347] _wpaSetPtk: ******** set PTK status: 0, key_type=3, macaddr=02:00:00:00:00:04, key_len=16
+[4934615.237347] 
+[4934615.237347] 
+[4934694.238718] do_stat_set_ctl|944: can't find entry: 02:00:00:00:00:02
+[4934754.396363] do_stat_set_ctl|944: can't find entry: 02:00:00:00:00:04
+[4935960.054445] wlan: [0:I:ANY] [UNSPECIFIED] vap-0(ath0): 
+[4935960.054445] 
+[4935960.054445] _wpaSetPtk: ******** set PTK status: 0, key_type=3, macaddr=02:00:00:00:00:01, key_len=16
+[4935960.054445] 
+[4935960.054445] 
+[4936089.376830] do_stat_set_ctl|944: can't find entry: 02:00:00:00:00:01
+[4936603.541633] wlan: [0:I:ANY] [UNSPECIFIED] vap-0(ath0): 
+[4936603.541633] 
+[4936603.541633] _wpaSetPtk: ******** set PTK status: 0, key_type=3, macaddr=02:00:00:00:00:04, key_len=16
+[4936603.541633] 
+[4936603.541633] 
+[4936627.118363] do_stat_set_ctl|944: can't find entry: 02:00:00:00:00:0D
+[4936815.431546] do_stat_set_ctl|944: can't find entry: 02:00:00:00:00:0E
+[4936815.475406] do_stat_set_ctl|944: can't find entry: 02:00:00:00:00:0C
+[4936846.642058] wlan: [0:I:ANY] [UNSPECIFIED] vap-0(ath0): 
+[4936846.642058] 
+[4936846.642058] _wpaSetPtk: ******** set PTK status: 0, key_type=3, macaddr=02:00:00:00:00:03, key_len=16
+[4936846.642058] 
+[4936846.642058] 
+[4936881.032431] do_stat_set_ctl|944: can't find entry: 02:00:00:00:00:03
+[4936881.146760] wlan: [0:I:ANY] [UNSPECIFIED] vap-0(ath0): 
+[4936881.146760] 
+[4936881.146760] _wpaSetPtk: ******** set PTK status: 0, key_type=3, macaddr=02:00:00:00:00:03, key_len=16
+[4936881.146760] 
+[4936881.146760] 
+[4936928.528223] do_stat_set_ctl|944: can't find entry: 02:00:00:00:00:04
+[4936971.402582] wlan: [0:I:ANY] [UNSPECIFIED] vap-0(ath0): 
+[4936971.402582] 
+[4936971.402582] _wpaSetPtk: ******** set PTK status: 0, key_type=3, macaddr=02:00:00:00:00:01, key_len=16
+[4936971.402582] 
+[4936971.402582] 
+[4937034.645745] wlan: [0:I:ANY] [UNSPECIFIED] vap-0(ath0): 
+[4937034.645745] 
+[4937034.645745] _wpaSetPtk: ******** set PTK status: 0, key_type=3, macaddr=02:00:00:00:00:02, key_len=16
+[4937034.645745] 
+[4937034.645745] 
+[4937201.569406] do_stat_set_ctl|944: can't find entry: 02:00:00:00:00:03
+[4937226.953774] do_stat_set_ctl|944: can't find entry: 02:00:00:00:00:02
+[4937258.410771] wlan: [0:I:ANY] [UNSPECIFIED] vap-0(ath0): 
+[4937258.410771] 
+[4937258.410771] _wpaSetPtk: ******** set PTK status: 0, key_type=3, macaddr=02:00:00:00:00:02, key_len=16
+[4937258.410771] 
+[4937258.410771] 
+[4937331.034564] do_stat_set_ctl|944: can't find entry: 02:00:00:00:00:01
+[4937810.934014] wlan: [0:I:ANY] [UNSPECIFIED] vap-0(ath0): 
+[4937810.934014] 
+[4937810.934014] _wpaSetPtk: ******** set PTK status: 0, key_type=3, macaddr=02:00:00:00:00:01, key_len=16
+[4937810.934014] 
+[4937810.934014] 
+[4937932.077522] wlan: [0:I:ANY] [UNSPECIFIED] vap-0(ath0): 
+[4937932.077522] 
+[4937932.077522] _wpaSetPtk: ******** set PTK status: 0, key_type=3, macaddr=02:00:00:00:00:04, key_len=16
+[4937932.077522] 
+[4937932.077522] 
+[4938147.936418] wlan: [0:I:ANY] [UNSPECIFIED] vap-0(ath0): 
+[4938147.936418] 
+[4938147.936418] _wpaSetPtk: ******** set PTK status: 0, key_type=3, macaddr=02:00:00:00:00:03, key_len=16
+[4938147.936418] 
+[4938147.936418] 
+[4938198.369193] do_stat_set_ctl|944: can't find entry: 02:00:00:00:00:05
+[4938220.381394] do_stat_set_ctl|944: can't find entry: 02:00:00:00:00:06
+[4938227.513260] do_stat_set_ctl|944: can't find entry: 02:00:00:00:00:08
+[4938227.524629] do_stat_set_ctl|944: can't find entry: 02:00:00:00:00:07
+[4938277.482013] do_stat_set_ctl|944: can't find entry: 02:00:00:00:00:03
+[4938344.561360] do_stat_set_ctl|944: can't find entry: 02:00:00:00:00:09
+[4938411.589682] do_stat_set_ctl|944: can't find entry: 02:00:00:00:00:01
+[4938551.854205] do_stat_set_ctl|944: can't find entry: 02:00:00:00:00:04
+[4939247.653923] do_stat_set_ctl|944: can't find entry: 02:00:00:00:00:02
+[4942954.367219] do_stat_set_ctl|944: can't find entry: 02:00:00:00:00:0A
+[4944226.535634] do_stat_set_ctl|944: can't find entry: 02:00:00:00:00:12
+[4944333.790968] do_stat_set_ctl|944: can't find entry: 02:00:00:00:00:12
+[4944662.605581] do_stat_set_ctl|944: can't find entry: 02:00:00:00:00:12
+[4944851.625907] do_stat_set_ctl|944: can't find entry: 02:00:00:00:00:12
+[4944970.696120] do_stat_set_ctl|944: can't find entry: 02:00:00:00:00:12
+[4945102.255607] do_stat_set_ctl|944: can't find entry: 02:00:00:00:00:12
+[4945206.030644] do_stat_set_ctl|944: can't find entry: 02:00:00:00:00:12
+[4945358.435460] do_stat_set_ctl|944: can't find entry: 02:00:00:00:00:12
+[4945505.572216] do_stat_set_ctl|944: can't find entry: 02:00:00:00:00:12
+[4945641.511071] do_stat_set_ctl|944: can't find entry: 02:00:00:00:00:12
+[4946094.855607] do_stat_set_ctl|944: can't find entry: 02:00:00:00:00:12
+[4946716.985641] do_stat_set_ctl|944: can't find entry: 02:00:00:00:00:18
+[4947142.705585] do_stat_set_ctl|944: can't find entry: 02:00:00:00:00:18
+[4947264.955579] do_stat_set_ctl|944: can't find entry: 02:00:00:00:00:18
+[4947433.881156] do_stat_set_ctl|944: can't find entry: 02:00:00:00:00:12
+[4947724.815521] do_stat_set_ctl|944: can't find entry: 02:00:00:00:00:12
+[4947913.080202] wlan: [0:I:ANY] [UNSPECIFIED] vap-0(ath0): 
+[4947913.080202] 
+[4947913.080202] _wpaSetPtk: ******** set PTK status: 0, key_type=3, macaddr=02:00:00:00:00:00, key_len=16
+[4947913.080202] 
+[4947913.080202] 
+[4948135.385575] do_stat_set_ctl|944: can't find entry: 02:00:00:00:00:12
+[4948424.575772] do_stat_set_ctl|944: can't find entry: 02:00:00:00:00:12
+[4948734.111298] do_stat_set_ctl|944: can't find entry: 02:00:00:00:00:18
+[4949079.705743] do_stat_set_ctl|944: can't find entry: 02:00:00:00:00:12
+[4950438.901396] do_stat_set_ctl|944: can't find entry: 02:00:00:00:00:12
+[4951317.615630] do_stat_set_ctl|944: can't find entry: 02:00:00:00:00:18
+[4951730.917186] do_stat_set_ctl|944: can't find entry: 02:00:00:00:00:12
+[4952686.485555] do_stat_set_ctl|944: can't find entry: 02:00:00:00:00:12
+[4952922.865516] do_stat_set_ctl|944: can't find entry: 02:00:00:00:00:19
+[4953473.765532] do_stat_set_ctl|944: can't find entry: 02:00:00:00:00:12
+[4954188.180917] wlan: [0:I:ANY] [UNSPECIFIED] vap-0(ath0): 
+[4954188.180917] 
+[4954188.180917] _wpaSetPtk: ******** set PTK status: 0, key_type=3, macaddr=02:00:00:00:00:0b, key_len=16
+[4954188.180917] 
+[4954188.180917] 
+[4958730.941657] wlan: [0:I:ANY] [UNSPECIFIED] vap-0(ath0): 
+[4958730.941657] 
+[4958730.941657] _wpaSetPtk: ******** set PTK status: 0, key_type=3, macaddr=02:00:00:00:00:00, key_len=16
+[4958730.941657] 
+[4958730.941657] 
+[4958737.843776] wlan: [0:I:ANY] [UNSPECIFIED] vap-0(ath0): 
+[4958737.843776] 
+[4958737.843776] _wpaSetPtk: ******** set PTK status: 0, key_type=3, macaddr=02:00:00:00:00:00, key_len=16
+[4958737.843776] 
+[4958737.843776] 
+[4958800.555324] do_stat_set_ctl|944: can't find entry: 02:00:00:00:00:00
+[4966843.262152] wlan: [0:I:ANY] [UNSPECIFIED] vap-0(ath1): 
+[4966843.262152] 
+[4966843.262152] _wpaSetPtk: ******** set PTK status: 0, key_type=3, macaddr=02:00:00:00:00:0a, key_len=16
+[4966843.262152] 
+[4966843.262152] 
+[4968543.871989] do_stat_set_ctl|944: can't find entry: 02:00:00:00:00:0A
+[4970572.218607] wlan: [0:I:ANY] [UNSPECIFIED] vap-0(ath1): 
+[4970572.218607] 
+[4970572.218607] _wpaSetPtk: ******** set PTK status: 0, key_type=3, macaddr=02:00:00:00:00:0a, key_len=16
+[4970572.218607] 
+[4970572.218607] 
+[4972545.120343] wlan: [0:I:ANY] [UNSPECIFIED] vap-0(ath0): 
+[4972545.120343] 
+[4972545.120343] _wpaSetPtk: ******** set PTK status: 0, key_type=3, macaddr=02:00:00:00:00:0e, key_len=16
+[4972545.120343] 
+[4972545.120343] 
+[4972545.179870] wlan: [0:I:ANY] [UNSPECIFIED] vap-0(ath0): 
+[4972545.179870] 
+[4972545.179870] _wpaSetPtk: ******** set PTK status: 0, key_type=3, macaddr=02:00:00:00:00:0c, key_len=16
+[4972545.179870] 
+[4972545.179870] 
+[4972545.364950] wlan: [0:I:ANY] [UNSPECIFIED] vap-0(ath0): 
+[4972545.364950] 
+[4972545.364950] _wpaSetPtk: ******** set PTK status: 0, key_type=3, macaddr=02:00:00:00:00:0d, key_len=16
+[4972545.364950] 
+[4972545.364950] 
+[4973470.116320] wlan: [0:I:ANY] [UNSPECIFIED] vap-0(ath0): 
+[4973470.116320] 
+[4973470.116320] _wpaSetPtk: ******** set PTK status: 0, key_type=3, macaddr=02:00:00:00:00:00, key_len=16
+[4973470.116320] 
+[4973470.116320] 
+[4974859.174797] do_stat_set_ctl|944: can't find entry: 02:00:00:00:00:0E
+[4974860.323088] do_stat_set_ctl|944: can't find entry: 02:00:00:00:00:0C
+[4974860.382864] do_stat_set_ctl|944: can't find entry: 02:00:00:00:00:0D
+[4975251.472435] wlan: [0:I:ANY] [UNSPECIFIED] vap-0(ath0): 
+[4975251.472435] 
+[4975251.472435] _wpaSetPtk: ******** set PTK status: 0, key_type=3, macaddr=02:00:00:00:00:00, key_len=16
+[4975251.472435] 
+[4975251.472435] 
+[4975342.434764] do_stat_set_ctl|944: can't find entry: 02:00:00:00:00:00
+[4975597.559645] do_stat_set_ctl|944: can't find entry: 02:00:00:00:00:0A
+[4975600.799288] do_stat_set_ctl|944: can't find entry: 02:00:00:00:00:10
+[4976013.120692] wlan: [0:I:ANY] [UNSPECIFIED] vap-0(ath0): 
+[4976013.120692] 
+[4976013.120692] _wpaSetPtk: ******** set PTK status: 0, key_type=3, macaddr=02:00:00:00:00:00, key_len=16
+[4976013.120692] 
+[4976013.120692] 
+[4976100.846083] do_stat_set_ctl|944: can't find entry: 02:00:00:00:00:00
+[4978942.351400] wlan: [0:I:ANY] [UNSPECIFIED] vap-0(ath0): 
+[4978942.351400] 
+[4978942.351400] _wpaSetPtk: ******** set PTK status: 0, key_type=3, macaddr=02:00:00:00:00:00, key_len=16
+[4978942.351400] 
+[4978942.351400] 
+[4979099.289153] do_stat_set_ctl|944: can't find entry: 02:00:00:00:00:00
+[4979109.196545] wlan: [0:I:ANY] [UNSPECIFIED] vap-0(ath0): 
+[4979109.196545] 
+[4979109.196545] _wpaSetPtk: ******** set PTK status: 0, key_type=3, macaddr=02:00:00:00:00:00, key_len=16
+[4979109.196545] 
+[4979109.196545] 
+[4979261.655432] wlan: [0:I:ANY] [UNSPECIFIED] vap-0(ath0): 
+[4979261.655432] 
+[4979261.655432] _wpaSetPtk: ******** set PTK status: 0, key_type=3, macaddr=02:00:00:00:00:00, key_len=16
+[4979261.655432] 
+[4979261.655432] 
+[4979353.618356] do_stat_set_ctl|944: can't find entry: 02:00:00:00:00:13
+[4984781.072057] wlan: [0:I:ANY] [UNSPECIFIED] vap-0(ath0): 
+[4984781.072057] 
+[4984781.072057] _wpaSetPtk: ******** set PTK status: 0, key_type=3, macaddr=02:00:00:00:00:00, key_len=16
+[4984781.072057] 
+[4984781.072057] 
+[4984857.005991] do_stat_set_ctl|944: can't find entry: 02:00:00:00:00:00
+[4985027.661015] wlan: [0:I:ANY] [UNSPECIFIED] vap-0(ath0): 
+[4985027.661015] 
+[4985027.661015] _wpaSetPtk: ******** set PTK status: 0, key_type=3, macaddr=02:00:00:00:00:13, key_len=16
+[4985027.661015] 
+[4985027.661015] 
+[4988577.055408] wlan: [0:I:ANY] [UNSPECIFIED] vap-0(ath1): 
+[4988577.055408] 
+[4988577.055408] _wpaSetPtk: ******** set PTK status: 0, key_type=3, macaddr=02:00:00:00:00:10, key_len=16
+[4988577.055408] 
+[4988577.055408] 
+[4988578.641375] wlan: [0:I:ANY] [UNSPECIFIED] vap-0(ath0): 
+[4988578.641375] 
+[4988578.641375] _wpaSetPtk: ******** set PTK status: 0, key_type=3, macaddr=02:00:00:00:00:00, key_len=16
+[4988578.641375] 
+[4988578.641375] 
+[4988649.293799] do_stat_set_ctl|944: can't find entry: 02:00:00:00:00:00
+[4988668.232216] wlan: [0:I:ANY] [UNSPECIFIED] vap-0(ath1): 
+[4988668.232216] 
+[4988668.232216] _wpaSetPtk: ******** set PTK status: 0, key_type=3, macaddr=02:00:00:00:00:0a, key_len=16
+[4988668.232216] 
+[4988668.232216] 
+[4989833.237565] wlan: [0:I:ANY] [UNSPECIFIED] vap-0(ath0): 
+[4989833.237565] 
+[4989833.237565] _wpaSetPtk: ******** set PTK status: 0, key_type=3, macaddr=02:00:00:00:00:00, key_len=16
+[4989833.237565] 
+[4989833.237565] 
+[4989935.059211] do_stat_set_ctl|944: can't find entry: 02:00:00:00:00:00
+[4990473.546263] wlan: [0:I:ANY] [UNSPECIFIED] vap-0(ath0): 
+[4990473.546263] 
+[4990473.546263] _wpaSetPtk: ******** set PTK status: 0, key_type=3, macaddr=02:00:00:00:00:00, key_len=16
+[4990473.546263] 
+[4990473.546263] 
+[4990685.876189] wlan: [0:I:ANY] [UNSPECIFIED] vap-0(ath0): 
+[4990685.876189] 
+[4990685.876189] _wpaSetPtk: ******** set PTK status: 0, key_type=3, macaddr=02:00:00:00:00:00, key_len=16
+[4990685.876189] 
+[4990685.876189] 
+[4990754.510337] do_stat_set_ctl|944: can't find entry: 02:00:00:00:00:00
+[4991679.345854] wlan: [0:I:ANY] [UNSPECIFIED] vap-0(ath0): 
+[4991679.345854] 
+[4991679.345854] _wpaSetPtk: ******** set PTK status: 0, key_type=3, macaddr=02:00:00:00:00:00, key_len=16
+[4991679.345854] 
+[4991679.345854] 
+[4992163.880947] wlan: [0:I:ANY] [UNSPECIFIED] vap-0(ath0): 
+[4992163.880947] 
+[4992163.880947] _wpaSetPtk: ******** set PTK status: 0, key_type=3, macaddr=02:00:00:00:00:00, key_len=16
+[4992163.880947] 
+[4992163.880947] 
+[4992271.568834] do_stat_set_ctl|944: can't find entry: 02:00:00:00:00:00
+[4992341.712669] do_stat_set_ctl|944: can't find entry: 02:00:00:00:00:10
+[4992515.557340] do_stat_set_ctl|944: can't find entry: 02:00:00:00:00:0A
+[4992534.616707] wlan: [0:I:ANY] [UNSPECIFIED] vap-0(ath0): 
+[4992534.616707] 
+[4992534.616707] _wpaSetPtk: ******** set PTK status: 0, key_type=3, macaddr=02:00:00:00:00:00, key_len=16
+[4992534.616707] 
+[4992534.616707] 
+[4997909.150876] wlan: [0:I:ANY] [UNSPECIFIED] vap-0(ath0): 
+[4997909.150876] 
+[4997909.150876] _wpaSetPtk: ******** set PTK status: 0, key_type=3, macaddr=02:00:00:00:00:00, key_len=16
+[4997909.150876] 
+[4997909.150876] 
+[4998949.272782] wlan: [0:I:ANY] [UNSPECIFIED] vap-0(ath0): 
+[4998949.272782] 
+[4998949.272782] _wpaSetPtk: ******** set PTK status: 0, key_type=3, macaddr=02:00:00:00:00:00, key_len=16
+[4998949.272782] 
+[4998949.272782] 
+[5000871.353851] wlan: [0:I:ANY] [UNSPECIFIED] vap-0(ath0): 
+[5000871.353851] 
+[5000871.353851] _wpaSetPtk: ******** set PTK status: 0, key_type=3, macaddr=02:00:00:00:00:00, key_len=16
+[5000871.353851] 
+[5000871.353851] 
+[5001502.276211] wlan: [0:I:ANY] [UNSPECIFIED] vap-0(ath0): 
+[5001502.276211] 
+[5001502.276211] _wpaSetPtk: ******** set PTK status: 0, key_type=3, macaddr=02:00:00:00:00:00, key_len=16
+[5001502.276211] 
+[5001502.276211] 
+[5001571.458686] do_stat_set_ctl|944: can't find entry: 02:00:00:00:00:00
+[5004699.808246] wlan: [0:I:ANY] [UNSPECIFIED] vap-0(ath0): 
+[5004699.808246] 
+[5004699.808246] _wpaSetPtk: ******** set PTK status: 0, key_type=3, macaddr=02:00:00:00:00:00, key_len=16
+[5004699.808246] 
+[5004699.808246] 
+[5004790.386633] do_stat_set_ctl|944: can't find entry: 02:00:00:00:00:00
+[5006644.275322] wlan: [0:I:ANY] [UNSPECIFIED] vap-0(ath0): 
+[5006644.275322] 
+[5006644.275322] _wpaSetPtk: ******** set PTK status: 0, key_type=3, macaddr=02:00:00:00:00:00, key_len=16
+[5006644.275322] 
+[5006644.275322] 
+[5006657.615090] wlan: [0:I:ANY] [UNSPECIFIED] vap-0(ath0): 
+[5006657.615090] 
+[5006657.615090] _wpaSetPtk: ******** set PTK status: 0, key_type=3, macaddr=02:00:00:00:00:00, key_len=16
+[5006657.615090] 
+[5006657.615090] 
+[5006732.372924] do_stat_set_ctl|944: can't find entry: 02:00:00:00:00:00
+[5007296.672448] wlan: [0:I:ANY] [UNSPECIFIED] vap-0(ath1): 
+[5007296.672448] 
+[5007296.672448] _wpaSetPtk: ******** set PTK status: 0, key_type=3, macaddr=02:00:00:00:00:1a, key_len=16
+[5007296.672448] 
+[5007296.672448] 
+[5007298.198597] wlan: [0:I:ANY] [UNSPECIFIED] vap-0(ath0): 
+[5007298.198597] 
+[5007298.198597] _wpaSetPtk: ******** set PTK status: 0, key_type=3, macaddr=02:00:00:00:00:00, key_len=16
+[5007298.198597] 
+[5007298.198597] 
+[5007316.308045] wlan: [0:I:ANY] [UNSPECIFIED] vap-0(ath0): 
+[5007316.308045] 
+[5007316.308045] _wpaSetPtk: ******** set PTK status: 0, key_type=3, macaddr=02:00:00:00:00:09, key_len=16
+[5007316.308045] 
+[5007316.308045] 
+[5007316.668032] wlan: [0:I:ANY] [UNSPECIFIED] vap-0(ath0): 
+[5007316.668032] 
+[5007316.668032] _wpaSetPtk: ******** set PTK status: 0, key_type=3, macaddr=02:00:00:00:00:07, key_len=16
+[5007316.668032] 
+[5007316.668032] 
+[5007316.817982] wlan: [0:I:ANY] [UNSPECIFIED] vap-0(ath0): 
+[5007316.817982] 
+[5007316.817982] _wpaSetPtk: ******** set PTK status: 0, key_type=3, macaddr=02:00:00:00:00:05, key_len=16
+[5007316.817982] 
+[5007316.817982] 
+[5007316.927427] wlan: [0:I:ANY] [UNSPECIFIED] vap-0(ath0): 
+[5007316.927427] 
+[5007316.927427] _wpaSetPtk: ******** set PTK status: 0, key_type=3, macaddr=02:00:00:00:00:06, key_len=16
+[5007316.927427] 
+[5007316.927427] 
+[5007316.933850] wlan: [0:I:ANY] [UNSPECIFIED] vap-0(ath0): 
+[5007316.933850] 
+[5007316.933850] _wpaSetPtk: ******** set PTK status: 0, key_type=3, macaddr=02:00:00:00:00:08, key_len=16
+[5007316.933850] 
+[5007316.933850] 
+[5007334.583264] wlan: [0:I:ANY] [UNSPECIFIED] vap-0(ath0): 
+[5007334.583264] 
+[5007334.583264] _wpaSetPtk: ******** set PTK status: 0, key_type=3, macaddr=02:00:00:00:00:0e, key_len=16
+[5007334.583264] 
+[5007334.583264] 
+[5007334.598126] wlan: [0:I:ANY] [UNSPECIFIED] vap-0(ath0): 
+[5007334.598126] 
+[5007334.598126] _wpaSetPtk: ******** set PTK status: 0, key_type=3, macaddr=02:00:00:00:00:0c, key_len=16
+[5007334.598126] 
+[5007334.598126] 
+[5007334.717230] wlan: [0:I:ANY] [UNSPECIFIED] vap-0(ath0): 
+[5007334.717230] 
+[5007334.717230] _wpaSetPtk: ******** set PTK status: 0, key_type=3, macaddr=02:00:00:00:00:0d, key_len=16
+[5007334.717230] 
+[5007334.717230] 
+[5007379.591522] do_stat_set_ctl|944: can't find entry: 02:00:00:00:00:00
+[5007413.320793] wlan: [0:I:ANY] [UNSPECIFIED] vap-0(ath0): 
+[5007413.320793] 
+[5007413.320793] _wpaSetPtk: ******** set PTK status: 0, key_type=3, macaddr=02:00:00:00:00:00, key_len=16
+[5007413.320793] 
+[5007413.320793] 
+[5007416.481829] wlan: [0:I:ANY] [UNSPECIFIED] vap-0(ath1): 
+[5007416.481829] 
+[5007416.481829] _wpaSetPtk: ******** set PTK status: 0, key_type=3, macaddr=02:00:00:00:00:1b, key_len=16
+[5007416.481829] 
+[5007416.481829] 
+[5007520.327825] do_stat_set_ctl|944: can't find entry: 02:00:00:00:00:1A
+[5007527.230156] do_stat_set_ctl|944: can't find entry: 02:00:00:00:00:00
+[5008482.038419] wlan: [0:I:ANY] [UNSPECIFIED] vap-0(ath0): 
+[5008482.038419] 
+[5008482.038419] _wpaSetPtk: ******** set PTK status: 0, key_type=3, macaddr=02:00:00:00:00:00, key_len=16
+[5008482.038419] 
+[5008482.038419] 
+[5008482.263629] wlan: [0:I:ANY] [UNSPECIFIED] vap-0(ath1): 
+[5008482.263629] 
+[5008482.263629] _wpaSetPtk: ******** set PTK status: 0, key_type=3, macaddr=02:00:00:00:00:10, key_len=16
+[5008482.263629] 
+[5008482.263629] 
+[5008487.407531] wlan: [0:I:ANY] [UNSPECIFIED] vap-0(ath1): 
+[5008487.407531] 
+[5008487.407531] _wpaSetPtk: ******** set PTK status: 0, key_type=3, macaddr=02:00:00:00:00:0a, key_len=16
+[5008487.407531] 
+[5008487.407531] 
+[5008553.071957] do_stat_set_ctl|944: can't find entry: 02:00:00:00:00:00
+[5008648.324230] wlan: [0:I:ANY] [UNSPECIFIED] vap-0(ath0): 
+[5008648.324230] 
+[5008648.324230] _wpaSetPtk: ******** set PTK status: 0, key_type=3, macaddr=02:00:00:00:00:00, key_len=16
+[5008648.324230] 
+[5008648.324230] 
+[5008678.280226] wlan: [0:I:ANY] [UNSPECIFIED] vap-0(ath1): 
+[5008678.280226] 
+[5008678.280226] _wpaSetPtk: ******** set PTK status: 0, key_type=3, macaddr=02:00:00:00:00:1a, key_len=16
+[5008678.280226] 
+[5008678.280226] 
+[5008684.026844] wlan: [0:I:ANY] [UNSPECIFIED] vap-0(ath0): 
+[5008684.026844] 
+[5008684.026844] _wpaSetPtk: ******** set PTK status: 0, key_type=3, macaddr=02:00:00:00:00:03, key_len=16
+[5008684.026844] 
+[5008684.026844] 
+[5008724.652532] do_stat_set_ctl|944: can't find entry: 02:00:00:00:00:00
+[5008750.751047] wlan: [0:I:ANY] [UNSPECIFIED] vap-0(ath0): 
+[5008750.751047] 
+[5008750.751047] _wpaSetPtk: ******** set PTK status: 0, key_type=3, macaddr=02:00:00:00:00:13, key_len=16
+[5008750.751047] 
+[5008750.751047] 
+[5008962.962225] wlan: [0:I:ANY] [UNSPECIFIED] vap-0(ath0): 
+[5008962.962225] 
+[5008962.962225] _wpaSetPtk: ******** set PTK status: 0, key_type=3, macaddr=02:00:00:00:00:01, key_len=16
+[5008962.962225] 
+[5008962.962225] 
+[5009160.891225] do_stat_set_ctl|944: can't find entry: 02:00:00:00:00:01
+[5009161.008594] wlan: [0:I:ANY] [UNSPECIFIED] vap-0(ath0): 
+[5009161.008594] 
+[5009161.008594] _wpaSetPtk: ******** set PTK status: 0, key_type=3, macaddr=02:00:00:00:00:01, key_len=16
+[5009161.008594] 
+[5009161.008594] 
+[5009283.431568] wlan: [0:I:ANY] [UNSPECIFIED] vap-0(ath0): 
+[5009283.431568] 
+[5009283.431568] _wpaSetPtk: ******** set PTK status: 0, key_type=3, macaddr=02:00:00:00:00:00, key_len=16
+[5009283.431568] 
+[5009283.431568] 
+[5009358.437084] do_stat_set_ctl|944: can't find entry: 02:00:00:00:00:00
+[5009597.028807] wlan: [0:I:ANY] [UNSPECIFIED] vap-0(ath0): 
+[5009597.028807] 
+[5009597.028807] _wpaSetPtk: ******** set PTK status: 0, key_type=3, macaddr=02:00:00:00:00:01, key_len=16
+[5009597.028807] 
+[5009597.028807] 
+[5009783.834951] wlan: [0:I:ANY] [UNSPECIFIED] vap-0(ath0): 
+[5009783.834951] 
+[5009783.834951] _wpaSetPtk: ******** set PTK status: 0, key_type=3, macaddr=02:00:00:00:00:00, key_len=16
+[5009783.834951] 
+[5009783.834951] 
+[5009846.396704] do_stat_set_ctl|944: can't find entry: 02:00:00:00:00:01
+[5009853.787228] do_stat_set_ctl|944: can't find entry: 02:00:00:00:00:00
+[5010124.823790] wlan: [0:I:ANY] [UNSPECIFIED] vap-0(ath0): 
+[5010124.823790] 
+[5010124.823790] _wpaSetPtk: ******** set PTK status: 0, key_type=3, macaddr=02:00:00:00:00:01, key_len=16
+[5010124.823790] 
+[5010124.823790] 
+[5010251.267817] do_stat_set_ctl|944: can't find entry: 02:00:00:00:00:03
+[5010296.930835] wlan: [0:I:ANY] [UNSPECIFIED] vap-0(ath0): 
+[5010296.930835] 
+[5010296.930835] _wpaSetPtk: ******** set PTK status: 0, key_type=3, macaddr=02:00:00:00:00:03, key_len=16
+[5010296.930835] 
+[5010296.930835] 
+[5010304.600221] do_stat_set_ctl|944: can't find entry: 02:00:00:00:00:01
+[5010305.532551] wlan: [0:I:ANY] [UNSPECIFIED] vap-0(ath0): 
+[5010305.532551] 
+[5010305.532551] _wpaSetPtk: ******** set PTK status: 0, key_type=3, macaddr=02:00:00:00:00:01, key_len=16
+[5010305.532551] 
+[5010305.532551] 
+[5010337.682658] wlan: [0:I:ANY] [UNSPECIFIED] vap-0(ath0): 
+[5010337.682658] 
+[5010337.682658] _wpaSetPtk: ******** set PTK status: 0, key_type=3, macaddr=02:00:00:00:00:04, key_len=16
+[5010337.682658] 
+[5010337.682658] 
+[5010366.654684] wlan: [0:I:ANY] [UNSPECIFIED] vap-0(ath0): 
+[5010366.654684] 
+[5010366.654684] _wpaSetPtk: ******** set PTK status: 0, key_type=3, macaddr=02:00:00:00:00:00, key_len=16
+[5010366.654684] 
+[5010366.654684] 
+[5010377.199990] do_stat_set_ctl|944: can't find entry: 02:00:00:00:00:04
+[5010433.941310] do_stat_set_ctl|944: can't find entry: 02:00:00:00:00:00
+[5010487.725559] wlan: [0:I:ANY] [UNSPECIFIED] vap-0(ath0): 
+[5010487.725559] 
+[5010487.725559] _wpaSetPtk: ******** set PTK status: 0, key_type=3, macaddr=02:00:00:00:00:00, key_len=16
+[5010487.725559] 
+[5010487.725559] 
+[5010505.445187] do_stat_set_ctl|944: can't find entry: 02:00:00:00:00:01
+[5010548.497306] do_stat_set_ctl|944: can't find entry: 02:00:00:00:00:05
+[5010549.513105] do_stat_set_ctl|944: can't find entry: 02:00:00:00:00:07
+[5010578.826848] do_stat_set_ctl|944: can't find entry: 02:00:00:00:00:08
+[5010578.829645] do_stat_set_ctl|944: can't find entry: 02:00:00:00:00:06
+[5010580.971217] do_stat_set_ctl|944: can't find entry: 02:00:00:00:00:0A
+[5010582.975621] do_stat_set_ctl|944: can't find entry: 02:00:00:00:00:10
+[5010605.020567] do_stat_set_ctl|944: can't find entry: 02:00:00:00:00:1A
+[5010607.809822] do_stat_set_ctl|944: can't find entry: 02:00:00:00:00:00
+[5010639.608926] do_stat_set_ctl|944: can't find entry: 02:00:00:00:00:09
+[5010656.630433] do_stat_set_ctl|944: can't find entry: 02:00:00:00:00:0E
+[5010657.878152] do_stat_set_ctl|944: can't find entry: 02:00:00:00:00:0C
+[5010657.880871] do_stat_set_ctl|944: can't find entry: 02:00:00:00:00:0D
+[5010778.017754] do_stat_set_ctl|944: can't find entry: 02:00:00:00:00:03
+[5010814.826002] do_stat_set_ctl|944: can't find entry: 02:00:00:00:00:13
+[5010859.637039] do_stat_set_ctl|944: can't find entry: 02:00:00:00:00:11
+[5016837.991065] wlan: [0:I:ANY] [UNSPECIFIED] vap-0(ath0): 
+[5016837.991065] 
+[5016837.991065] _wpaSetPtk: ******** set PTK status: 0, key_type=3, macaddr=02:00:00:00:00:00, key_len=16
+[5016837.991065] 
+[5016837.991065] 
+[5024256.387998] wlan: [0:I:ANY] [UNSPECIFIED] vap-0(ath1): 
+[5024256.387998] 
+[5024256.387998] _wpaSetPtk: ******** set PTK status: 0, key_type=3, macaddr=02:00:00:00:00:10, key_len=16
+[5024256.387998] 
+[5024256.387998] 
+[5024258.290244] wlan: [0:I:ANY] [UNSPECIFIED] vap-0(ath0): 
+[5024258.290244] 
+[5024258.290244] _wpaSetPtk: ******** set PTK status: 0, key_type=3, macaddr=02:00:00:00:00:00, key_len=16
+[5024258.290244] 
+[5024258.290244] 
+[5024258.508434] wlan: [0:I:ANY] [UNSPECIFIED] vap-0(ath1): 
+[5024258.508434] 
+[5024258.508434] _wpaSetPtk: ******** set PTK status: 0, key_type=3, macaddr=02:00:00:00:00:1a, key_len=16
+[5024258.508434] 
+[5024258.508434] 
+[5024269.424354] wlan: [0:I:ANY] [UNSPECIFIED] vap-0(ath0): 
+[5024269.424354] 
+[5024269.424354] _wpaSetPtk: ******** set PTK status: 0, key_type=3, macaddr=02:00:00:00:00:09, key_len=16
+[5024269.424354] 
+[5024269.424354] 
+[5024269.861052] wlan: [0:I:ANY] [UNSPECIFIED] vap-0(ath0): 
+[5024269.861052] 
+[5024269.861052] _wpaSetPtk: ******** set PTK status: 0, key_type=3, macaddr=02:00:00:00:00:07, key_len=16
+[5024269.861052] 
+[5024269.861052] 
+[5024269.956616] wlan: [0:I:ANY] [UNSPECIFIED] vap-0(ath0): 
+[5024269.956616] 
+[5024269.956616] _wpaSetPtk: ******** set PTK status: 0, key_type=3, macaddr=02:00:00:00:00:05, key_len=16
+[5024269.956616] 
+[5024269.956616] 
+[5024270.147876] wlan: [0:I:ANY] [UNSPECIFIED] vap-0(ath0): 
+[5024270.147876] 
+[5024270.147876] _wpaSetPtk: ******** set PTK status: 0, key_type=3, macaddr=02:00:00:00:00:06, key_len=16
+[5024270.147876] 
+[5024270.147876] 
+[5024270.148468] wlan: [0:I:ANY] [UNSPECIFIED] vap-0(ath0): 
+[5024270.148468] 
+[5024270.148468] _wpaSetPtk: ******** set PTK status: 0, key_type=3, macaddr=02:00:00:00:00:08, key_len=16
+[5024270.148468] 
+[5024270.148468] 
+[5024279.105054] wlan: [0:I:ANY] [UNSPECIFIED] vap-0(ath0): 
+[5024279.105054] 
+[5024279.105054] _wpaSetPtk: ******** set PTK status: 0, key_type=3, macaddr=02:00:00:00:00:0e, key_len=16
+[5024279.105054] 
+[5024279.105054] 
+[5024279.187355] wlan: [0:I:ANY] [UNSPECIFIED] vap-0(ath0): 
+[5024279.187355] 
+[5024279.187355] _wpaSetPtk: ******** set PTK status: 0, key_type=3, macaddr=02:00:00:00:00:0c, key_len=16
+[5024279.187355] 
+[5024279.187355] 
+[5024279.345825] wlan: [0:I:ANY] [UNSPECIFIED] vap-0(ath0): 
+[5024279.345825] 
+[5024279.345825] _wpaSetPtk: ******** set PTK status: 0, key_type=3, macaddr=02:00:00:00:00:0d, key_len=16
+[5024279.345825] 
+[5024279.345825] 
+[5024284.327480] wlan: [0:I:ANY] [UNSPECIFIED] vap-0(ath1): 
+[5024284.327480] 
+[5024284.327480] _wpaSetPtk: ******** set PTK status: 0, key_type=3, macaddr=02:00:00:00:00:0a, key_len=16
+[5024284.327480] 
+[5024284.327480] 
+[5024284.542439] wlan: [0:I:ANY] [UNSPECIFIED] vap-0(ath1): 
+[5024284.542439] 
+[5024284.542439] _wpaSetPtk: ******** set PTK status: 0, key_type=3, macaddr=02:00:00:00:00:11, key_len=16
+[5024284.542439] 
+[5024284.542439] 
+[5024301.878015] wlan: [0:I:ANY] [UNSPECIFIED] vap-0(ath0): 
+[5024301.878015] 
+[5024301.878015] _wpaSetPtk: ******** set PTK status: 0, key_type=3, macaddr=02:00:00:00:00:02, key_len=16
+[5024301.878015] 
+[5024301.878015] 
+[5024306.685478] wlan: [0:I:ANY] [UNSPECIFIED] vap-0(ath0): 
+[5024306.685478] 
+[5024306.685478] _wpaSetPtk: ******** set PTK status: 0, key_type=3, macaddr=02:00:00:00:00:13, key_len=16
+[5024306.685478] 
+[5024306.685478] 
+[5024326.655729] wlan: [0:I:ANY] [UNSPECIFIED] vap-0(ath0): 
+[5024326.655729] 
+[5024326.655729] _wpaSetPtk: ******** set PTK status: 0, key_type=3, macaddr=02:00:00:00:00:02, key_len=16
+[5024326.655729] 
+[5024326.655729] 
+[5024361.979233] wlan: [0:I:ANY] [UNSPECIFIED] vap-0(ath0): 
+[5024361.979233] 
+[5024361.979233] _wpaSetPtk: ******** set PTK status: 0, key_type=3, macaddr=02:00:00:00:00:03, key_len=16
+[5024361.979233] 
+[5024361.979233] 
+[5024366.590342] wlan: [0:I:ANY] [UNSPECIFIED] vap-0(ath0): 
+[5024366.590342] 
+[5024366.590342] _wpaSetPtk: ******** set PTK status: 0, key_type=3, macaddr=02:00:00:00:00:01, key_len=16
+[5024366.590342] 
+[5024366.590342] 
+[5024380.598609] do_stat_set_ctl|944: can't find entry: 02:00:00:00:00:00
+[5024441.375497] do_stat_set_ctl|944: can't find entry: 02:00:00:00:00:02
+[5024495.103525] wlan: [0:I:ANY] [UNSPECIFIED] vap-0(ath0): 
+[5024495.103525] 
+[5024495.103525] _wpaSetPtk: ******** set PTK status: 0, key_type=3, macaddr=02:00:00:00:00:04, key_len=16
+[5024495.103525] 
+[5024495.103525] 
+[5024624.601348] do_stat_set_ctl|944: can't find entry: 02:00:00:00:00:04
+[5024638.162087] wlan: [0:I:ANY] [UNSPECIFIED] vap-0(ath0): 
+[5024638.162087] 
+[5024638.162087] _wpaSetPtk: ******** set PTK status: 0, key_type=3, macaddr=02:00:00:00:00:01, key_len=16
+[5024638.162087] 
+[5024638.162087] 
+[5024638.906818] do_stat_set_ctl|944: can't find entry: 02:00:00:00:00:03
+[5024638.971203] wlan: [0:I:ANY] [UNSPECIFIED] vap-0(ath0): 
+[5024638.971203] 
+[5024638.971203] _wpaSetPtk: ******** set PTK status: 0, key_type=3, macaddr=02:00:00:00:00:03, key_len=16
+[5024638.971203] 
+[5024638.971203] 
+[5024767.812316] do_stat_set_ctl|944: can't find entry: 02:00:00:00:00:01
+[5024776.622709] wlan: [0:I:ANY] [UNSPECIFIED] vap-0(ath0): 
+[5024776.622709] 
+[5024776.622709] _wpaSetPtk: ******** set PTK status: 0, key_type=3, macaddr=02:00:00:00:00:00, key_len=16
+[5024776.622709] 
+[5024776.622709] 
+[5024845.387882] do_stat_set_ctl|944: can't find entry: 02:00:00:00:00:00
+[5025415.373013] wlan: [0:I:ANY] [UNSPECIFIED] vap-0(ath0): 
+[5025415.373013] 
+[5025415.373013] _wpaSetPtk: ******** set PTK status: 0, key_type=3, macaddr=02:00:00:00:00:02, key_len=16
+[5025415.373013] 
+[5025415.373013] 
+[5025480.194216] wlan: [0:I:ANY] [UNSPECIFIED] vap-0(ath0): 
+[5025480.194216] 
+[5025480.194216] _wpaSetPtk: ******** set PTK status: 0, key_type=3, macaddr=02:00:00:00:00:01, key_len=16
+[5025480.194216] 
+[5025480.194216] 
+[5025818.987838] do_stat_set_ctl|944: can't find entry: 02:00:00:00:00:02
+[5026158.481985] wlan: [0:I:ANY] [UNSPECIFIED] vap-0(ath0): 
+[5026158.481985] 
+[5026158.481985] _wpaSetPtk: ******** set PTK status: 0, key_type=3, macaddr=02:00:00:00:00:02, key_len=16
+[5026158.481985] 
+[5026158.481985] 
+[5026288.142716] do_stat_set_ctl|944: can't find entry: 02:00:00:00:00:02
+[5026662.803044] wlan: [0:I:ANY] [UNSPECIFIED] vap-0(ath0): 
+[5026662.803044] 
+[5026662.803044] _wpaSetPtk: ******** set PTK status: 0, key_type=3, macaddr=02:00:00:00:00:04, key_len=16
+[5026662.803044] 
+[5026662.803044] 
+[5026689.837159] do_stat_set_ctl|944: can't find entry: 02:00:00:00:00:01
+[5026724.172606] wlan: [0:I:ANY] [UNSPECIFIED] vap-0(ath0): 
+[5026724.172606] 
+[5026724.172606] _wpaSetPtk: ******** set PTK status: 0, key_type=3, macaddr=02:00:00:00:00:01, key_len=16
+[5026724.172606] 
+[5026724.172606] 
+[5027549.674580] wlan: [0:I:ANY] [UNSPECIFIED] vap-0(ath0): 
+[5027549.674580] 
+[5027549.674580] _wpaSetPtk: ******** set PTK status: 0, key_type=3, macaddr=02:00:00:00:00:00, key_len=16
+[5027549.674580] 
+[5027549.674580] 
+[5027627.785457] do_stat_set_ctl|944: can't find entry: 02:00:00:00:00:00
+[5027630.472566] do_stat_set_ctl|944: can't find entry: 02:00:00:00:00:01
+[5027630.586387] wlan: [0:I:ANY] [UNSPECIFIED] vap-0(ath0): 
+[5027630.586387] 
+[5027630.586387] _wpaSetPtk: ******** set PTK status: 0, key_type=3, macaddr=02:00:00:00:00:01, key_len=16
+[5027630.586387] 
+[5027630.586387] 
+[5027812.135368] wlan: [0:I:ANY] [UNSPECIFIED] vap-0(ath0): 
+[5027812.135368] 
+[5027812.135368] _wpaSetPtk: ******** set PTK status: 0, key_type=3, macaddr=02:00:00:00:00:00, key_len=16
+[5027812.135368] 
+[5027812.135368] 
+[5027874.577670] do_stat_set_ctl|944: can't find entry: 02:00:00:00:00:00
+[5027895.729797] wlan: [0:I:ANY] [UNSPECIFIED] vap-0(ath0): 
+[5027895.729797] 
+[5027895.729797] _wpaSetPtk: ******** set PTK status: 0, key_type=3, macaddr=02:00:00:00:00:00, key_len=16
+[5027895.729797] 
+[5027895.729797] 
+[5027958.237084] do_stat_set_ctl|944: can't find entry: 02:00:00:00:00:00
+[5028049.147239] do_stat_set_ctl|944: can't find entry: 02:00:00:00:00:07
+[5028062.129832] do_stat_set_ctl|944: can't find entry: 02:00:00:00:00:1C
+[5028079.216568] do_stat_set_ctl|944: can't find entry: 02:00:00:00:00:06
+[5028079.219400] do_stat_set_ctl|944: can't find entry: 02:00:00:00:00:05
+[5028100.912970] do_stat_set_ctl|944: can't find entry: 02:00:00:00:00:08
+[5028106.000787] do_stat_set_ctl|944: can't find entry: 02:00:00:00:00:0E
+[5028106.122112] do_stat_set_ctl|944: can't find entry: 02:00:00:00:00:0D
+[5028107.020798] do_stat_set_ctl|944: can't find entry: 02:00:00:00:00:0C
+[5028172.083505] do_stat_set_ctl|944: can't find entry: 02:00:00:00:00:04
+[5028204.130634] do_stat_set_ctl|944: can't find entry: 02:00:00:00:00:09
+[5028254.080576] do_stat_set_ctl|944: can't find entry: 02:00:00:00:00:01
+[5029742.063999] do_stat_set_ctl|944: can't find entry: 02:00:00:00:00:0A
+[5033120.665415] wlan: [0:I:ANY] [UNSPECIFIED] vap-0(ath0): 
+[5033120.665415] 
+[5033120.665415] _wpaSetPtk: ******** set PTK status: 0, key_type=3, macaddr=02:00:00:00:00:1c, key_len=16
+[5033120.665415] 
+[5033120.665415] 
+[5033771.069042] wlan: [0:E:NSS] osif_nss_wifili_update_wds_activeinfo: [nss-wifili]: Could not set astenty active for hw_idx = 242 due to ast NULL
+[5034160.327922] wlan: [0:I:ANY] [UNSPECIFIED] vap-0(ath0): 
+[5034160.327922] 
+[5034160.327922] _wpaSetPtk: ******** set PTK status: 0, key_type=3, macaddr=02:00:00:00:00:00, key_len=16
+[5034160.327922] 
+[5034160.327922] 
+[5040208.063933] wlan: [0:I:ANY] [UNSPECIFIED] vap-0(ath1): 
+[5040208.063933] 
+[5040208.063933] _wpaSetPtk: ******** set PTK status: 0, key_type=3, macaddr=02:00:00:00:00:10, key_len=16
+[5040208.063933] 
+[5040208.063933] 
+[5040344.313927] wlan: [0:I:ANY] [UNSPECIFIED] vap-0(ath1): 
+[5040344.313927] 
+[5040344.313927] _wpaSetPtk: ******** set PTK status: 0, key_type=3, macaddr=02:00:00:00:00:10, key_len=16
+[5040344.313927] 
+[5040344.313927] 
+[5040668.359378] wlan: [0:I:ANY] [UNSPECIFIED] vap-0(ath0): 
+[5040668.359378] 
+[5040668.359378] _wpaSetPtk: ******** set PTK status: 0, key_type=3, macaddr=02:00:00:00:00:0b, key_len=16
+[5040668.359378] 
+[5040668.359378] 
+[5041058.578036] wlan: [0:I:ANY] [UNSPECIFIED] vap-0(ath1): 
+[5041058.578036] 
+[5041058.578036] _wpaSetPtk: ******** set PTK status: 0, key_type=3, macaddr=02:00:00:00:00:10, key_len=16
+[5041058.578036] 
+[5041058.578036] 
+[5041442.632363] wlan: [0:I:ANY] [UNSPECIFIED] vap-0(ath1): 
+[5041442.632363] 
+[5041442.632363] _wpaSetPtk: ******** set PTK status: 0, key_type=3, macaddr=02:00:00:00:00:1a, key_len=16
+[5041442.632363] 
+[5041442.632363] 
+[5041534.247124] wlan: [0:E:ANY] ol_peer_sta_ps_state_change_handler: Unable to find peer object
+[5041534.272038] wlan: [0:I:ANY] [UNSPECIFIED] vap-0(ath1): 
+[5041534.272038] 
+[5041534.272038] _wpaSetPtk: ******** set PTK status: 0, key_type=3, macaddr=02:00:00:00:00:1a, key_len=16
+[5041534.272038] 
+[5041534.272038] 
+[5041615.042548] wlan: [0:I:ANY] [UNSPECIFIED] vap-0(ath1): 
+[5041615.042548] 
+[5041615.042548] _wpaSetPtk: ******** set PTK status: 0, key_type=3, macaddr=02:00:00:00:00:10, key_len=16
+[5041615.042548] 
+[5041615.042548] 
+[5041773.436210] wlan: [0:I:ANY] [UNSPECIFIED] vap-0(ath1): 
+[5041773.436210] 
+[5041773.436210] _wpaSetPtk: ******** set PTK status: 0, key_type=3, macaddr=02:00:00:00:00:10, key_len=16
+[5041773.436210] 
+[5041773.436210] 
+[5042620.036253] wlan: [0:I:ANY] [UNSPECIFIED] vap-0(ath1): 
+[5042620.036253] 
+[5042620.036253] _wpaSetPtk: ******** set PTK status: 0, key_type=3, macaddr=02:00:00:00:00:10, key_len=16
+[5042620.036253] 
+[5042620.036253] 
+[5043335.017738] wlan: [0:I:ANY] [UNSPECIFIED] vap-0(ath1): 
+[5043335.017738] 
+[5043335.017738] _wpaSetPtk: ******** set PTK status: 0, key_type=3, macaddr=02:00:00:00:00:10, key_len=16
+[5043335.017738] 
+[5043335.017738] 
+[5043928.349795] wlan: [0:I:ANY] [UNSPECIFIED] vap-0(ath0): 
+[5043928.349795] 
+[5043928.349795] _wpaSetPtk: ******** set PTK status: 0, key_type=3, macaddr=02:00:00:00:00:00, key_len=16
+[5043928.349795] 
+[5043928.349795] 
+[5043935.114210] wlan: [0:I:ANY] [UNSPECIFIED] vap-0(ath0): 
+[5043935.114210] 
+[5043935.114210] _wpaSetPtk: ******** set PTK status: 0, key_type=3, macaddr=02:00:00:00:00:00, key_len=16
+[5043935.114210] 
+[5043935.114210] 
+[5043997.819902] do_stat_set_ctl|944: can't find entry: 02:00:00:00:00:00
+[5044151.004568] wlan: [0:I:ANY] [UNSPECIFIED] vap-0(ath1): 
+[5044151.004568] 
+[5044151.004568] _wpaSetPtk: ******** set PTK status: 0, key_type=3, macaddr=02:00:00:00:00:10, key_len=16
+[5044151.004568] 
+[5044151.004568] 
+[5044695.929025] wlan: [0:I:ANY] [UNSPECIFIED] vap-0(ath1): 
+[5044695.929025] 
+[5044695.929025] _wpaSetPtk: ******** set PTK status: 0, key_type=3, macaddr=02:00:00:00:00:10, key_len=16
+[5044695.929025] 
+[5044695.929025] 
+[5045084.158627] wlan: [0:I:ANY] [UNSPECIFIED] vap-0(ath1): 
+[5045084.158627] 
+[5045084.158627] _wpaSetPtk: ******** set PTK status: 0, key_type=3, macaddr=02:00:00:00:00:10, key_len=16
+[5045084.158627] 
+[5045084.158627] 
+[5047154.957489] wlan: [0:I:ANY] [UNSPECIFIED] vap-0(ath1): 
+[5047154.957489] 
+[5047154.957489] _wpaSetPtk: ******** set PTK status: 0, key_type=3, macaddr=02:00:00:00:00:1a, key_len=16
+[5047154.957489] 
+[5047154.957489] 
+[5048970.726811] do_stat_set_ctl|944: can't find entry: 02:00:00:00:00:1C
+[5049004.829662] wlan: [0:I:ANY] [UNSPECIFIED] vap-0(ath0): 
+[5049004.829662] 
+[5049004.829662] _wpaSetPtk: ******** set PTK status: 0, key_type=3, macaddr=02:00:00:00:00:1c, key_len=16
+[5049004.829662] 
+[5049004.829662] 
+[5050187.431516] wlan: [0:I:ANY] [UNSPECIFIED] vap-0(ath0): 
+[5050187.431516] 
+[5050187.431516] _wpaSetPtk: ******** set PTK status: 0, key_type=3, macaddr=02:00:00:00:00:1c, key_len=16
+[5050187.431516] 
+[5050187.431516] 
+[5051074.220165] wlan: [0:I:ANY] [UNSPECIFIED] vap-0(ath0): 
+[5051074.220165] 
+[5051074.220165] _wpaSetPtk: ******** set PTK status: 0, key_type=3, macaddr=02:00:00:00:00:1c, key_len=16
+[5051074.220165] 
+[5051074.220165] 
+[5051310.288781] do_stat_set_ctl|944: can't find entry: 02:00:00:00:00:1C
+[5052378.510713] wlan: [0:I:ANY] [UNSPECIFIED] vap-0(ath0): 
+[5052378.510713] 
+[5052378.510713] _wpaSetPtk: ******** set PTK status: 0, key_type=3, macaddr=02:00:00:00:00:1c, key_len=16
+[5052378.510713] 
+[5052378.510713] 
+[5052627.479957] do_stat_set_ctl|944: can't find entry: 02:00:00:00:00:1C
+[5054340.554023] wlan: [0:I:ANY] [UNSPECIFIED] vap-0(ath0): 
+[5054340.554023] 
+[5054340.554023] _wpaSetPtk: ******** set PTK status: 0, key_type=3, macaddr=02:00:00:00:00:1c, key_len=16
+[5054340.554023] 
+[5054340.554023] 
+[5055333.677159] do_stat_set_ctl|944: can't find entry: 02:00:00:00:00:1C
+[5057721.054087] wlan: [0:I:ANY] [UNSPECIFIED] vap-0(ath1): 
+[5057721.054087] 
+[5057721.054087] _wpaSetPtk: ******** set PTK status: 0, key_type=3, macaddr=02:00:00:00:00:0a, key_len=16
+[5057721.054087] 
+[5057721.054087] 
+[5060147.537576] wlan: [0:I:ANY] [UNSPECIFIED] vap-0(ath0): 
+[5060147.537576] 
+[5060147.537576] _wpaSetPtk: ******** set PTK status: 0, key_type=3, macaddr=02:00:00:00:00:1c, key_len=16
+[5060147.537576] 
+[5060147.537576] 
+[5060219.619803] do_stat_set_ctl|944: can't find entry: 02:00:00:00:00:1C
+[5060276.595636] wlan: [0:I:ANY] [UNSPECIFIED] vap-0(ath0): 
+[5060276.595636] 
+[5060276.595636] _wpaSetPtk: ******** set PTK status: 0, key_type=3, macaddr=02:00:00:00:00:1c, key_len=16
+[5060276.595636] 
+[5060276.595636] 
+[5061593.617391] wlan: [0:I:ANY] [UNSPECIFIED] vap-0(ath0): 
+[5061593.617391] 
+[5061593.617391] _wpaSetPtk: ******** set PTK status: 0, key_type=3, macaddr=02:00:00:00:00:00, key_len=16
+[5061593.617391] 
+[5061593.617391] 
+[5061612.656550] wlan: [0:I:ANY] [UNSPECIFIED] vap-0(ath0): 
+[5061612.656550] 
+[5061612.656550] _wpaSetPtk: ******** set PTK status: 0, key_type=3, macaddr=02:00:00:00:00:00, key_len=16
+[5061612.656550] 
+[5061612.656550] 
+[5062076.019359] wlan: [0:I:ANY] [UNSPECIFIED] vap-0(ath1): 
+[5062076.019359] 
+[5062076.019359] _wpaSetPtk: ******** set PTK status: 0, key_type=3, macaddr=02:00:00:00:00:1a, key_len=16
+[5062076.019359] 
+[5062076.019359] 
+[5064430.640615] wlan: [0:I:ANY] [UNSPECIFIED] vap-0(ath0): 
+[5064430.640615] 
+[5064430.640615] _wpaSetPtk: ******** set PTK status: 0, key_type=3, macaddr=02:00:00:00:00:00, key_len=16
+[5064430.640615] 
+[5064430.640615] 
+[5064493.196433] do_stat_set_ctl|944: can't find entry: 02:00:00:00:00:00
+[5064551.515930] wlan: [0:I:ANY] [UNSPECIFIED] vap-0(ath0): 
+[5064551.515930] 
+[5064551.515930] _wpaSetPtk: ******** set PTK status: 0, key_type=3, macaddr=02:00:00:00:00:00, key_len=16
+[5064551.515930] 
+[5064551.515930] 
+[5064613.993258] do_stat_set_ctl|944: can't find entry: 02:00:00:00:00:00
+[5064794.820396] wlan: [0:I:ANY] [UNSPECIFIED] vap-0(ath0): 
+[5064794.820396] 
+[5064794.820396] _wpaSetPtk: ******** set PTK status: 0, key_type=3, macaddr=02:00:00:00:00:00, key_len=16
+[5064794.820396] 
+[5064794.820396] 
+[5064829.137581] do_stat_set_ctl|944: can't find entry: 02:00:00:00:00:10
+[5064857.366674] do_stat_set_ctl|944: can't find entry: 02:00:00:00:00:00
+[5065055.596285] do_stat_set_ctl|944: can't find entry: 02:00:00:00:00:1A
+[5066628.577396] wlan: [0:I:ANY] [UNSPECIFIED] vap-0(ath1): 
+[5066628.577396] 
+[5066628.577396] _wpaSetPtk: ******** set PTK status: 0, key_type=3, macaddr=02:00:00:00:00:10, key_len=16
+[5066628.577396] 
+[5066628.577396] 
+[5066629.588874] wlan: [0:I:ANY] [UNSPECIFIED] vap-0(ath0): 
+[5066629.588874] 
+[5066629.588874] _wpaSetPtk: ******** set PTK status: 0, key_type=3, macaddr=02:00:00:00:00:00, key_len=16
+[5066629.588874] 
+[5066629.588874] 
+[5066737.812824] do_stat_set_ctl|944: can't find entry: 02:00:00:00:00:00
+[5066795.956496] wlan: [0:I:ANY] [UNSPECIFIED] vap-0(ath0): 
+[5066795.956496] 
+[5066795.956496] _wpaSetPtk: ******** set PTK status: 0, key_type=3, macaddr=02:00:00:00:00:00, key_len=16
+[5066795.956496] 
+[5066795.956496] 
+[5066858.404838] do_stat_set_ctl|944: can't find entry: 02:00:00:00:00:00
+[5066914.972406] wlan: [0:I:ANY] [UNSPECIFIED] vap-0(ath0): 
+[5066914.972406] 
+[5066914.972406] _wpaSetPtk: ******** set PTK status: 0, key_type=3, macaddr=02:00:00:00:00:00, key_len=16
+[5066914.972406] 
+[5066914.972406] 
+[5066977.459610] do_stat_set_ctl|944: can't find entry: 02:00:00:00:00:00
+[5068144.761690] wlan: [0:I:ANY] [UNSPECIFIED] vap-0(ath0): 
+[5068144.761690] 
+[5068144.761690] _wpaSetPtk: ******** set PTK status: 0, key_type=3, macaddr=02:00:00:00:00:00, key_len=16
+[5068144.761690] 
+[5068144.761690] 
+[5069849.074028] do_stat_set_ctl|944: can't find entry: 02:00:00:00:00:1D
+[5069865.566694] wlan: [0:I:ANY] [UNSPECIFIED] vap-0(ath0): 
+[5069865.566694] 
+[5069865.566694] _wpaSetPtk: ******** set PTK status: 0, key_type=3, macaddr=02:00:00:00:00:1d, key_len=16
+[5069865.566694] 
+[5069865.566694] 
+[5069913.268977] wlan: [0:I:ANY] [UNSPECIFIED] vap-0(ath0): 
+[5069913.268977] 
+[5069913.268977] _wpaSetPtk: ******** set PTK status: 0, key_type=3, macaddr=02:00:00:00:00:00, key_len=16
+[5069913.268977] 
+[5069913.268977] 
+[5069975.757665] do_stat_set_ctl|944: can't find entry: 02:00:00:00:00:00
+[5070034.016493] wlan: [0:I:ANY] [UNSPECIFIED] vap-0(ath0): 
+[5070034.016493] 
+[5070034.016493] _wpaSetPtk: ******** set PTK status: 0, key_type=3, macaddr=02:00:00:00:00:00, key_len=16
+[5070034.016493] 
+[5070034.016493] 
+[5070116.428955] do_stat_set_ctl|944: can't find entry: 02:00:00:00:00:00
+[5077069.766310] do_stat_set_ctl|944: can't find entry: 02:00:00:00:00:16
+[5077072.470561] wlan: [0:I:ANY] [UNSPECIFIED] vap-0(ath0): 
+[5077072.470561] 
+[5077072.470561] _wpaSetPtk: ******** set PTK status: 0, key_type=3, macaddr=02:00:00:00:00:00, key_len=16
+[5077072.470561] 
+[5077072.470561] 
+[5077108.598534] wlan: [0:I:ANY] [UNSPECIFIED] vap-0(ath1): 
+[5077108.598534] 
+[5077108.598534] _wpaSetPtk: ******** set PTK status: 0, key_type=3, macaddr=02:00:00:00:00:1a, key_len=16
+[5077108.598534] 
+[5077108.598534] 
+[5077141.114530] do_stat_set_ctl|944: can't find entry: 02:00:00:00:00:00
+[5077146.712788] wlan: [0:I:ANY] [UNSPECIFIED] vap-0(ath0): 
+[5077146.712788] 
+[5077146.712788] _wpaSetPtk: ******** set PTK status: 0, key_type=3, macaddr=02:00:00:00:00:00, key_len=16
+[5077146.712788] 
+[5077146.712788] 
+[5077155.880527] do_stat_set_ctl|944: can't find entry: 02:00:00:00:00:1C
+[5077188.541553] wlan: [0:I:ANY] [UNSPECIFIED] vap-0(ath0): 
+[5077188.541553] 
+[5077188.541553] _wpaSetPtk: ******** set PTK status: 0, key_type=3, macaddr=02:00:00:00:00:0c, key_len=16
+[5077188.541553] 
+[5077188.541553] 
+[5077189.564697] wlan: [0:I:ANY] [UNSPECIFIED] vap-0(ath0): 
+[5077189.564697] 
+[5077189.564697] _wpaSetPtk: ******** set PTK status: 0, key_type=3, macaddr=02:00:00:00:00:0e, key_len=16
+[5077189.564697] 
+[5077189.564697] 
+[5077189.620353] wlan: [0:I:ANY] [UNSPECIFIED] vap-0(ath0): 
+[5077189.620353] 
+[5077189.620353] _wpaSetPtk: ******** set PTK status: 0, key_type=3, macaddr=02:00:00:00:00:0d, key_len=16
+[5077189.620353] 
+[5077189.620353] 
+[5077209.139173] do_stat_set_ctl|944: can't find entry: 02:00:00:00:00:00
+[5077677.510155] do_stat_set_ctl|944: can't find entry: 02:00:00:00:00:0C
+[5077678.511485] do_stat_set_ctl|944: can't find entry: 02:00:00:00:00:0E
+[5077679.518856] do_stat_set_ctl|944: can't find entry: 02:00:00:00:00:0D
+[5080103.277184] wlan: [0:I:ANY] [UNSPECIFIED] vap-0(ath0): 
+[5080103.277184] 
+[5080103.277184] _wpaSetPtk: ******** set PTK status: 0, key_type=3, macaddr=02:00:00:00:00:00, key_len=16
+[5080103.277184] 
+[5080103.277184] 
+[5080205.689595] do_stat_set_ctl|944: can't find entry: 02:00:00:00:00:00
+[5080215.413571] wlan: [0:I:ANY] [UNSPECIFIED] vap-0(ath0): 
+[5080215.413571] 
+[5080215.413571] _wpaSetPtk: ******** set PTK status: 0, key_type=3, macaddr=02:00:00:00:00:00, key_len=16
+[5080215.413571] 
+[5080215.413571] 
+[5080278.049509] do_stat_set_ctl|944: can't find entry: 02:00:00:00:00:00
+[5081039.102638] wlan: [0:I:ANY] [UNSPECIFIED] vap-0(ath0): 
+[5081039.102638] 
+[5081039.102638] _wpaSetPtk: ******** set PTK status: 0, key_type=3, macaddr=02:00:00:00:00:00, key_len=16
+[5081039.102638] 
+[5081039.102638] 
+[5081118.470612] do_stat_set_ctl|944: can't find entry: 02:00:00:00:00:00
+[5081381.564891] wlan: [0:I:ANY] [UNSPECIFIED] vap-0(ath0): 
+[5081381.564891] 
+[5081381.564891] _wpaSetPtk: ******** set PTK status: 0, key_type=3, macaddr=02:00:00:00:00:00, key_len=16
+[5081381.564891] 
+[5081381.564891] 
+[5081456.034929] do_stat_set_ctl|944: can't find entry: 02:00:00:00:00:00
+[5084404.104727] wlan: [0:I:ANY] [UNSPECIFIED] vap-0(ath0): 
+[5084404.104727] 
+[5084404.104727] _wpaSetPtk: ******** set PTK status: 0, key_type=3, macaddr=02:00:00:00:00:00, key_len=16
+[5084404.104727] 
+[5084404.104727] 
+[5085209.546861] wlan: [0:I:ANY] [UNSPECIFIED] vap-0(ath0): 
+[5085209.546861] 
+[5085209.546861] _wpaSetPtk: ******** set PTK status: 0, key_type=3, macaddr=02:00:00:00:00:00, key_len=16
+[5085209.546861] 
+[5085209.546861] 
+[5085291.559623] do_stat_set_ctl|944: can't find entry: 02:00:00:00:00:00
+[5085393.689559] do_stat_set_ctl|944: can't find entry: 02:00:00:00:00:13
+[5088248.704681] wlan: [0:I:ANY] [UNSPECIFIED] vap-0(ath0): 
+[5088248.704681] 
+[5088248.704681] _wpaSetPtk: ******** set PTK status: 0, key_type=3, macaddr=02:00:00:00:00:00, key_len=16
+[5088248.704681] 
+[5088248.704681] 
+[5088341.017005] wlan: [0:I:ANY] [UNSPECIFIED] vap-0(ath0): 
+[5088341.017005] 
+[5088341.017005] _wpaSetPtk: ******** set PTK status: 0, key_type=3, macaddr=02:00:00:00:00:13, key_len=16
+[5088341.017005] 
+[5088341.017005] 
+[5088355.661081] do_stat_set_ctl|944: can't find entry: 02:00:00:00:00:00
+[5088409.868241] do_stat_set_ctl|944: can't find entry: 02:00:00:00:00:1A
+[5088409.891932] wlan: [0:I:ANY] [UNSPECIFIED] vap-0(ath1): 
+[5088409.891932] 
+[5088409.891932] _wpaSetPtk: ******** set PTK status: 0, key_type=3, macaddr=02:00:00:00:00:1a, key_len=16
+[5088409.891932] 
+[5088409.891932] 
+[5088467.802187] wlan: [0:I:ANY] [UNSPECIFIED] vap-0(ath0): 
+[5088467.802187] 
+[5088467.802187] _wpaSetPtk: ******** set PTK status: 0, key_type=3, macaddr=02:00:00:00:00:00, key_len=16
+[5088467.802187] 
+[5088467.802187] 
+[5088560.199463] do_stat_set_ctl|944: can't find entry: 02:00:00:00:00:00
+[5089641.218786] wlan: [0:I:ANY] [UNSPECIFIED] vap-0(ath0): 
+[5089641.218786] 
+[5089641.218786] _wpaSetPtk: ******** set PTK status: 0, key_type=3, macaddr=02:00:00:00:00:0e, key_len=16
+[5089641.218786] 
+[5089641.218786] 
+[5089641.303472] wlan: [0:I:ANY] [UNSPECIFIED] vap-0(ath0): 
+[5089641.303472] 
+[5089641.303472] _wpaSetPtk: ******** set PTK status: 0, key_type=3, macaddr=02:00:00:00:00:0c, key_len=16
+[5089641.303472] 
+[5089641.303472] 
+[5089641.600439] wlan: [0:I:ANY] [UNSPECIFIED] vap-0(ath0): 
+[5089641.600439] 
+[5089641.600439] _wpaSetPtk: ******** set PTK status: 0, key_type=3, macaddr=02:00:00:00:00:0d, key_len=16
+[5089641.600439] 
+[5089641.600439] 
+[5090078.620959] wlan: [0:I:ANY] [UNSPECIFIED] vap-0(ath0): 
+[5090078.620959] 
+[5090078.620959] _wpaSetPtk: ******** set PTK status: 0, key_type=3, macaddr=02:00:00:00:00:02, key_len=16
+[5090078.620959] 
+[5090078.620959] 
+[5090105.974290] wlan: [0:I:ANY] [UNSPECIFIED] vap-0(ath0): 
+[5090105.974290] 
+[5090105.974290] _wpaSetPtk: ******** set PTK status: 0, key_type=3, macaddr=02:00:00:00:00:00, key_len=16
+[5090105.974290] 
+[5090105.974290] 
+[5091192.650867] wlan: [0:I:ANY] [UNSPECIFIED] vap-0(ath0): 
+[5091192.650867] 
+[5091192.650867] _wpaSetPtk: ******** set PTK status: 0, key_type=3, macaddr=02:00:00:00:00:00, key_len=16
+[5091192.650867] 
+[5091192.650867] 
+[5091205.180425] wlan: [0:I:ANY] [UNSPECIFIED] vap-0(ath0): 
+[5091205.180425] 
+[5091205.180425] _wpaSetPtk: ******** set PTK status: 0, key_type=3, macaddr=02:00:00:00:00:00, key_len=16
+[5091205.180425] 
+[5091205.180425] 
+[5091206.225763] wlan: [0:I:ANY] [UNSPECIFIED] vap-0(ath0): 
+[5091206.225763] 
+[5091206.225763] _wpaSetPtk: ******** set PTK status: 0, key_type=3, macaddr=02:00:00:00:00:00, key_len=16
+[5091206.225763] 
+[5091206.225763] 
+[5091209.983222] wlan: [0:I:ANY] [UNSPECIFIED] vap-0(ath0): 
+[5091209.983222] 
+[5091209.983222] _wpaSetPtk: ******** set PTK status: 0, key_type=3, macaddr=02:00:00:00:00:00, key_len=16
+[5091209.983222] 
+[5091209.983222] 
+[5091272.929004] do_stat_set_ctl|944: can't find entry: 02:00:00:00:00:00
+[5091406.917242] do_stat_set_ctl|944: can't find entry: 02:00:00:00:00:02
+[5091526.649287] do_stat_set_ctl|944: can't find entry: 02:00:00:00:00:10
+[5091672.882963] wlan: [0:I:ANY] [UNSPECIFIED] vap-0(ath0): 
+[5091672.882963] 
+[5091672.882963] _wpaSetPtk: ******** set PTK status: 0, key_type=3, macaddr=02:00:00:00:00:00, key_len=16
+[5091672.882963] 
+[5091672.882963] 
+[5091741.746344] do_stat_set_ctl|944: can't find entry: 02:00:00:00:00:00
+[5091794.881320] wlan: [0:I:ANY] [UNSPECIFIED] vap-0(ath0): 
+[5091794.881320] 
+[5091794.881320] _wpaSetPtk: ******** set PTK status: 0, key_type=3, macaddr=02:00:00:00:00:00, key_len=16
+[5091794.881320] 
+[5091794.881320] 
+[5091857.337718] do_stat_set_ctl|944: can't find entry: 02:00:00:00:00:00
+[5091873.199847] wlan: [0:I:ANY] [UNSPECIFIED] vap-0(ath0): 
+[5091873.199847] 
+[5091873.199847] _wpaSetPtk: ******** set PTK status: 0, key_type=3, macaddr=02:00:00:00:00:00, key_len=16
+[5091873.199847] 
+[5091873.199847] 
+[5091886.553793] wlan: [0:I:ANY] [UNSPECIFIED] vap-0(ath0): 
+[5091886.553793] 
+[5091886.553793] _wpaSetPtk: ******** set PTK status: 0, key_type=3, macaddr=02:00:00:00:00:00, key_len=16
+[5091886.553793] 
+[5091886.553793] 
+[5091953.341072] do_stat_set_ctl|944: can't find entry: 02:00:00:00:00:00
+[5095633.122882] wlan: [0:I:ANY] [UNSPECIFIED] vap-0(ath0): 
+[5095633.122882] 
+[5095633.122882] _wpaSetPtk: ******** set PTK status: 0, key_type=3, macaddr=02:00:00:00:00:09, key_len=16
+[5095633.122882] 
+[5095633.122882] 
+[5095633.289064] wlan: [0:I:ANY] [UNSPECIFIED] vap-0(ath0): 
+[5095633.289064] 
+[5095633.289064] _wpaSetPtk: ******** set PTK status: 0, key_type=3, macaddr=02:00:00:00:00:08, key_len=16
+[5095633.289064] 
+[5095633.289064] 
+[5095633.348740] wlan: [0:I:ANY] [UNSPECIFIED] vap-0(ath0): 
+[5095633.348740] 
+[5095633.348740] _wpaSetPtk: ******** set PTK status: 0, key_type=3, macaddr=02:00:00:00:00:07, key_len=16
+[5095633.348740] 
+[5095633.348740] 
+[5095633.615667] wlan: [0:I:ANY] [UNSPECIFIED] vap-0(ath0): 
+[5095633.615667] 
+[5095633.615667] _wpaSetPtk: ******** set PTK status: 0, key_type=3, macaddr=02:00:00:00:00:06, key_len=16
+[5095633.615667] 
+[5095633.615667] 
+[5095634.630336] wlan: [0:I:ANY] [UNSPECIFIED] vap-0(ath0): 
+[5095634.630336] 
+[5095634.630336] _wpaSetPtk: ******** set PTK status: 0, key_type=3, macaddr=02:00:00:00:00:05, key_len=16
+[5095634.630336] 
+[5095634.630336] 
+[5096104.032944] wlan: [0:I:ANY] [UNSPECIFIED] vap-0(ath0): 
+[5096104.032944] 
+[5096104.032944] _wpaSetPtk: ******** set PTK status: 0, key_type=3, macaddr=02:00:00:00:00:04, key_len=16
+[5096104.032944] 
+[5096104.032944] 
+[5096324.291808] wlan: [0:I:ANY] [UNSPECIFIED] vap-0(ath0): 
+[5096324.291808] 
+[5096324.291808] _wpaSetPtk: ******** set PTK status: 0, key_type=3, macaddr=02:00:00:00:00:01, key_len=16
+[5096324.291808] 
+[5096324.291808] 
+[5096463.394020] do_stat_set_ctl|944: can't find entry: 02:00:00:00:00:01
+[5096632.278001] do_stat_set_ctl|944: can't find entry: 02:00:00:00:00:04
+[5096793.902943] wlan: [0:I:ANY] [UNSPECIFIED] vap-0(ath0): 
+[5096793.902943] 
+[5096793.902943] _wpaSetPtk: ******** set PTK status: 0, key_type=3, macaddr=02:00:00:00:00:01, key_len=16
+[5096793.902943] 
+[5096793.902943] 
+[5097595.290993] wlan: [0:I:ANY] [UNSPECIFIED] vap-0(ath0): 
+[5097595.290993] 
+[5097595.290993] _wpaSetPtk: ******** set PTK status: 0, key_type=3, macaddr=02:00:00:00:00:03, key_len=16
+[5097595.290993] 
+[5097595.290993] 
+[5097715.405582] wlan: [0:I:ANY] [UNSPECIFIED] vap-0(ath0): 
+[5097715.405582] 
+[5097715.405582] _wpaSetPtk: ******** set PTK status: 0, key_type=3, macaddr=02:00:00:00:00:01, key_len=16
+[5097715.405582] 
+[5097715.405582] 
+[5097961.917099] do_stat_set_ctl|944: can't find entry: 02:00:00:00:00:1E
+[5097961.975997] wlan: [0:I:ANY] [UNSPECIFIED] vap-0(ath0): 
+[5097961.975997] 
+[5097961.975997] _wpaSetPtk: ******** set PTK status: 0, key_type=3, macaddr=02:00:00:00:00:1e, key_len=16
+[5097961.975997] 
+[5097961.975997] 
+[5097962.095528] wlan: [0:I:ANY] [UNSPECIFIED] vap-0(ath0): 
+[5097962.095528] 
+[5097962.095528] _wpaSetPtk: ******** set PTK status: 0, key_type=3, macaddr=02:00:00:00:00:1c, key_len=16
+[5097962.095528] 
+[5097962.095528] 
+[5098016.611338] do_stat_set_ctl|944: can't find entry: 02:00:00:00:00:1E
+[5098020.713820] wlan: [0:I:ANY] [UNSPECIFIED] vap-0(ath0): 
+[5098020.713820] 
+[5098020.713820] _wpaSetPtk: ******** set PTK status: 0, key_type=3, macaddr=02:00:00:00:00:1e, key_len=16
+[5098020.713820] 
+[5098020.713820] 
+[5098043.967614] do_stat_set_ctl|944: can't find entry: 02:00:00:00:00:01
+[5098108.004322] wlan: [0:I:ANY] [UNSPECIFIED] vap-0(ath0): 
+[5098108.004322] 
+[5098108.004322] _wpaSetPtk: ******** set PTK status: 0, key_type=3, macaddr=02:00:00:00:00:01, key_len=16
+[5098108.004322] 
+[5098108.004322] 
+[5098417.207554] do_stat_set_ctl|944: can't find entry: 02:00:00:00:00:01
+[5098458.311736] wlan: [0:I:ANY] [UNSPECIFIED] vap-0(ath0): 
+[5098458.311736] 
+[5098458.311736] _wpaSetPtk: ******** set PTK status: 0, key_type=3, macaddr=02:00:00:00:00:01, key_len=16
+[5098458.311736] 
+[5098458.311736] 
+[5098597.644350] do_stat_set_ctl|944: can't find entry: 02:00:00:00:00:01
+[5098745.507632] wlan: [0:I:ANY] [UNSPECIFIED] vap-0(ath0): 
+[5098745.507632] 
+[5098745.507632] _wpaSetPtk: ******** set PTK status: 0, key_type=3, macaddr=02:00:00:00:00:00, key_len=16
+[5098745.507632] 
+[5098745.507632] 
+[5098785.948147] wlan: [0:I:ANY] [UNSPECIFIED] vap-0(ath1): 
+[5098785.948147] 
+[5098785.948147] _wpaSetPtk: ******** set PTK status: 0, key_type=3, macaddr=02:00:00:00:00:10, key_len=16
+[5098785.948147] 
+[5098785.948147] 
+[5098792.347040] wlan: [0:I:ANY] [UNSPECIFIED] vap-0(ath0): 
+[5098792.347040] 
+[5098792.347040] _wpaSetPtk: ******** set PTK status: 0, key_type=3, macaddr=02:00:00:00:00:01, key_len=16
+[5098792.347040] 
+[5098792.347040] 
+[5098837.945018] do_stat_set_ctl|944: can't find entry: 02:00:00:00:00:00
+[5098912.591199] wlan: [0:I:ANY] [UNSPECIFIED] vap-0(ath0): 
+[5098912.591199] 
+[5098912.591199] _wpaSetPtk: ******** set PTK status: 0, key_type=3, macaddr=02:00:00:00:00:01, key_len=16
+[5098912.591199] 
+[5098912.591199] 
+[5098999.188014] wlan: [0:I:ANY] [UNSPECIFIED] vap-0(ath0): 
+[5098999.188014] 
+[5098999.188014] _wpaSetPtk: ******** set PTK status: 0, key_type=3, macaddr=02:00:00:00:00:04, key_len=16
+[5098999.188014] 
+[5098999.188014] 
+[5099042.262221] do_stat_set_ctl|944: can't find entry: 02:00:00:00:00:01
+[5099364.652980] wlan: [0:I:ANY] [UNSPECIFIED] vap-0(ath0): 
+[5099364.652980] 
+[5099364.652980] _wpaSetPtk: ******** set PTK status: 0, key_type=3, macaddr=02:00:00:00:00:01, key_len=16
+[5099364.652980] 
+[5099364.652980] 
+[5100004.790270] do_stat_set_ctl|944: can't find entry: 02:00:00:00:00:03
+[5100193.790402] wlan: [0:I:ANY] [UNSPECIFIED] vap-0(ath0): 
+[5100193.790402] 
+[5100193.790402] _wpaSetPtk: ******** set PTK status: 0, key_type=3, macaddr=02:00:00:00:00:03, key_len=16
+[5100193.790402] 
+[5100193.790402] 
+[5100520.204305] wlan: [0:I:ANY] [UNSPECIFIED] vap-0(ath1): 
+[5100520.204305] 
+[5100520.204305] _wpaSetPtk: ******** set PTK status: 0, key_type=3, macaddr=02:00:00:00:00:1f, key_len=16
+[5100520.204305] 
+[5100520.204305] 
+[5100614.508628] do_stat_set_ctl|944: can't find entry: 02:00:00:00:00:03
+[5101930.360474] wlan: [0:I:ANY] [UNSPECIFIED] vap-0(ath0): 
+[5101930.360474] 
+[5101930.360474] _wpaSetPtk: ******** set PTK status: 0, key_type=3, macaddr=02:00:00:00:00:00, key_len=16
+[5101930.360474] 
+[5101930.360474] 
+[5102014.852205] do_stat_set_ctl|944: can't find entry: 02:00:00:00:00:00
+[5102018.247155] wlan: [0:I:ANY] [UNSPECIFIED] vap-0(ath0): 
+[5102018.247155] 
+[5102018.247155] _wpaSetPtk: ******** set PTK status: 0, key_type=3, macaddr=02:00:00:00:00:02, key_len=16
+[5102018.247155] 
+[5102018.247155] 
+[5102031.180722] wlan: [0:I:ANY] [UNSPECIFIED] vap-0(ath0): 
+[5102031.180722] 
+[5102031.180722] _wpaSetPtk: ******** set PTK status: 0, key_type=3, macaddr=02:00:00:00:00:00, key_len=16
+[5102031.180722] 
+[5102031.180722] 
+[5102037.984948] do_stat_set_ctl|944: can't find entry: 02:00:00:00:00:1A
+[5102038.006513] wlan: [0:I:ANY] [UNSPECIFIED] vap-0(ath1): 
+[5102038.006513] 
+[5102038.006513] _wpaSetPtk: ******** set PTK status: 0, key_type=3, macaddr=02:00:00:00:00:1a, key_len=16
+[5102038.006513] 
+[5102038.006513] 
+[5102152.866304] do_stat_set_ctl|944: can't find entry: 02:00:00:00:00:00
+[5102377.152320] wlan: [0:I:ANY] [UNSPECIFIED] vap-0(ath0): 
+[5102377.152320] 
+[5102377.152320] _wpaSetPtk: ******** set PTK status: 0, key_type=3, macaddr=02:00:00:00:00:00, key_len=16
+[5102377.152320] 
+[5102377.152320] 
+[5102449.830016] do_stat_set_ctl|944: can't find entry: 02:00:00:00:00:00
+[5104308.730741] wlan: [0:I:ANY] [UNSPECIFIED] vap-0(ath0): 
+[5104308.730741] 
+[5104308.730741] _wpaSetPtk: ******** set PTK status: 0, key_type=3, macaddr=02:00:00:00:00:02, key_len=16
+[5104308.730741] 
+[5104308.730741] 
+[5104474.719582] wlan: [0:I:ANY] [UNSPECIFIED] vap-0(ath0): 
+[5104474.719582] 
+[5104474.719582] _wpaSetPtk: ******** set PTK status: 0, key_type=3, macaddr=02:00:00:00:00:01, key_len=16
+[5104474.719582] 
+[5104474.719582] 
+[5104497.843196] do_stat_set_ctl|944: can't find entry: 02:00:00:00:00:02
+[5104604.011169] do_stat_set_ctl|944: can't find entry: 02:00:00:00:00:01
+[5104771.280370] do_stat_set_ctl|944: can't find entry: 02:00:00:00:00:0E
+[5104772.450116] do_stat_set_ctl|944: can't find entry: 02:00:00:00:00:0D
+[5104772.457476] do_stat_set_ctl|944: can't find entry: 02:00:00:00:00:0C
+[5105085.774636] wlan: [0:I:ANY] [UNSPECIFIED] vap-0(ath0): 
+[5105085.774636] 
+[5105085.774636] _wpaSetPtk: ******** set PTK status: 0, key_type=3, macaddr=02:00:00:00:00:0d, key_len=16
+[5105085.774636] 
+[5105085.774636] 
+[5105085.852435] wlan: [0:I:ANY] [UNSPECIFIED] vap-0(ath0): 
+[5105085.852435] 
+[5105085.852435] _wpaSetPtk: ******** set PTK status: 0, key_type=3, macaddr=02:00:00:00:00:0e, key_len=16
+[5105085.852435] 
+[5105085.852435] 
+[5105085.937229] wlan: [0:I:ANY] [UNSPECIFIED] vap-0(ath0): 
+[5105085.937229] 
+[5105085.937229] _wpaSetPtk: ******** set PTK status: 0, key_type=3, macaddr=02:00:00:00:00:0c, key_len=16
+[5105085.937229] 
+[5105085.937229] 
+[5105647.716116] wlan: [0:I:ANY] [UNSPECIFIED] vap-0(ath0): 
+[5105647.716116] 
+[5105647.716116] _wpaSetPtk: ******** set PTK status: 0, key_type=3, macaddr=02:00:00:00:00:01, key_len=16
+[5105647.716116] 
+[5105647.716116] 
+[5105760.666969] wlan: [0:I:ANY] [UNSPECIFIED] vap-0(ath0): 
+[5105760.666969] 
+[5105760.666969] _wpaSetPtk: ******** set PTK status: 0, key_type=3, macaddr=02:00:00:00:00:02, key_len=16
+[5105760.666969] 
+[5105760.666969] 
+[5105780.311838] do_stat_set_ctl|944: can't find entry: 02:00:00:00:00:04
+[5105780.427636] wlan: [0:I:ANY] [UNSPECIFIED] vap-0(ath0): 
+[5105780.427636] 
+[5105780.427636] _wpaSetPtk: ******** set PTK status: 0, key_type=3, macaddr=02:00:00:00:00:04, key_len=16
+[5105780.427636] 
+[5105780.427636] 
+[5105841.340251] do_stat_set_ctl|944: can't find entry: 02:00:00:00:00:04
+[5105841.457403] wlan: [0:I:ANY] [UNSPECIFIED] vap-0(ath0): 
+[5105841.457403] 
+[5105841.457403] _wpaSetPtk: ******** set PTK status: 0, key_type=3, macaddr=02:00:00:00:00:04, key_len=16
+[5105841.457403] 
+[5105841.457403] 
+[5105891.013096] wlan: [0:I:ANY] [UNSPECIFIED] vap-0(ath0): 
+[5105891.013096] 
+[5105891.013096] _wpaSetPtk: ******** set PTK status: 0, key_type=3, macaddr=02:00:00:00:00:03, key_len=16
+[5105891.013096] 
+[5105891.013096] 
+[5106128.827645] do_stat_set_ctl|944: can't find entry: 02:00:00:00:00:02
+[5106563.683811] wlan: [0:I:ANY] [UNSPECIFIED] vap-0(ath0): 
+[5106563.683811] 
+[5106563.683811] _wpaSetPtk: ******** set PTK status: 0, key_type=3, macaddr=02:00:00:00:00:02, key_len=16
+[5106563.683811] 
+[5106563.683811] 
+[5106652.685974] wlan: [0:I:ANY] [UNSPECIFIED] vap-0(ath0): 
+[5106652.685974] 
+[5106652.685974] _wpaSetPtk: ******** set PTK status: 0, key_type=3, macaddr=02:00:00:00:00:00, key_len=16
+[5106652.685974] 
+[5106652.685974] 
+[5106720.156837] do_stat_set_ctl|944: can't find entry: 02:00:00:00:00:00
+[5106809.093334] do_stat_set_ctl|944: can't find entry: 02:00:00:00:00:04
+[5106878.317523] do_stat_set_ctl|944: can't find entry: 02:00:00:00:00:02
+[5106996.026386] do_stat_set_ctl|944: can't find entry: 02:00:00:00:00:10
+[5107220.168040] wlan: [0:I:ANY] [UNSPECIFIED] vap-0(ath0): 
+[5107220.168040] 
+[5107220.168040] _wpaSetPtk: ******** set PTK status: 0, key_type=3, macaddr=02:00:00:00:00:02, key_len=16
+[5107220.168040] 
+[5107220.168040] 
+[5107377.646940] do_stat_set_ctl|944: can't find entry: 02:00:00:00:00:02
+[5107377.759876] wlan: [0:I:ANY] [UNSPECIFIED] vap-0(ath0): 
+[5107377.759876] 
+[5107377.759876] _wpaSetPtk: ******** set PTK status: 0, key_type=3, macaddr=02:00:00:00:00:02, key_len=16
+[5107377.759876] 
+[5107377.759876] 
+[5107419.937099] do_stat_set_ctl|944: can't find entry: 02:00:00:00:00:02
+[5107419.950384] wlan: [0:I:ANY] [UNSPECIFIED] vap-0(ath0): 
+[5107419.950384] 
+[5107419.950384] _wpaSetPtk: ******** set PTK status: 0, key_type=3, macaddr=02:00:00:00:00:02, key_len=16
+[5107419.950384] 
+[5107419.950384] 
+[5107660.919150] do_stat_set_ctl|944: can't find entry: 02:00:00:00:00:01
+[5108374.820987] wlan: [0:I:ANY] [UNSPECIFIED] vap-0(ath0): 
+[5108374.820987] 
+[5108374.820987] _wpaSetPtk: ******** set PTK status: 0, key_type=3, macaddr=02:00:00:00:00:00, key_len=16
+[5108374.820987] 
+[5108374.820987] 
+[5108499.268042] do_stat_set_ctl|944: can't find entry: 02:00:00:00:00:00
+[5108555.790952] do_stat_set_ctl|944: can't find entry: 02:00:00:00:00:1A
+[5108643.522220] wlan: [0:I:ANY] [UNSPECIFIED] vap-0(ath1): 
+[5108643.522220] 
+[5108643.522220] _wpaSetPtk: ******** set PTK status: 0, key_type=3, macaddr=02:00:00:00:00:10, key_len=16
+[5108643.522220] 
+[5108643.522220] 
+[5108646.896004] wlan: [0:I:ANY] [UNSPECIFIED] vap-0(ath0): 
+[5108646.896004] 
+[5108646.896004] _wpaSetPtk: ******** set PTK status: 0, key_type=3, macaddr=02:00:00:00:00:00, key_len=16
+[5108646.896004] 
+[5108646.896004] 
+[5108648.575438] wlan: [0:I:ANY] [UNSPECIFIED] vap-0(ath1): 
+[5108648.575438] 
+[5108648.575438] _wpaSetPtk: ******** set PTK status: 0, key_type=3, macaddr=02:00:00:00:00:1a, key_len=16
+[5108648.575438] 
+[5108648.575438] 
+[5108687.149912] wlan: [0:I:ANY] [UNSPECIFIED] vap-0(ath0): 
+[5108687.149912] 
+[5108687.149912] _wpaSetPtk: ******** set PTK status: 0, key_type=3, macaddr=02:00:00:00:00:01, key_len=16
+[5108687.149912] 
+[5108687.149912] 
+[5108720.287930] do_stat_set_ctl|944: can't find entry: 02:00:00:00:00:00
+[5108835.641368] wlan: [0:I:ANY] [UNSPECIFIED] vap-0(ath0): 
+[5108835.641368] 
+[5108835.641368] _wpaSetPtk: ******** set PTK status: 0, key_type=3, macaddr=02:00:00:00:00:04, key_len=16
+[5108835.641368] 
+[5108835.641368] 
+[5109236.769429] do_stat_set_ctl|944: can't find entry: 02:00:00:00:00:0E
+[5109237.879295] do_stat_set_ctl|944: can't find entry: 02:00:00:00:00:0D
+[5109237.885982] do_stat_set_ctl|944: can't find entry: 02:00:00:00:00:0C
+[5109468.953742] wlan: [0:I:ANY] [UNSPECIFIED] vap-0(ath1): 
+[5109468.953742] 
+[5109468.953742] _wpaSetPtk: ******** set PTK status: 0, key_type=3, macaddr=02:00:00:00:00:16, key_len=16
+[5109468.953742] 
+[5109468.953742] 
+[5109729.986977] wlan: [0:I:ANY] [UNSPECIFIED] vap-0(ath0): 
+[5109729.986977] 
+[5109729.986977] _wpaSetPtk: ******** set PTK status: 0, key_type=3, macaddr=02:00:00:00:00:04, key_len=16
+[5109729.986977] 
+[5109729.986977] 
+[5109829.696546] do_stat_set_ctl|944: can't find entry: 02:00:00:00:00:02
+[5110029.198034] do_stat_set_ctl|944: can't find entry: 02:00:00:00:00:01
+[5110029.317822] wlan: [0:I:ANY] [UNSPECIFIED] vap-0(ath0): 
+[5110029.317822] 
+[5110029.317822] _wpaSetPtk: ******** set PTK status: 0, key_type=3, macaddr=02:00:00:00:00:01, key_len=16
+[5110029.317822] 
+[5110029.317822] 
+[5110076.913902] do_stat_set_ctl|944: can't find entry: 02:00:00:00:00:01
+[5110299.686260] wlan: [0:I:ANY] [UNSPECIFIED] vap-0(ath0): 
+[5110299.686260] 
+[5110299.686260] _wpaSetPtk: ******** set PTK status: 0, key_type=3, macaddr=02:00:00:00:00:01, key_len=16
+[5110299.686260] 
+[5110299.686260] 
+[5110437.072202] wlan: [0:I:ANY] [UNSPECIFIED] vap-0(ath0): 
+[5110437.072202] 
+[5110437.072202] _wpaSetPtk: ******** set PTK status: 0, key_type=3, macaddr=02:00:00:00:00:02, key_len=16
+[5110437.072202] 
+[5110437.072202] 
+[5110489.528103] do_stat_set_ctl|944: can't find entry: 02:00:00:00:00:01
+[5110746.168408] do_stat_set_ctl|944: can't find entry: 02:00:00:00:00:02
+[5111819.357380] wlan: [0:I:ANY] [UNSPECIFIED] vap-0(ath0): 
+[5111819.357380] 
+[5111819.357380] _wpaSetPtk: ******** set PTK status: 0, key_type=3, macaddr=02:00:00:00:00:02, key_len=16
+[5111819.357380] 
+[5111819.357380] 
+[5111951.754921] do_stat_set_ctl|944: can't find entry: 02:00:00:00:00:02
+[5112525.083242] do_stat_set_ctl|944: can't find entry: 02:00:00:00:00:04
+[5112904.082383] do_stat_set_ctl|944: can't find entry: 02:00:00:00:00:05
+[5112933.131867] do_stat_set_ctl|944: can't find entry: 02:00:00:00:00:06
+[5112933.266266] do_stat_set_ctl|944: can't find entry: 02:00:00:00:00:08
+[5112934.112233] do_stat_set_ctl|944: can't find entry: 02:00:00:00:00:07
+[5113043.255047] do_stat_set_ctl|944: can't find entry: 02:00:00:00:00:09
+[5116141.971277] do_stat_set_ctl|944: can't find entry: 02:00:00:00:00:0A
+[5118870.017278] wlan: [0:I:ANY] [UNSPECIFIED] vap-0(ath0): 
+[5118870.017278] 
+[5118870.017278] _wpaSetPtk: ******** set PTK status: 0, key_type=3, macaddr=02:00:00:00:00:00, key_len=16
+[5118870.017278] 
+[5118870.017278] 
+[5127386.925009] wlan: [0:I:ANY] [UNSPECIFIED] vap-0(ath0): 
+[5127386.925009] 
+[5127386.925009] _wpaSetPtk: ******** set PTK status: 0, key_type=3, macaddr=02:00:00:00:00:0b, key_len=16
+[5127386.925009] 
+[5127386.925009] 
+[5129835.979197] wlan: [0:I:ANY] [UNSPECIFIED] vap-0(ath0): 
+[5129835.979197] 
+[5129835.979197] _wpaSetPtk: ******** set PTK status: 0, key_type=3, macaddr=02:00:00:00:00:00, key_len=16
+[5129835.979197] 
+[5129835.979197] 
+[5129842.802396] wlan: [0:I:ANY] [UNSPECIFIED] vap-0(ath0): 
+[5129842.802396] 
+[5129842.802396] _wpaSetPtk: ******** set PTK status: 0, key_type=3, macaddr=02:00:00:00:00:00, key_len=16
+[5129842.802396] 
+[5129842.802396] 
+[5129905.512027] do_stat_set_ctl|944: can't find entry: 02:00:00:00:00:00
+[5131994.619413] wlan: [0:I:ANY] [UNSPECIFIED] vap-0(ath0): 
+[5131994.619413] 
+[5131994.619413] _wpaSetPtk: ******** set PTK status: 0, key_type=3, macaddr=02:00:00:00:00:01, key_len=16
+[5131994.619413] 
+[5131994.619413] 
+[5132123.816207] do_stat_set_ctl|944: can't find entry: 02:00:00:00:00:01
+[5141427.753399] wlan: [0:I:ANY] [UNSPECIFIED] vap-0(ath0): 
+[5141427.753399] 
+[5141427.753399] _wpaSetPtk: ******** set PTK status: 0, key_type=3, macaddr=02:00:00:00:00:0d, key_len=16
+[5141427.753399] 
+[5141427.753399] 
+[5141427.778066] wlan: [0:I:ANY] [UNSPECIFIED] vap-0(ath0): 
+[5141427.778066] 
+[5141427.778066] _wpaSetPtk: ******** set PTK status: 0, key_type=3, macaddr=02:00:00:00:00:0e, key_len=16
+[5141427.778066] 
+[5141427.778066] 
+[5141427.851841] wlan: [0:I:ANY] [UNSPECIFIED] vap-0(ath0): 
+[5141427.851841] 
+[5141427.851841] _wpaSetPtk: ******** set PTK status: 0, key_type=3, macaddr=02:00:00:00:00:0c, key_len=16
+[5141427.851841] 
+[5141427.851841] 
+[5141581.406219] wlan: [0:I:ANY] [UNSPECIFIED] vap-0(ath0): 
+[5141581.406219] 
+[5141581.406219] _wpaSetPtk: ******** set PTK status: 0, key_type=3, macaddr=02:00:00:00:00:01, key_len=16
+[5141581.406219] 
+[5141581.406219] 
+[5142262.904668] do_stat_set_ctl|944: can't find entry: 02:00:00:00:00:03
+[5142495.667177] do_stat_set_ctl|944: can't find entry: 02:00:00:00:00:01
+[5143409.923821] wlan: [0:I:ANY] [UNSPECIFIED] vap-0(ath1): 
+[5143409.923821] 
+[5143409.923821] _wpaSetPtk: ******** set PTK status: 0, key_type=3, macaddr=02:00:00:00:00:0a, key_len=16
+[5143409.923821] 
+[5143409.923821] 
+[5143715.438127] wlan: [0:I:ANY] [UNSPECIFIED] vap-0(ath0): 
+[5143715.438127] 
+[5143715.438127] _wpaSetPtk: ******** set PTK status: 0, key_type=3, macaddr=02:00:00:00:00:00, key_len=16
+[5143715.438127] 
+[5143715.438127] 
+[5143788.534482] do_stat_set_ctl|944: can't find entry: 02:00:00:00:00:00
+[5143859.366273] wlan: [0:I:ANY] [UNSPECIFIED] vap-0(ath0): 
+[5143859.366273] 
+[5143859.366273] _wpaSetPtk: ******** set PTK status: 0, key_type=3, macaddr=02:00:00:00:00:00, key_len=16
+[5143859.366273] 
+[5143859.366273] 
+[5143969.743360] do_stat_set_ctl|944: can't find entry: 02:00:00:00:00:00
+[5143975.123850] wlan: [0:I:ANY] [UNSPECIFIED] vap-0(ath0): 
+[5143975.123850] 
+[5143975.123850] _wpaSetPtk: ******** set PTK status: 0, key_type=3, macaddr=02:00:00:00:00:09, key_len=16
+[5143975.123850] 
+[5143975.123850] 
+[5143975.359394] wlan: [0:I:ANY] [UNSPECIFIED] vap-0(ath0): 
+[5143975.359394] 
+[5143975.359394] _wpaSetPtk: ******** set PTK status: 0, key_type=3, macaddr=02:00:00:00:00:08, key_len=16
+[5143975.359394] 
+[5143975.359394] 
+[5143975.693661] wlan: [0:I:ANY] [UNSPECIFIED] vap-0(ath0): 
+[5143975.693661] 
+[5143975.693661] _wpaSetPtk: ******** set PTK status: 0, key_type=3, macaddr=02:00:00:00:00:06, key_len=16
+[5143975.693661] 
+[5143975.693661] 
+[5143976.543381] wlan: [0:I:ANY] [UNSPECIFIED] vap-0(ath0): 
+[5143976.543381] 
+[5143976.543381] _wpaSetPtk: ******** set PTK status: 0, key_type=3, macaddr=02:00:00:00:00:07, key_len=16
+[5143976.543381] 
+[5143976.543381] 
+[5143976.740852] wlan: [0:I:ANY] [UNSPECIFIED] vap-0(ath0): 
+[5143976.740852] 
+[5143976.740852] _wpaSetPtk: ******** set PTK status: 0, key_type=3, macaddr=02:00:00:00:00:05, key_len=16
+[5143976.740852] 
+[5143976.740852] 
+[5144030.493533] do_stat_set_ctl|944: can't find entry: 02:00:00:00:00:1B
+[5144041.523502] do_stat_set_ctl|944: can't find entry: 02:00:00:00:00:1A
+[5145975.965841] wlan: [0:I:ANY] [UNSPECIFIED] vap-0(ath0): 
+[5145975.965841] 
+[5145975.965841] _wpaSetPtk: ******** set PTK status: 0, key_type=3, macaddr=02:00:00:00:00:00, key_len=16
+[5145975.965841] 
+[5145975.965841] 
+[5146095.895008] do_stat_set_ctl|944: can't find entry: 02:00:00:00:00:00
+[5146309.635888] do_stat_set_ctl|944: can't find entry: 02:00:00:00:00:10
+[5146334.680475] do_stat_set_ctl|944: can't find entry: 02:00:00:00:00:0E
+[5146334.689036] do_stat_set_ctl|944: can't find entry: 02:00:00:00:00:0D
+[5146335.594609] do_stat_set_ctl|944: can't find entry: 02:00:00:00:00:0C
+[5146931.710563] wlan: [0:I:ANY] [UNSPECIFIED] vap-0(ath1): 
+[5146931.710563] 
+[5146931.710563] _wpaSetPtk: ******** set PTK status: 0, key_type=3, macaddr=02:00:00:00:00:10, key_len=16
+[5146931.710563] 
+[5146931.710563] 
+[5146935.963326] wlan: [0:I:ANY] [UNSPECIFIED] vap-0(ath0): 
+[5146935.963326] 
+[5146935.963326] _wpaSetPtk: ******** set PTK status: 0, key_type=3, macaddr=02:00:00:00:00:00, key_len=16
+[5146935.963326] 
+[5146935.963326] 
+[5147010.857481] wlan: [0:I:ANY] [UNSPECIFIED] vap-0(ath0): 
+[5147010.857481] 
+[5147010.857481] _wpaSetPtk: ******** set PTK status: 0, key_type=3, macaddr=02:00:00:00:00:0d, key_len=16
+[5147010.857481] 
+[5147010.857481] 
+[5147010.909594] wlan: [0:I:ANY] [UNSPECIFIED] vap-0(ath0): 
+[5147010.909594] 
+[5147010.909594] _wpaSetPtk: ******** set PTK status: 0, key_type=3, macaddr=02:00:00:00:00:0e, key_len=16
+[5147010.909594] 
+[5147010.909594] 
+[5147010.984703] wlan: [0:I:ANY] [UNSPECIFIED] vap-0(ath0): 
+[5147010.984703] 
+[5147010.984703] _wpaSetPtk: ******** set PTK status: 0, key_type=3, macaddr=02:00:00:00:00:0c, key_len=16
+[5147010.984703] 
+[5147010.984703] 
+[5147043.504996] do_stat_set_ctl|944: can't find entry: 02:00:00:00:00:00
+[5147142.382185] wlan: [0:I:ANY] [UNSPECIFIED] vap-0(ath0): 
+[5147142.382185] 
+[5147142.382185] _wpaSetPtk: ******** set PTK status: 0, key_type=3, macaddr=02:00:00:00:00:00, key_len=16
+[5147142.382185] 
+[5147142.382185] 
+[5147220.441064] do_stat_set_ctl|944: can't find entry: 02:00:00:00:00:00
+[5147475.173033] wlan: [0:I:ANY] [UNSPECIFIED] vap-0(ath0): 
+[5147475.173033] 
+[5147475.173033] _wpaSetPtk: ******** set PTK status: 0, key_type=3, macaddr=02:00:00:00:00:00, key_len=16
+[5147475.173033] 
+[5147475.173033] 
+[5147565.592443] do_stat_set_ctl|944: can't find entry: 02:00:00:00:00:00
+[5147706.771210] wlan: [0:I:ANY] [UNSPECIFIED] vap-0(ath0): 
+[5147706.771210] 
+[5147706.771210] _wpaSetPtk: ******** set PTK status: 0, key_type=3, macaddr=02:00:00:00:00:02, key_len=16
+[5147706.771210] 
+[5147706.771210] 
+[5147838.863873] do_stat_set_ctl|944: can't find entry: 02:00:00:00:00:08
+[5147838.870934] do_stat_set_ctl|944: can't find entry: 02:00:00:00:00:07
+[5147868.794232] do_stat_set_ctl|944: can't find entry: 02:00:00:00:00:06
+[5147868.913941] do_stat_set_ctl|944: can't find entry: 02:00:00:00:00:05
+[5147895.834316] do_stat_set_ctl|944: can't find entry: 02:00:00:00:00:02
+[5148008.622745] wlan: [0:I:ANY] [UNSPECIFIED] vap-0(ath0): 
+[5148008.622745] 
+[5148008.622745] _wpaSetPtk: ******** set PTK status: 0, key_type=3, macaddr=02:00:00:00:00:00, key_len=16
+[5148008.622745] 
+[5148008.622745] 
+[5148017.995696] do_stat_set_ctl|944: can't find entry: 02:00:00:00:00:09
+[5148083.246387] do_stat_set_ctl|944: can't find entry: 02:00:00:00:00:00
+[5148341.386716] do_stat_set_ctl|944: can't find entry: 02:00:00:00:00:0A
+[5148341.395220] do_stat_set_ctl|944: can't find entry: 02:00:00:00:00:10
+[5152717.212407] wlan: [0:I:ANY] [UNSPECIFIED] vap-0(ath0): 
+[5152717.212407] 
+[5152717.212407] _wpaSetPtk: ******** set PTK status: 0, key_type=3, macaddr=02:00:00:00:00:00, key_len=16
+[5152717.212407] 
+[5152717.212407] 
+[5152781.229910] do_stat_set_ctl|944: can't find entry: 02:00:00:00:00:0C
+[5152782.373792] do_stat_set_ctl|944: can't find entry: 02:00:00:00:00:0E
+[5152782.399037] do_stat_set_ctl|944: can't find entry: 02:00:00:00:00:0D
+[5152820.593593] do_stat_set_ctl|944: can't find entry: 02:00:00:00:00:00
+[5153090.867559] do_stat_set_ctl|944: can't find entry: 02:00:00:00:00:13
+[5153131.172651] wlan: [0:I:ANY] [UNSPECIFIED] vap-0(ath0): 
+[5153131.172651] 
+[5153131.172651] _wpaSetPtk: ******** set PTK status: 0, key_type=3, macaddr=02:00:00:00:00:00, key_len=16
+[5153131.172651] 
+[5153131.172651] 
+[5153221.167645] do_stat_set_ctl|944: can't find entry: 02:00:00:00:00:00
+[5154250.920895] wlan: [0:I:ANY] [UNSPECIFIED] vap-0(ath0): 
+[5154250.920895] 
+[5154250.920895] _wpaSetPtk: ******** set PTK status: 0, key_type=3, macaddr=02:00:00:00:00:00, key_len=16
+[5154250.920895] 
+[5154250.920895] 
+[5154315.900310] do_stat_set_ctl|944: can't find entry: 02:00:00:00:00:00
+[5154324.514556] wlan: [0:I:ANY] [UNSPECIFIED] vap-0(ath0): 
+[5154324.514556] 
+[5154324.514556] _wpaSetPtk: ******** set PTK status: 0, key_type=3, macaddr=02:00:00:00:00:00, key_len=16
+[5154324.514556] 
+[5154324.514556] 
+[5154346.069259] wlan: [0:I:ANY] [UNSPECIFIED] vap-0(ath0): 
+[5154346.069259] 
+[5154346.069259] _wpaSetPtk: ******** set PTK status: 0, key_type=3, macaddr=02:00:00:00:00:13, key_len=16
+[5154346.069259] 
+[5154346.069259] 
+[5154394.172015] do_stat_set_ctl|944: can't find entry: 02:00:00:00:00:00
+[5155523.895679] wlan: [0:I:ANY] [UNSPECIFIED] vap-0(ath0): 
+[5155523.895679] 
+[5155523.895679] _wpaSetPtk: ******** set PTK status: 0, key_type=3, macaddr=02:00:00:00:00:00, key_len=16
+[5155523.895679] 
+[5155523.895679] 
+[5160507.236036] wlan: [0:I:ANY] [UNSPECIFIED] vap-0(ath0): 
+[5160507.236036] 
+[5160507.236036] _wpaSetPtk: ******** set PTK status: 0, key_type=3, macaddr=02:00:00:00:00:00, key_len=16
+[5160507.236036] 
+[5160507.236036] 
+[5160545.624126] wlan: [0:I:ANY] [UNSPECIFIED] vap-0(ath0): 
+[5160545.624126] 
+[5160545.624126] _wpaSetPtk: ******** set PTK status: 0, key_type=3, macaddr=02:00:00:00:00:09, key_len=16
+[5160545.624126] 
+[5160545.624126] 
+[5160545.878471] wlan: [0:I:ANY] [UNSPECIFIED] vap-0(ath0): 
+[5160545.878471] 
+[5160545.878471] _wpaSetPtk: ******** set PTK status: 0, key_type=3, macaddr=02:00:00:00:00:06, key_len=16
+[5160545.878471] 
+[5160545.878471] 
+[5160545.893026] wlan: [0:I:ANY] [UNSPECIFIED] vap-0(ath0): 
+[5160545.893026] 
+[5160545.893026] _wpaSetPtk: ******** set PTK status: 0, key_type=3, macaddr=02:00:00:00:00:08, key_len=16
+[5160545.893026] 
+[5160545.893026] 
+[5160547.081003] wlan: [0:I:ANY] [UNSPECIFIED] vap-0(ath0): 
+[5160547.081003] 
+[5160547.081003] _wpaSetPtk: ******** set PTK status: 0, key_type=3, macaddr=02:00:00:00:00:07, key_len=16
+[5160547.081003] 
+[5160547.081003] 
+[5160555.941072] wlan: [0:I:ANY] [UNSPECIFIED] vap-0(ath0): 
+[5160555.941072] 
+[5160555.941072] _wpaSetPtk: ******** set PTK status: 0, key_type=3, macaddr=02:00:00:00:00:05, key_len=16
+[5160555.941072] 
+[5160555.941072] 
+[5160578.300160] do_stat_set_ctl|944: can't find entry: 02:00:00:00:00:00
+[5162297.163538] do_stat_set_ctl|944: can't find entry: 02:00:00:00:00:07
+[5162323.546530] do_stat_set_ctl|944: can't find entry: 02:00:00:00:00:05
+[5162327.386021] do_stat_set_ctl|944: can't find entry: 02:00:00:00:00:06
+[5162327.397760] do_stat_set_ctl|944: can't find entry: 02:00:00:00:00:08
+[5162355.229380] do_stat_set_ctl|944: can't find entry: 02:00:00:00:00:09
+[5165324.093550] wlan: [0:I:ANY] [UNSPECIFIED] vap-0(ath0): 
+[5165324.093550] 
+[5165324.093550] _wpaSetPtk: ******** set PTK status: 0, key_type=3, macaddr=02:00:00:00:00:00, key_len=16
+[5165324.093550] 
+[5165324.093550] 
+[5165431.059425] do_stat_set_ctl|944: can't find entry: 02:00:00:00:00:00
+[5165576.624569] do_stat_set_ctl|944: can't find entry: 02:00:00:00:00:12
+[5166158.974504] do_stat_set_ctl|944: can't find entry: 02:00:00:00:00:12
+[5166247.109630] do_stat_set_ctl|944: can't find entry: 02:00:00:00:00:12
+[5167978.201457] wlan: [0:I:ANY] [UNSPECIFIED] vap-0(ath0): 
+[5167978.201457] 
+[5167978.201457] _wpaSetPtk: ******** set PTK status: 0, key_type=3, macaddr=02:00:00:00:00:00, key_len=16
+[5167978.201457] 
+[5167978.201457] 
+[5168046.657004] do_stat_set_ctl|944: can't find entry: 02:00:00:00:00:00
+[5170634.145058] wlan: [0:I:ANY] [UNSPECIFIED] vap-0(ath0): 
+[5170634.145058] 
+[5170634.145058] _wpaSetPtk: ******** set PTK status: 0, key_type=3, macaddr=02:00:00:00:00:00, key_len=16
+[5170634.145058] 
+[5170634.145058] 
+[5170703.679871] do_stat_set_ctl|944: can't find entry: 02:00:00:00:00:00
+[5174754.831079] wlan: [0:I:ANY] [UNSPECIFIED] vap-0(ath0): 
+[5174754.831079] 
+[5174754.831079] _wpaSetPtk: ******** set PTK status: 0, key_type=3, macaddr=02:00:00:00:00:00, key_len=16
+[5174754.831079] 
+[5174754.831079] 
+[5174844.653666] do_stat_set_ctl|944: can't find entry: 02:00:00:00:00:00
+[5175133.117509] do_stat_set_ctl|944: can't find entry: 02:00:00:00:00:13
+[5178389.997026] wlan: [1734:I:ANY] tp_cfg80211_get_cac_wait_time: target_chan=0, target_bw=160, cac time=0.
+[5178391.004415] wlan: [1652:I:ANY] [UNSPECIFIED] vap-0(ath1):02:00:00:00:00:20 WPA detach
+[5178391.004415] 
+[5178391.004526] wlan: [1652:I:CMN_MLME] PSOC_1 VDEV_0 Sending bcast deauth and DELETE_ALL_PEER, clients: 6
+[5178391.043961] device ath1 left promiscuous mode
+[5178391.044119] br-lan: port 8(ath1) entered disabled state
+[5178391.061453] wlan: [1652:I:ANY] [UNSPECIFIED] vap-0(ath1):02:00:00:00:00:20 WPA attach
+[5178391.061453] 
+[5178391.063831] device ath1 entered promiscuous mode
+[5178391.070571] br-lan: port 8(ath1) entered forwarding state
+[5178391.074886] br-lan: port 8(ath1) entered forwarding state
+[5178391.119525] do_stat_set_ctl|944: can't find entry: 02:00:00:00:00:21
+[5178391.254437] [WPS]Set role to REGISTRAR ifname=[ath1]
+[5178391.943735] wlan: [347:E:ANY] ol_ath_get_chan_grade_info: RF characterization entries is empty
+[5178391.944265] wlan: [0:D:dfs] WLAN_DEBUG_DFS_AGILE : dfs_agile_sm_print_state_event: [DFS_AGILE]INIT, EV_AGILE_STOP
+[5178391.977548] wlan: [0:D:dfs] WLAN_DEBUG_DFS_AGILE : dfs_agile_sm_print_state_event: [DFS_AGILE]INIT, EV_AGILE_START
+[5178391.977691] wlan: [0:D:dfs] WLAN_DEBUG_DFS_AGILE : dfs_agile_sm_print_state: ->[DFS_AGILE] RUNNING
+[5178391.987223] wlan: [0:I:ANY] mlme_vdev_start_continue_cb: phy changed, set ic_phy_changed=1
+[5178391.996853] wlan: [0:I:ANY] mlme_vdev_notify_up_complete_cb: clear ic_phy_changed=0, send phy change event
+[5178392.007328] [MESH]meshIoctlGetHandle: Unsuported MESH get command: 4046 
+[5178395.181446] wlan: [0:I:ANY] [UNSPECIFIED] vap-0(ath1): 
+[5178395.181446] 
+[5178395.181446] _wpaSetPtk: ******** set PTK status: 0, key_type=3, macaddr=02:00:00:00:00:1f, key_len=16
+[5178395.181446] 
+[5178395.181446] 
+[5178395.562912] wlan: [0:I:ANY] [UNSPECIFIED] vap-0(ath1): 
+[5178395.562912] 
+[5178395.562912] _wpaSetPtk: ******** set PTK status: 0, key_type=3, macaddr=02:00:00:00:00:11, key_len=16
+[5178395.562912] 
+[5178395.562912] 
+[5178396.409052] wlan: [0:I:ANY] [UNSPECIFIED] vap-0(ath1): 
+[5178396.409052] 
+[5178396.409052] _wpaSetPtk: ******** set PTK status: 0, key_type=3, macaddr=02:00:00:00:00:22, key_len=16
+[5178396.409052] 
+[5178396.409052] 
+[5178406.102489] br-lan: port 8(ath1) entered forwarding state
+[5178446.908144] wlan: [0:I:ANY] [UNSPECIFIED] vap-0(ath1): 
+[5178446.908144] 
+[5178446.908144] _wpaSetPtk: ******** set PTK status: 0, key_type=3, macaddr=02:00:00:00:00:16, key_len=16
+[5178446.908144] 
+[5178446.908144] 
+[5178451.989064] wlan: [0:D:dfs] WLAN_DEBUG_DFS_ALWAYS : dfs_process_ocac_complete: PreCAC timer Completed for agile freq: 5250 0
+[5178451.989103] wlan: [0:D:dfs] WLAN_DEBUG_DFS_AGILE : dfs_agile_sm_print_state_event: [DFS_AGILE]RUNNING, EV_AGILE_DONE
+[5178451.999797] wlan: [0:E:ANY] ieee80211_ucfg_set_chanswitch: Destination and current channels are the same. Exiting without error.
+[5178452.010060] wlan: [0:D:dfs] WLAN_DEBUG_DFS_AGILE : dfs_agile_sm_print_state: ->[DFS_AGILE] INIT
+[5180712.344281] wlan: [0:I:ANY] [UNSPECIFIED] vap-0(ath0): 
+[5180712.344281] 
+[5180712.344281] _wpaSetPtk: ******** set PTK status: 0, key_type=3, macaddr=02:00:00:00:00:00, key_len=16
+[5180712.344281] 
+[5180712.344281] 
+[5180723.600281] wlan: [0:I:ANY] [UNSPECIFIED] vap-0(ath0): 
+[5180723.600281] 
+[5180723.600281] _wpaSetPtk: ******** set PTK status: 0, key_type=3, macaddr=02:00:00:00:00:09, key_len=16
+[5180723.600281] 
+[5180723.600281] 
+[5180723.711822] wlan: [0:I:ANY] [UNSPECIFIED] vap-0(ath0): 
+[5180723.711822] 
+[5180723.711822] _wpaSetPtk: ******** set PTK status: 0, key_type=3, macaddr=02:00:00:00:00:06, key_len=16
+[5180723.711822] 
+[5180723.711822] 
+[5180723.721205] wlan: [0:I:ANY] [UNSPECIFIED] vap-0(ath0): 
+[5180723.721205] 
+[5180723.721205] _wpaSetPtk: ******** set PTK status: 0, key_type=3, macaddr=02:00:00:00:00:08, key_len=16
+[5180723.721205] 
+[5180723.721205] 
+[5180723.812009] wlan: [0:I:ANY] [UNSPECIFIED] vap-0(ath0): 
+[5180723.812009] 
+[5180723.812009] _wpaSetPtk: ******** set PTK status: 0, key_type=3, macaddr=02:00:00:00:00:07, key_len=16
+[5180723.812009] 
+[5180723.812009] 
+[5180727.308733] wlan: [0:I:ANY] [UNSPECIFIED] vap-0(ath0): 
+[5180727.308733] 
+[5180727.308733] _wpaSetPtk: ******** set PTK status: 0, key_type=3, macaddr=02:00:00:00:00:05, key_len=16
+[5180727.308733] 
+[5180727.308733] 
+[5180763.336190] wlan: [0:I:ANY] [UNSPECIFIED] vap-0(ath0): 
+[5180763.336190] 
+[5180763.336190] _wpaSetPtk: ******** set PTK status: 0, key_type=3, macaddr=02:00:00:00:00:01, key_len=16
+[5180763.336190] 
+[5180763.336190] 
+[5180837.359158] do_stat_set_ctl|944: can't find entry: 02:00:00:00:00:00

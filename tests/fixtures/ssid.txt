@@ -1,0 +1,4 @@
+ath0      IEEE 802.11ng  ESSID:"HomeWiFi"  
+ath1      IEEE 802.11axa  ESSID:"HomeWiFi_5G"  
+ath0    get_mode:11NGHT40PLUS
+ath1    get_mode:11AHE160

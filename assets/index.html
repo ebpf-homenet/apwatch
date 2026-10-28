@@ -1,0 +1,1163 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>AP 观测</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%232b6583'/%3E%3Cpath d='M8 14a11 11 0 0 1 16 0M11 17.5a6.5 6.5 0 0 1 10 0' stroke='%23fff' stroke-width='2.4' fill='none' stroke-linecap='round'/%3E%3Ccircle cx='16' cy='22' r='2.4' fill='%2336c4c6'/%3E%3C/svg%3E">
+<style>
+/*
+ * 设计语言参考 ros-dpi：淡灰紫底 + 白色大圆角卡片 + 左侧图标导航；品牌钢蓝，关键数字青绿。
+ * 序列色取 dataviz 参考调色板前三槽（蓝/橙/青），已用 validate_palette.js 在本页卡片底色上校验（两种主题全对通过）。
+ * 浅色下青色对比度 2.82:1，所以每张图都带图例和数据表视图。
+ */
+:root {
+  --paper: #eef0f6; --panel: #ffffff; --sunk: #f4f5f9;
+  --ink: #1f2933; --muted: #5f6b77; --faint: #8a949e;
+  --line: #e5e8f0; --line-strong: #cdd3de; --grid: #edf0f5;
+  --brand: #2b6583; --brand-ink: #2b6583; --brand-weak: #e8ebf8; --accent: #129ea2;
+  --s1: #2a78d6; --s2: #eb6834; --s3: #1baf7a;
+  --good: #0ca30c; --warn: #fab219; --serious: #ec835a; --bad: #d03b3b;
+  --good-ink: #08800a; --warn-ink: #9a6a00; --bad-ink: #b42f2f;
+  --r-sm: 8px; --r: 14px; --side: 208px; --top: 58px;
+  --sans: "Barlow", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Noto Sans CJK SC", system-ui, sans-serif;
+  --cond: "Barlow Semi Condensed", "Barlow", "PingFang SC", "Microsoft YaHei", system-ui, sans-serif;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --paper: #11161b; --panel: #1a2128; --sunk: #151b21;
+    --ink: #e4e9ee; --muted: #a0abb5; --faint: #77838e;
+    --line: #29323b; --line-strong: #3a4550; --grid: #232b33;
+    --brand-ink: #74b0d1; --brand-weak: #22303c; --accent: #36c4c6;
+    --s1: #3987e5; --s2: #d95926; --s3: #199e70;
+    --good-ink: #3fc65a; --warn-ink: #f2b84b; --bad-ink: #f07171;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --paper: #11161b; --panel: #1a2128; --sunk: #151b21;
+  --ink: #e4e9ee; --muted: #a0abb5; --faint: #77838e;
+  --line: #29323b; --line-strong: #3a4550; --grid: #232b33;
+  --brand-ink: #74b0d1; --brand-weak: #22303c; --accent: #36c4c6;
+  --s1: #3987e5; --s2: #d95926; --s3: #199e70;
+  --good-ink: #3fc65a; --warn-ink: #f2b84b; --bad-ink: #f07171;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; background: var(--paper); color: var(--ink); font: 14px/1.5 var(--sans); }
+button, input, select { font: inherit; color: inherit; }
+a { color: var(--brand-ink); text-decoration: none; }
+.num { font-family: var(--cond); font-variant-numeric: tabular-nums; }
+
+/* 框架 */
+.side { position: fixed; inset: 0 auto 0 0; width: var(--side); background: var(--panel); border-right: 1px solid var(--line); display: flex; flex-direction: column; z-index: 5; }
+.logo { height: var(--top); display: flex; align-items: center; gap: 10px; padding: 0 20px; font: 700 19px/1 var(--cond); letter-spacing: .5px; color: var(--brand-ink); font-style: italic; }
+.logo svg { width: 30px; height: 30px; flex: none; }
+.nav { padding: 10px 12px; display: flex; flex-direction: column; gap: 4px; }
+.nav a { display: flex; align-items: center; gap: 12px; padding: 10px 14px; border-radius: 10px; color: var(--ink); font-size: 15px; }
+.nav a svg { width: 18px; height: 18px; flex: none; stroke: currentColor; fill: none; stroke-width: 1.7; stroke-linecap: round; stroke-linejoin: round; color: var(--muted); }
+.nav a:hover { background: var(--sunk); }
+.nav a.on { background: var(--brand-weak); color: var(--brand-ink); font-weight: 600; }
+.nav a.on svg { color: var(--brand-ink); }
+.side-foot { margin-top: auto; padding: 14px 20px; font-size: 12px; color: var(--muted); display: flex; align-items: center; gap: 8px; border-top: 1px solid var(--line); }
+.dot { width: 8px; height: 8px; border-radius: 50%; background: var(--faint); flex: none; display: inline-block; }
+.dot.ok { background: var(--good); } .dot.bad { background: var(--bad); } .dot.warn { background: var(--warn); }
+.top { position: fixed; top: 0; left: var(--side); right: 0; height: var(--top); background: var(--panel); border-bottom: 1px solid var(--line); display: flex; align-items: center; gap: 16px; padding: 0 24px; z-index: 4; }
+.crumb { color: var(--muted); font-size: 14px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.crumb b { color: var(--ink); font-weight: 600; }
+.top .grow { flex: 1; }
+.seg { display: inline-flex; gap: 2px; background: var(--sunk); border-radius: 10px; padding: 3px; }
+.seg button { border: 0; background: transparent; padding: 4px 12px; border-radius: 8px; cursor: pointer; color: var(--muted); font-size: 13px; }
+.seg button.on { background: var(--panel); color: var(--brand-ink); font-weight: 600; box-shadow: 0 1px 2px rgba(0,0,0,.08); }
+.iconbtn { border: 0; background: transparent; width: 34px; height: 34px; border-radius: 8px; cursor: pointer; display: grid; place-items: center; color: var(--muted); }
+.iconbtn:hover { background: var(--sunk); color: var(--ink); }
+.iconbtn svg { width: 18px; height: 18px; stroke: currentColor; fill: none; stroke-width: 1.7; stroke-linecap: round; stroke-linejoin: round; }
+main { margin-left: var(--side); padding: calc(var(--top) + 18px) 18px 32px; min-height: 100vh; }
+.loading main > * { opacity: .55; transition: opacity .2s; }
+
+/* 卡片与网格 */
+.grid { display: grid; gap: 16px; margin-bottom: 16px; }
+.g4 { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+.g3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.g2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.g21 { grid-template-columns: minmax(0, 2fr) minmax(0, 1fr); }
+.card { background: var(--panel); border-radius: var(--r); padding: 16px 18px; min-width: 0; }
+.card.flat { background: var(--sunk); }
+.card-h { display: flex; align-items: baseline; gap: 4px 10px; margin-bottom: 12px; min-height: 24px; flex-wrap: wrap; }
+.card-h h3 { margin: 0; font-size: 16px; font-weight: 700; white-space: nowrap; }
+.card-h .sub { flex: 1 1 0; min-width: 0; }
+.card-h .sub { color: var(--muted); font-size: 12.5px; }
+.card-h .act { margin-left: auto; display: flex; gap: 6px; align-items: center; }
+.link-btn { border: 0; background: transparent; color: var(--brand-ink); cursor: pointer; font-size: 13px; padding: 2px 4px; }
+.link-btn:hover { text-decoration: underline; }
+.panel-title { background: var(--panel); border-radius: var(--r); padding: 14px 18px; margin-bottom: 16px; display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+.panel-title h2 { margin: 0; font-size: 18px; }
+.panel-title .sub { color: var(--muted); font-size: 13px; }
+.kv { display: grid; grid-template-columns: auto 1fr; gap: 6px 14px; font-size: 13.5px; }
+.kv dt { color: var(--muted); } .kv dd { margin: 0; text-align: right; font-weight: 500; }
+.big { font: 600 40px/1.1 var(--cond); color: var(--accent); }
+.big small { font-size: 20px; color: var(--muted); font-weight: 500; margin-left: 4px; }
+.mid { font: 600 26px/1.15 var(--cond); }
+.muted { color: var(--muted); } .faint { color: var(--faint); }
+.meter { height: 6px; background: var(--sunk); border-radius: 3px; overflow: hidden; }
+.meter > i { display: block; height: 100%; background: var(--accent); border-radius: 3px; }
+.row { display: flex; align-items: center; gap: 10px; }
+.row.sp { justify-content: space-between; }
+.stack-bar { display: flex; height: 10px; border-radius: 5px; overflow: hidden; background: var(--sunk); gap: 2px; }
+.stack-bar i { display: block; height: 100%; }
+.legend { display: flex; flex-wrap: wrap; gap: 4px 14px; font-size: 12.5px; color: var(--muted); margin-bottom: 6px; }
+.legend span { display: inline-flex; align-items: center; gap: 6px; }
+.key { width: 14px; height: 3px; border-radius: 2px; display: inline-block; }
+.key.box { height: 10px; width: 10px; border-radius: 3px; }
+.pill { display: inline-flex; align-items: center; gap: 5px; font-size: 12px; padding: 1px 8px; border-radius: 999px; background: var(--sunk); color: var(--muted); white-space: nowrap; }
+.pill.ok { color: var(--good-ink); } .pill.warn { color: var(--warn-ink); } .pill.bad { color: var(--bad-ink); }
+.pill .dot { width: 6px; height: 6px; }
+.band-tag { font: 600 11.5px/1 var(--cond); padding: 3px 6px; border-radius: 5px; border: 1px solid var(--line-strong); color: var(--muted); }
+.empty { color: var(--muted); text-align: center; padding: 26px 0; font-size: 13px; }
+.banner { background: var(--panel); border-left: 4px solid var(--bad); border-radius: var(--r-sm); padding: 10px 14px; margin-bottom: 16px; display: flex; gap: 10px; align-items: center; }
+
+/* 健康与事件列表 */
+.gauge { position: relative; width: 150px; height: 112px; margin: 0 auto; }
+.gauge svg { width: 150px; height: 112px; }
+.gauge .v { position: absolute; left: 0; right: 0; top: 46px; text-align: center; font: 600 36px/1 var(--cond); color: var(--accent); }
+.gauge .v small { font-size: 15px; color: var(--muted); }
+.find { display: flex; gap: 10px; padding: 10px 0; border-top: 1px solid var(--line); }
+.find:first-child { border-top: 0; padding-top: 0; }
+.find .ic { width: 20px; height: 20px; border-radius: 50%; flex: none; display: grid; place-items: center; font: 700 12px/1 var(--cond); color: #fff; margin-top: 1px; }
+.find .ic.warn { background: var(--warn); color: #3a2a00; } .find .ic.bad { background: var(--bad); } .find .ic.info { background: var(--brand); }
+.find b { font-weight: 600; } .find p { margin: 2px 0 0; color: var(--muted); font-size: 13px; }
+.ev { display: grid; grid-template-columns: 92px 22px minmax(0, 1fr); gap: 8px; padding: 7px 0; border-top: 1px solid var(--line); align-items: start; font-size: 13.5px; }
+.ev:first-child { border-top: 0; }
+.ev time { color: var(--muted); font-size: 12.5px; white-space: nowrap; }
+.ev .ek { width: 22px; height: 22px; border-radius: 7px; display: grid; place-items: center; background: var(--sunk); color: var(--muted); }
+.ev .ek svg { width: 14px; height: 14px; stroke: currentColor; fill: none; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+.ev .ek.bad { color: var(--bad-ink); } .ev .ek.warn { color: var(--warn-ink); } .ev .ek.ok { color: var(--good-ink); }
+.ev .who { font-weight: 600; }
+.day-h { font-size: 12.5px; color: var(--muted); font-weight: 600; padding: 14px 0 4px; border-bottom: 1px solid var(--line); }
+.chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.chip { border: 1px solid var(--line-strong); background: var(--panel); border-radius: 999px; padding: 3px 11px; font-size: 13px; cursor: pointer; color: var(--muted); }
+.chip.on { background: var(--brand-weak); color: var(--brand-ink); border-color: transparent; font-weight: 600; }
+.chip .n { font-family: var(--cond); margin-left: 4px; opacity: .8; }
+.search { border: 1px solid var(--line-strong); background: var(--panel); border-radius: 10px; padding: 6px 12px; min-width: 200px; }
+
+/* 表格 */
+.tbl-wrap { overflow-x: auto; }
+table.t { width: 100%; border-collapse: collapse; font-size: 13.5px; }
+table.t th { text-align: left; font-weight: 500; color: var(--muted); font-size: 12.5px; padding: 8px 10px; border-bottom: 1px solid var(--line); white-space: nowrap; cursor: default; user-select: none; }
+table.t th.s { cursor: pointer; } table.t th.s:hover { color: var(--ink); }
+table.t th .arr { font-size: 10px; margin-left: 3px; }
+table.t td { padding: 9px 10px; border-bottom: 1px solid var(--line); white-space: nowrap; vertical-align: middle; }
+table.t td.r, table.t th.r { text-align: right; }
+table.t tbody tr:hover td { background: var(--sunk); }
+table.t tr.click { cursor: pointer; }
+table.t tr.off td { color: var(--faint); }
+.dev b { font-weight: 600; display: block; } .dev span { font-size: 12px; color: var(--muted); font-family: var(--cond); }
+.sig { display: inline-flex; align-items: center; gap: 8px; }
+.bars { display: inline-flex; gap: 2px; align-items: flex-end; height: 14px; }
+.bars i { width: 4px; border-radius: 1px; background: var(--line-strong); display: block; }
+.bars.q4 i.f, .bars.q3 i.f { background: var(--good); } .bars.q2 i.f { background: var(--accent); } .bars.q1 i.f { background: var(--warn); } .bars.q0 i.f { background: var(--bad); }
+.tbl-data { max-height: 280px; overflow: auto; margin-top: 8px; border-top: 1px solid var(--line); }
+.tbl-data table.t td, .tbl-data table.t th { padding: 4px 8px; font-size: 12.5px; }
+
+/* 图表 */
+.chart { position: relative; width: 100%; }
+.chart svg { display: block; width: 100%; overflow: visible; }
+.chart .ax { fill: var(--faint); font: 11px var(--cond); }
+.chart .gl { stroke: var(--grid); stroke-width: 1; shape-rendering: crispEdges; }
+.chart .base { stroke: var(--line-strong); stroke-width: 1; shape-rendering: crispEdges; }
+.chart .xh { stroke: var(--muted); stroke-width: 1; opacity: .5; }
+.tip { position: fixed; pointer-events: none; z-index: 50; background: var(--panel); border: 1px solid var(--line); box-shadow: 0 6px 20px rgba(0,0,0,.14); border-radius: 10px; padding: 8px 10px; font-size: 12.5px; min-width: 140px; display: none; }
+.tip .tt { color: var(--muted); margin-bottom: 4px; font-size: 12px; }
+.tip .tr { display: flex; align-items: center; gap: 8px; line-height: 1.7; }
+.tip .tr b { font-family: var(--cond); font-size: 14px; font-weight: 600; min-width: 54px; }
+.tip .tr span { color: var(--muted); }
+.hbar { display: grid; grid-template-columns: 150px minmax(0, 1fr) 70px; gap: 8px; align-items: center; font-size: 12.5px; padding: 2px 0; }
+.hbar .tr { height: 12px; background: var(--sunk); border-radius: 0 4px 4px 0; }
+.hbar .tr i { display: block; height: 100%; border-radius: 0 4px 4px 0; }
+.hbar .v { text-align: right; font-family: var(--cond); color: var(--muted); }
+.note { color: var(--muted); font-size: 12.5px; margin-top: 8px; }
+.btn { border: 1px solid var(--line-strong); background: var(--panel); border-radius: 9px; padding: 6px 14px; cursor: pointer; }
+.btn:hover { border-color: var(--brand-ink); color: var(--brand-ink); }
+.btn.pri { background: var(--brand); color: #fff; border-color: var(--brand); }
+code { font-family: ui-monospace, Menlo, Consolas, monospace; font-size: 12px; background: var(--sunk); padding: 1px 5px; border-radius: 5px; }
+
+.modal { position: fixed; inset: 0; background: rgba(0,0,0,.38); display: grid; place-items: center; z-index: 60; padding: 16px; }
+.modal .box { background: var(--panel); border-radius: var(--r); padding: 20px 22px; width: min(400px, 100%); box-shadow: 0 12px 40px rgba(0,0,0,.25); }
+.modal h3 { margin: 0 0 6px; font-size: 17px; }
+.field { display: grid; gap: 4px; margin-bottom: 12px; min-width: 0; }
+.field label { color: var(--muted); font-size: 12.5px; }
+.field .hint { color: var(--faint); font-size: 12px; }
+.inp { border: 1px solid var(--line-strong); background: var(--panel); border-radius: 9px; padding: 7px 10px; width: 100%; min-width: 0; }
+.inp:focus { outline: 2px solid var(--focus, var(--brand)); outline-offset: -1px; }
+.form-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 0 18px; }
+.form-sec { font-weight: 600; margin: 4px 0 10px; color: var(--ink); grid-column: 1 / -1; }
+.confirm { background: var(--sunk); border-radius: 10px; padding: 12px 14px; margin-top: 12px; }
+.confirm p { margin: 0 0 10px; font-size: 13.5px; }
+.btn.danger { background: var(--bad); color: #fff; border-color: var(--bad); }
+.btn:disabled { opacity: .55; cursor: default; }
+.btn-row { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+table.t .sm { display: none; margin-top: 4px; }
+#dv-b td.dev { white-space: normal; }
+.tag { font-size: 11.5px; padding: 1px 6px; border-radius: 5px; background: var(--brand-weak); color: var(--brand-ink); font-weight: 500; }
+.msg { font-size: 13px; margin-top: 8px; } .msg.ok { color: var(--good-ink); } .msg.bad { color: var(--bad-ink); }
+.sw-card .big { font-size: 30px; }
+.list-row { display: flex; align-items: center; gap: 10px; padding: 9px 0; border-top: 1px solid var(--line); }
+.list-row:first-child { border-top: 0; }
+.list-row .grow { flex: 1; min-width: 0; }
+@media (max-width: 1180px) { .g4 { grid-template-columns: repeat(2, minmax(0, 1fr)); } .g3 { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 860px) {
+  :root { --side: 0px; }
+  .side { position: fixed; inset: auto 0 0 0; width: auto; height: 60px; flex-direction: row; border-right: 0; border-top: 1px solid var(--line); }
+  .logo, .side-foot { display: none; }
+  .nav { flex-direction: row; flex: 1; padding: 6px; gap: 2px; justify-content: space-around; }
+  .nav a { flex-direction: column; gap: 2px; padding: 6px 4px; font-size: 11px; flex: 1; text-align: center; }
+  .top { left: 0; padding: 0 16px; gap: 8px; }
+  .top .crumb { display: none; }
+  main { padding: calc(var(--top) + 12px) 16px 84px; }
+  .g4, .g3, .g2, .g21, .form-grid { grid-template-columns: minmax(0, 1fr); }
+  .seg button { padding: 4px 8px; }
+  .hbar { grid-template-columns: 110px minmax(0, 1fr) 54px; }
+  table.t .hm, .sig svg, .sig .pill { display: none; }
+  table.t .sm { display: block; }
+  table.t td, table.t th { padding: 8px 6px; }
+}
+</style>
+</head>
+<body>
+<aside class="side">
+  <div class="logo"><svg viewBox="0 0 32 32"><rect width="32" height="32" rx="8" fill="#2b6583"/><path d="M8 14a11 11 0 0 1 16 0M11 17.5a6.5 6.5 0 0 1 10 0" stroke="#fff" stroke-width="2.4" fill="none" stroke-linecap="round"/><circle cx="16" cy="22" r="2.4" fill="#36c4c6"/></svg>APWATCH</div>
+  <nav class="nav" id="nav"></nav>
+  <div class="side-foot"><span class="dot" id="conn-dot"></span><span id="conn-txt">连接中…</span></div>
+</aside>
+<header class="top">
+  <div class="crumb" id="crumb"></div>
+  <div class="grow"></div>
+  <div class="seg" id="range"></div>
+  <button class="iconbtn" id="theme" title="切换主题" aria-label="切换主题"></button>
+</header>
+<main id="view"></main>
+<div class="tip" id="tip"></div>
+
+<script>
+"use strict";
+// ---------- 工具 ----------
+const $ = (s, el = document) => el.querySelector(s);
+const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+const store = {
+  get(k, d) { try { const v = localStorage.getItem("apw." + k); return v == null ? d : v; } catch { return d; } },
+  set(k, v) { try { localStorage.setItem("apw." + k, v); } catch {} },
+};
+async function api(path) {
+  const ctl = new AbortController();
+  const timer = setTimeout(() => ctl.abort(), 50000);
+  try {
+    const r = await fetch(path, { signal: ctl.signal });
+    if (!r.ok) throw new Error((await r.text()) || r.status);
+    return await r.json();
+  } finally { clearTimeout(timer); }
+}
+// 改动类请求：带防跨站头；未登录时弹出密码框，登录后重试一次
+async function apiPost(path, body) {
+  const send = async () => {
+    const r = await fetch(path, { method: "POST", headers: { "Content-Type": "application/json", "X-Apw": "1" }, body: JSON.stringify(body || {}) });
+    return { r, j: await r.json().catch(() => ({})) };
+  };
+  let { r, j } = await send();
+  if (r.status === 401 && path !== "/api/login") {
+    if (!(await loginDialog())) throw new Error("未登录");
+    ({ r, j } = await send());
+  }
+  if (!r.ok) throw new Error(j.error || `HTTP ${r.status}`);
+  return j;
+}
+async function apiAuthGet(path) {
+  const r = await fetch(path);
+  const j = await r.json().catch(() => ({}));
+  if (r.status === 401) { const e = new Error(j.error || "未登录"); e.unauth = true; throw e; }
+  if (!r.ok) throw new Error(j.error || `HTTP ${r.status}`);
+  return j;
+}
+function loginDialog() {
+  return new Promise(resolve => {
+    const m = document.createElement("div");
+    m.className = "modal";
+    m.innerHTML = `<form class="box"><h3>登录管理</h3><p class="muted" style="margin:0 0 14px;font-size:13px">输入 AP 管理员密码（和官方管理页面同一个），12 小时内不用再输。</p>
+      <div class="field"><input class="inp" type="password" autocomplete="current-password" placeholder="AP 管理员密码" required></div>
+      <div class="msg bad" style="margin:-4px 0 10px"></div>
+      <div class="btn-row" style="justify-content:flex-end"><button type="button" class="btn cancel">取消</button><button class="btn pri">登录</button></div></form>`;
+    document.body.appendChild(m);
+    const f = m.querySelector("form"), inp = m.querySelector("input"), msg = m.querySelector(".msg");
+    const done = ok => { m.remove(); resolve(ok); };
+    m.querySelector(".cancel").onclick = () => done(false);
+    m.addEventListener("keydown", e => { if (e.key === "Escape") done(false); });
+    f.onsubmit = async e => {
+      e.preventDefault();
+      msg.textContent = "";
+      try { await apiPost("/api/login", { password: inp.value }); done(true); }
+      catch (err) { msg.textContent = err.message; inp.select(); }
+    };
+    inp.focus();
+  });
+}
+const RESTORE_OPTS = [[0, "不自动恢复"], [10, "10 分钟后"], [30, "30 分钟后"], [60, "1 小时后"], [120, "2 小时后"], [480, "8 小时后"], [1440, "24 小时后"]];
+const restoreSelect = (def) => `<select class="inp rs" style="width:auto">${RESTORE_OPTS.map(([v, n]) => `<option value="${v}" ${v === def ? "selected" : ""}>${n}${v ? "自动恢复" : ""}</option>`).join("")}</select>`;
+// 禁用一台设备的确认面板；container 是放面板的元素
+function blockConfirm(container, dev, onDone) {
+  const name = dev.name || dev.ip || dev.mac;
+  container.innerHTML = `<div class="confirm"><p><b>禁用 ${esc(name)}</b>：${dev.online === false ? "它现在不在线，禁用后再来连也连不上" : "它会马上从 WiFi 断开"}，两个频段都连不上，局域网也用不了；插网线的设备不受影响。${dev.random_mac ? "<br>这台设备用的是<b>随机 MAC</b>，它换地址后可能重新连上，要彻底禁用得在设备上关掉“私有地址”。" : ""}</p>
+    <div class="btn-row">${restoreSelect(0)}<button class="btn danger go">确认禁用</button><button class="btn no">取消</button></div><div class="msg"></div></div>`;
+  const msg = container.querySelector(".msg"), go = container.querySelector(".go");
+  container.querySelector(".no").onclick = () => { container.innerHTML = ""; };
+  go.onclick = async () => {
+    go.disabled = true; go.textContent = "执行中…"; msg.className = "msg"; msg.textContent = "";
+    try {
+      const r = await apiPost("/api/ctl/block", { mac: dev.mac, block: true, restore_mins: +container.querySelector(".rs").value });
+      container.innerHTML = `<div class="msg ok">已禁用 ${esc(name)}</div>`;
+      onDone && onDone(r);
+    } catch (e) { msg.className = "msg bad"; msg.textContent = "失败：" + e.message; go.disabled = false; go.textContent = "确认禁用"; }
+  };
+}
+const normMac = v => { const m = v.trim().toLowerCase().replace(/-/g, ":"); return /^([0-9a-f]{2}:){5}[0-9a-f]{2}$/.test(m) ? m : null; };
+// 备注编辑面板；dev = {mac, alias, hostname}，mac 为空时先填 MAC（登记还没连过的设备）
+function aliasEditor(box, dev, onDone) {
+  const def = dev.hostname ? `默认名：${dev.hostname}（设备通过 DHCP 广播的主机名）` : dev.mac ? "设备没有广播主机名，默认显示 IP 或 MAC" : "可以先登记还没连过的设备，连上后自动对上";
+  box.innerHTML = `<div class="card" style="margin-bottom:16px"><div class="row" style="gap:16px;flex-wrap:wrap;align-items:flex-start">
+    ${dev.mac ? "" : '<div class="field" style="width:220px"><label>MAC 地址</label><input class="inp mc" placeholder="aa:bb:cc:dd:ee:ff"></div>'}
+    <div class="field" style="flex:1;min-width:220px;max-width:420px"><label>备注${dev.mac ? `<span class="muted" style="font-weight:400"> · ${esc(dev.mac)}</span>` : ""}</label><input class="inp nm" maxlength="40" value="${esc(dev.alias || "")}" placeholder="${esc(dev.hostname || "")}"><span class="hint">${esc(def)}。${dev.mac ? "留空保存即恢复默认。" : ""}</span></div></div>
+    <div class="btn-row"><button class="btn pri sv">保存</button><button class="btn no">取消</button></div><div class="msg"></div></div>`;
+  const nm = box.querySelector(".nm"), msg = box.querySelector(".msg");
+  (box.querySelector(".mc") || nm).focus();
+  box.querySelector(".no").onclick = () => { box.innerHTML = ""; };
+  box.querySelector(".sv").onclick = async () => {
+    const mac = dev.mac || normMac(box.querySelector(".mc").value);
+    if (!mac) { msg.className = "msg bad"; msg.textContent = "MAC 格式不对"; return; }
+    if (!dev.mac && !nm.value.trim()) { msg.className = "msg bad"; msg.textContent = "登记新设备要填备注"; return; }
+    try { await apiPost("/api/alias", { mac, name: nm.value.trim() || null }); box.innerHTML = ""; onDone && onDone(); }
+    catch (e) { msg.className = "msg bad"; msg.textContent = "保存失败：" + e.message; }
+  };
+}
+const ICON = {
+  overview: '<rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/>',
+  clients: '<rect x="6" y="2.5" width="12" height="19" rx="2.5"/><path d="M10.5 18.5h3"/>',
+  devices: '<rect x="3.5" y="4" width="17" height="16" rx="2.5"/><circle cx="9" cy="10.5" r="2.2"/><path d="M5.8 16.5a3.4 3.4 0 0 1 6.4 0M14.5 9.5h3.5M14.5 13h3.5"/>',
+  radio: '<path d="M5 12.5a10 10 0 0 1 14 0M8 15.5a5.6 5.6 0 0 1 8 0"/><circle cx="12" cy="19" r="1.2"/><path d="M2 9a14.5 14.5 0 0 1 20 0"/>',
+  events: '<path d="M4 5h16M4 12h16M4 19h10"/><circle cx="19" cy="19" r="1.5"/>',
+  settings: '<circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/>',
+  manage: '<rect x="2.5" y="6" width="19" height="12" rx="6"/><circle cx="16" cy="12" r="3.2"/>',
+  sun: '<circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/>',
+  moon: '<path d="M20 14.5A8 8 0 1 1 9.5 4a6.5 6.5 0 0 0 10.5 10.5z"/>',
+  auto: '<circle cx="12" cy="12" r="8.5"/><path d="M12 3.5v17a8.5 8.5 0 0 0 0-17z" fill="currentColor"/>',
+  on: '<path d="M5 12l4.5 4.5L19 7"/>', off: '<path d="M6 6l12 12M18 6L6 18"/>', radar: '<circle cx="12" cy="12" r="8"/><path d="M12 12l5-5M12 4v2"/>',
+  wave: '<path d="M3 12h3l3-7 4 14 3-7h5"/>', power: '<path d="M12 3v8M6.3 7a8 8 0 1 0 11.4 0"/>', link: '<path d="M9 15l6-6M10 6l1.5-1.5a4 4 0 0 1 5.7 5.7L15.5 12M14 18l-1.5 1.5a4 4 0 0 1-5.7-5.7L8.5 12"/>',
+  swap: '<path d="M4 8h14l-3-3M20 16H6l3 3"/>', key: '<circle cx="8" cy="15" r="4"/><path d="M11 12l8-8M16 7l2 2"/>', temp: '<path d="M10 14V5a2 2 0 0 1 4 0v9a4 4 0 1 1-4 0z"/>',
+  gap: '<path d="M4 12h5M15 12h5M10 8l4 8"/>',
+};
+const svgIcon = (k, cls = "") => `<svg viewBox="0 0 24 24" class="${cls}">${ICON[k] || ""}</svg>`;
+
+const pad = n => String(n).padStart(2, "0");
+function fmtClock(t, withDate) {
+  const d = new Date(t * 1000);
+  const hm = `${pad(d.getHours())}:${pad(d.getMinutes())}`;
+  return withDate ? `${d.getMonth() + 1}/${d.getDate()} ${hm}` : hm;
+}
+function fmtFull(t) { const d = new Date(t * 1000); return `${d.getMonth() + 1}月${d.getDate()}日 ${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}`; }
+function fmtDur(s) {
+  s = Math.max(0, Math.round(s || 0));
+  if (s >= 86400) return `${Math.floor(s / 86400)}天${Math.floor(s % 86400 / 3600)}小时`;
+  if (s >= 3600) return `${Math.floor(s / 3600)}小时${Math.floor(s % 3600 / 60)}分`;
+  if (s >= 60) return `${Math.floor(s / 60)}分${s % 60}秒`;
+  return `${s}秒`;
+}
+function fmtAgo(t) { const s = Date.now() / 1000 - t; return s < 60 ? "刚刚" : fmtDur(s) + "前"; }
+const fmtNum = (v, d = 0) => v == null || !isFinite(v) ? "—" : Number(v).toFixed(d);
+function fmtMbps(v) { if (v == null || !isFinite(v)) return "—"; return v >= 1000 ? (v / 1000).toFixed(2) + " Gbps" : v >= 10 ? v.toFixed(0) + " Mbps" : v.toFixed(v >= 1 ? 1 : 2) + " Mbps"; }
+const bandName = b => b === 0 ? "2.4G" : b === 1 ? "5G" : "—";
+function modeInfo(m) {
+  m = m || "";
+  // 射频给 11AHE160 / 11NGHT40PLUS，终端给 11AXA_HE160 / 11AC_VHT80 / 11NG_HT20：按 HE/VHT/HT 判断代际
+  const gen = /HE/.test(m) ? "Wi-Fi 6" : /VHT/.test(m) ? "Wi-Fi 5" : /HT/.test(m) ? "Wi-Fi 4" : m ? "旧协议" : "—";
+  const w = (m.match(/(?:HE|VHT|HT)(\d+)/) || [])[1];
+  return { gen, width: w ? w + "MHz" : "" };
+}
+// 信号分档：用于显示，不改变数据
+function sigQ(rssi) {
+  if (rssi == null) return { q: -1, label: "—", cls: "" };
+  if (rssi >= -55) return { q: 4, label: "极好", cls: "ok" };
+  if (rssi >= -65) return { q: 3, label: "良好", cls: "ok" };
+  if (rssi >= -72) return { q: 2, label: "一般", cls: "" };
+  if (rssi >= -80) return { q: 1, label: "偏弱", cls: "warn" };
+  return { q: 0, label: "很差", cls: "bad" };
+}
+function sigBars(rssi) {
+  const q = sigQ(rssi).q;
+  return `<span class="bars q${q}">${[5, 8, 11, 14].map((h, i) => `<i style="height:${h}px" class="${i < q ? "f" : ""}"></i>`).join("")}</span>`;
+}
+const css = v => getComputedStyle(document.documentElement).getPropertyValue(v).trim();
+
+// ---------- 状态 ----------
+const RANGES = [["1h", "1小时"], ["6h", "6小时"], ["24h", "24小时"], ["7d", "7天"], ["30d", "30天"]];
+let range = store.get("range", "24h");
+if (!RANGES.some(r => r[0] === range)) range = "24h";
+const NAV = [["overview", "概览"], ["clients", "终端"], ["devices", "设备"], ["radio", "射频"], ["events", "事件"], ["manage", "管理"], ["settings", "设置"]];
+
+// ---------- 主题 ----------
+const THEMES = ["auto", "light", "dark"];
+let theme = store.get("theme", "auto");
+function applyTheme() {
+  if (theme === "auto") document.documentElement.removeAttribute("data-theme");
+  else document.documentElement.setAttribute("data-theme", theme);
+  const b = $("#theme");
+  b.innerHTML = svgIcon(theme === "auto" ? "auto" : theme === "light" ? "sun" : "moon");
+  b.title = { auto: "主题：跟随系统", light: "主题：浅色", dark: "主题：深色" }[theme];
+}
+$("#theme").onclick = () => { theme = THEMES[(THEMES.indexOf(theme) + 1) % 3]; store.set("theme", theme); applyTheme(); redrawCharts(); };
+matchMedia("(prefers-color-scheme: dark)").addEventListener?.("change", () => redrawCharts());
+
+// ---------- 图表 ----------
+const charts = new Set();
+function redrawCharts() { for (const c of charts) if (c.el.isConnected) c.draw(); else charts.delete(c); }
+let resizeTimer;
+addEventListener("resize", () => { clearTimeout(resizeTimer); resizeTimer = setTimeout(redrawCharts, 120); });
+
+function niceTicks(min, max, n = 4) {
+  if (!(max > min)) { max = min + 1; }
+  const span = max - min, step0 = span / n, mag = Math.pow(10, Math.floor(Math.log10(step0)));
+  const step = [1, 2, 5, 10].map(m => m * mag).find(s => span / s <= n) || 10 * mag;
+  const lo = Math.floor(min / step) * step, hi = Math.ceil(max / step) * step, out = [];
+  for (let v = lo; v <= hi + step / 2; v += step) out.push(+v.toFixed(6));
+  return out;
+}
+const tip = $("#tip");
+function showTip(x, y, html) {
+  tip.innerHTML = html; tip.style.display = "block";
+  const w = tip.offsetWidth, h = tip.offsetHeight;
+  let left = x + 14, top = y - h / 2;
+  if (left + w > innerWidth - 8) left = x - w - 14;
+  top = Math.max(8, Math.min(innerHeight - h - 8, top));
+  tip.style.left = left + "px"; tip.style.top = top + "px";
+}
+const hideTip = () => { tip.style.display = "none"; };
+
+/**
+ * 时间折线 / 堆叠面积。opts:
+ *   t: [秒]，series: [{name, color: "--s1", values, fmt?}]，stacked, area, step, height,
+ *   yMin, yMax, fmt(v) 轴与提示格式，bands: [{from, to, color}] 背景分区
+ */
+function chart(el, opts) {
+  const c = { el, opts, draw };
+  charts.add(c);
+  function draw() {
+    const o = c.opts, H = o.height || 190;
+    const W = Math.max(260, el.clientWidth || 600);
+    const t = o.t || [], S = o.series || [];
+    if (!t.length || !S.some(s => s.values.some(v => v != null))) {
+      el.innerHTML = `<div class="empty" style="height:${H}px;display:grid;place-items:center">${esc(o.empty || "暂无数据（采集刚开始时需要两个采样点）")}</div>`;
+      return;
+    }
+    // 堆叠时求累计
+    const vals = S.map(s => s.values.map(v => v == null || !isFinite(v) ? null : +v));
+    const top = vals.map(a => a.slice());
+    if (o.stacked) for (let i = 0; i < t.length; i++) { let acc = 0, any = false; for (let k = 0; k < S.length; k++) { const v = vals[k][i]; if (v != null) { acc += v; any = true; } top[k][i] = any ? acc : null; } }
+    let lo = o.yMin, hi = o.yMax;
+    const all = top.flat().filter(v => v != null);
+    if (lo == null) lo = Math.min(0, ...all);
+    if (hi == null) hi = Math.max(...all, lo + (o.minSpan || 1));
+    const ticks = niceTicks(lo, hi, o.ticks || 4);
+    const tstep = ticks.length > 1 ? ticks[1] - ticks[0] : 1;
+    const dec = Math.max(0, Math.ceil(-Math.log10(tstep) - 1e-9));
+    if (o.yMin == null) lo = ticks[0];
+    if (o.yMax == null) hi = ticks[ticks.length - 1];
+    // 轴标签小数位由刻度步长决定，避免 0.25 显示成 0.3、相邻刻度同名
+    const fmt = o.fmt || (v => v.toFixed(dec) + (o.unit || ""));
+    const tfmt = o.tipFmt || (v => v.toFixed(Math.max(dec, 1)) + (o.unit || ""));
+    const L = Math.max(34, 8 + 7 * Math.max(...ticks.map(v => fmt(v).length))), R = 10, T = 8, B = 22;
+    const iw = W - L - R, ih = H - T - B;
+    const t0 = o.from ?? t[0], t1 = o.to ?? t[t.length - 1];
+    const X = v => L + (t1 > t0 ? (v - t0) / (t1 - t0) : 0.5) * iw;
+    const Y = v => T + ih - (v - lo) / (hi - lo || 1) * ih;
+    const span = t1 - t0, withDate = span > 36 * 3600;
+    let g = "";
+    for (const b of o.bands || []) {
+      const y1 = Y(Math.min(hi, b.to)), y2 = Y(Math.max(lo, b.from));
+      if (y2 > y1) g += `<rect x="${L}" y="${y1}" width="${iw}" height="${y2 - y1}" fill="${b.color}" opacity=".07"/>`;
+    }
+    for (const v of ticks) g += `<line class="gl" x1="${L}" x2="${W - R}" y1="${Y(v)}" y2="${Y(v)}"/><text class="ax" x="${L - 6}" y="${Y(v) + 4}" text-anchor="end">${esc(fmt(v))}</text>`;
+    g += `<line class="base" x1="${L}" x2="${W - R}" y1="${T + ih}" y2="${T + ih}"/>`;
+    const nx = Math.max(2, Math.min(7, Math.floor(iw / 90)));
+    for (let i = 0; i <= nx; i++) {
+      const tv = t0 + (t1 - t0) * i / nx;
+      g += `<text class="ax" x="${X(tv)}" y="${H - 5}" text-anchor="${i === 0 ? "start" : i === nx ? "end" : "middle"}">${fmtClock(tv, withDate)}</text>`;
+    }
+    // 采样间隔的 3 倍以上视为缺口，不连线
+    const gaps = []; for (let i = 1; i < t.length; i++) gaps.push(t[i] - t[i - 1]);
+    const med = gaps.length ? gaps.slice().sort((a, b) => a - b)[gaps.length >> 1] : 30;
+    const brk = i => i > 0 && t[i] - t[i - 1] > med * 3.5;
+    const pathOf = (arr, step) => {
+      let d = "", pen = false, py = 0;
+      for (let i = 0; i < t.length; i++) {
+        const v = arr[i];
+        if (v == null || brk(i)) { pen = false; if (v == null) continue; }
+        const x = X(t[i]).toFixed(1), y = Y(v).toFixed(1);
+        if (!pen) { d += `M${x},${y}`; pen = true; }
+        else d += step ? `H${x}V${y}` : `L${x},${y}`;
+        py = y;
+      }
+      return d;
+    };
+    const areaOf = (upper, lower) => {
+      let d = "", seg = [];
+      const flush = () => {
+        if (seg.length) {
+          d += "M" + seg.map(i => `${X(t[i]).toFixed(1)},${Y(upper[i]).toFixed(1)}`).join("L");
+          d += "L" + seg.slice().reverse().map(i => `${X(t[i]).toFixed(1)},${Y(lower ? (lower[i] ?? lo) : Math.max(lo, 0)).toFixed(1)}`).join("L") + "Z";
+        }
+        seg = [];
+      };
+      for (let i = 0; i < t.length; i++) { if (upper[i] == null || brk(i)) flush(); if (upper[i] != null) seg.push(i); }
+      flush();
+      return d;
+    };
+    for (let k = 0; k < S.length; k++) {
+      const col = `var(${S[k].color})`;
+      if (o.stacked) g += `<path d="${areaOf(top[k], k ? top[k - 1] : null)}" fill="${col}" opacity=".85"/>`;
+      else if (o.area) g += `<path d="${areaOf(top[k], null)}" fill="${col}" opacity=".1"/>`;
+      if (!o.stacked) g += `<path d="${pathOf(top[k], o.step)}" fill="none" stroke="${col}" stroke-width="2" stroke-linejoin="round" stroke-linecap="round" ${S[k].dash ? 'stroke-dasharray="4 4"' : ""}/>`;
+      // 末端圆点：数据少、时间跨度大时线段很短，靠它看得见当前值
+      let li = top[k].length - 1; while (li >= 0 && top[k][li] == null) li--;
+      if (li >= 0 && !S[k].dash) g += `<circle cx="${X(t[li]).toFixed(1)}" cy="${Y(top[k][li]).toFixed(1)}" r="4" fill="${col}" stroke="var(--panel)" stroke-width="2"/>`;
+    }
+    const legend = S.length > 1 ? `<div class="legend">${S.map(s => `<span><i class="key${o.stacked ? " box" : ""}" style="background:var(${s.color})"></i>${esc(s.name)}</span>`).join("")}</div>` : "";
+    el.innerHTML = `${legend}<svg viewBox="0 0 ${W} ${H}" height="${H}" role="img" aria-label="${esc(o.title || "")}">${g}<line class="xh" y1="${T}" y2="${T + ih}" style="display:none"/><g class="hd"></g><rect x="${L}" y="${T}" width="${iw}" height="${ih}" fill="transparent" class="hit"/></svg>`;
+    const svg = el.querySelector("svg"), xh = svg.querySelector(".xh"), hd = svg.querySelector(".hd"), hit = svg.querySelector(".hit");
+    const pick = ev => {
+      const r = svg.getBoundingClientRect();
+      const x = (ev.clientX - r.left) * W / r.width;
+      const tv = t0 + (x - L) / iw * (t1 - t0);
+      let bi = 0, bd = Infinity;
+      for (let i = 0; i < t.length; i++) { const d = Math.abs(t[i] - tv); if (d < bd) { bd = d; bi = i; } }
+      return bi;
+    };
+    hit.addEventListener("pointermove", ev => {
+      const i = pick(ev), x = X(t[i]);
+      xh.setAttribute("x1", x); xh.setAttribute("x2", x); xh.style.display = "";
+      hd.innerHTML = S.map((s, k) => top[k][i] == null ? "" : `<circle cx="${x}" cy="${Y(top[k][i])}" r="4" fill="var(${s.color})" stroke="var(--panel)" stroke-width="2"/>`).join("");
+      const rows = S.map((s, k) => `<div class="tr"><i class="key" style="background:var(${s.color})"></i><b>${esc(vals[k][i] == null ? "—" : (s.fmt || tfmt)(vals[k][i]))}</b><span>${esc(s.name)}</span></div>`).join("");
+      showTip(ev.clientX, ev.clientY, `<div class="tt">${fmtFull(t[i])}</div>${rows}`);
+    });
+    hit.addEventListener("pointerleave", () => { xh.style.display = "none"; hd.innerHTML = ""; hideTip(); });
+  }
+  draw();
+  return c;
+}
+// 数据表视图（每张图都可切换）
+function dataTable(o) {
+  const S = o.series, f = o.tipFmt || (v => fmtNum(v, 1) + (o.unit || ""));
+  const rows = o.t.map((tv, i) => `<tr><td>${fmtFull(tv)}</td>${S.map(s => `<td class="r num">${esc(s.values[i] == null ? "—" : (s.fmt || f)(s.values[i]))}</td>`).join("")}</tr>`).reverse().join("");
+  return `<div class="tbl-data"><table class="t"><thead><tr><th>时间</th>${S.map(s => `<th class="r">${esc(s.name)}</th>`).join("")}</tr></thead><tbody>${rows}</tbody></table></div>`;
+}
+// 一张带标题的图卡片：返回 set(opts) 用于刷新
+function chartCard(parent, title, sub) {
+  const card = document.createElement("div");
+  card.className = "card";
+  card.innerHTML = `<div class="card-h"><h3>${esc(title)}</h3><span class="sub">${esc(sub || "")}</span><div class="act"><button class="link-btn tb">数据表</button></div></div><div class="chart"></div><div class="tw"></div>`;
+  parent.appendChild(card);
+  const el = card.querySelector(".chart"), tw = card.querySelector(".tw");
+  let c = null, showT = false, last = null;
+  card.querySelector(".tb").onclick = e => { showT = !showT; e.target.textContent = showT ? "收起表" : "数据表"; tw.innerHTML = showT && last ? dataTable(last) : ""; };
+  return {
+    card,
+    set(o) {
+      last = o;
+      if (c) { c.opts = o; c.draw(); } else c = chart(el, o);
+      if (showT) tw.innerHTML = dataTable(o);
+    },
+    sub(s) { card.querySelector(".sub").textContent = s; },
+  };
+}
+function hbars(items, color, total) {
+  const mx = Math.max(1, ...items.map(x => x[1]));
+  const sum = total || items.reduce((a, x) => a + x[1], 0) || 1;
+  return items.map(([k, v]) => `<div class="hbar"><span>${esc(k)}</span><div class="tr"><i style="width:${(v / mx * 100).toFixed(1)}%;background:var(${color})"></i></div><span class="v">${(v / sum * 100).toFixed(1)}%</span></div>`).join("");
+}
+function gauge(score) {
+  const a0 = Math.PI * 0.8, a1 = Math.PI * 2.2, r = 58, cx = 75, cy = 72;
+  const pt = a => [cx + r * Math.cos(a), cy + r * Math.sin(a)];
+  const arc = (from, to, col, w) => { const [x1, y1] = pt(from), [x2, y2] = pt(to); return `<path d="M${x1},${y1}A${r},${r} 0 ${to - from > Math.PI ? 1 : 0} 1 ${x2},${y2}" stroke="${col}" stroke-width="${w}" fill="none" stroke-linecap="round"/>`; };
+  const col = score >= 85 ? "var(--accent)" : score >= 65 ? "var(--warn)" : "var(--bad)";
+  return `<div class="gauge"><svg viewBox="0 0 150 112">${arc(a0, a1, "var(--sunk)", 10)}${score > 0 ? arc(a0, a0 + (a1 - a0) * score / 100, col, 10) : ""}</svg><div class="v">${score}<small> 分</small></div></div>`;
+}
+
+// ---------- 框架 ----------
+$("#nav").innerHTML = NAV.map(([k, n]) => `<a href="#/${k}" data-k="${k}">${svgIcon(k)}<span>${n}</span></a>`).join("");
+$("#range").innerHTML = RANGES.map(([k, n]) => `<button data-r="${k}" class="${k === range ? "on" : ""}">${n}</button>`).join("");
+$("#range").onclick = e => {
+  const r = e.target.dataset?.r; if (!r) return;
+  range = r; store.set("range", r);
+  for (const b of $("#range").children) b.classList.toggle("on", b.dataset.r === r);
+  refresh(true);
+};
+const view = $("#view");
+let cur = null, timer = null, busy = false;
+
+function setConn(c) {
+  if (!$("#conn-dot")) return;
+  $("#conn-dot").className = "dot " + (c.paused_since ? "" : c.connected ? "ok" : "bad");
+  $("#conn-txt").textContent = c.paused_since ? "采集已暂停" : c.connected ? `AP 已连接 · ${c.last_poll ? fmtAgo(c.last_poll) : "等待采样"}` : "AP 未连接";
+}
+const connPill = c => c.paused_since ? '<span class="pill warn"><span class="dot"></span>已暂停</span>'
+  : `<span class="pill ${c.connected ? "ok" : "bad"}"><span class="dot ${c.connected ? "ok" : "bad"}"></span>${c.connected ? "已连接" : "未连接"}</span>`;
+async function refresh(user) {
+  if (!cur || busy) return;
+  busy = true;
+  if (user) document.body.classList.add("loading");
+  try { await cur.refresh(); } catch (e) { console.error(e); }
+  finally { busy = false; document.body.classList.remove("loading"); }
+}
+function route() {
+  const h = location.hash.replace(/^#\/?/, "") || "overview";
+  const [name, arg] = h.split("/");
+  const V = VIEWS[name === "collector" ? "settings" : name] || VIEWS.overview;
+  for (const a of $("#nav").children) a.classList.toggle("on", a.dataset.k === (name === "client" ? "clients" : name));
+  charts.clear(); hideTip();
+  view.innerHTML = "";
+  cur = V(view, decodeURIComponent(arg || ""));
+  $("#crumb").innerHTML = `AP 观测 <span class="faint">›</span> <b>${esc(cur.title)}</b>`;
+  document.title = `${cur.title} · AP 观测`;
+  scrollTo(0, 0);
+  refresh(true);
+}
+addEventListener("hashchange", route);
+function tick() { if (!document.hidden) refresh(false); }
+setInterval(tick, 30000);
+document.addEventListener("visibilitychange", tick);
+
+// ---------- 事件展示 ----------
+const EV = {
+  assoc: ["关联握手", "key", ""], online: ["上线", "on", "ok"], offline: ["离线", "off", ""], roam: ["切换频段", "swap", ""],
+  radar: ["雷达", "radar", "bad"], dfs: ["DFS 避让", "radar", "warn"], precac: ["雷达检测完成", "radar", ""], radio_restart: ["射频重启", "power", "warn"],
+  width: ["频宽变化", "wave", "warn"], chan: ["信道变化", "wave", "warn"], ap_reboot: ["AP 重启", "power", "bad"], collector: ["采集", "link", ""],
+  thermal: ["温度降频", "temp", "bad"], gap: ["日志缺口", "gap", ""], control: ["控制操作", "power", "warn"],
+};
+function evRow(e, showDate) {
+  const [label, ic, cls] = EV[e.kind] || [e.kind, "events", ""];
+  const who = e.mac ? `<a class="who" href="#/client/${esc(e.mac)}">${esc(e.name || e.mac)}</a> ` : "";
+  const band = e.band != null ? `<span class="band-tag">${bandName(e.band)}</span> ` : "";
+  return `<div class="ev"><time title="${fmtFull(e.t)}">${showDate ? fmtClock(e.t, true) : fmtClock(e.t)}</time><span class="ek ${cls}" title="${esc(label)}">${svgIcon(ic)}</span><div>${band}${who}<span>${esc(e.msg || label)}</span></div></div>`;
+}
+
+// ---------- 页面 ----------
+const VIEWS = {};
+
+VIEWS.overview = root => {
+  root.innerHTML = `
+    <div id="ov-banner"></div>
+    <div class="grid g4">
+      <div class="card" id="ov-ap"></div>
+      <div class="card" id="ov-health"></div>
+      <div class="card" id="ov-online"></div>
+      <div class="card" id="ov-coll"></div>
+    </div>
+    <div class="grid g2" id="ov-radios"></div>
+    <div class="grid g2" id="ov-charts"></div>
+    <div class="grid g2">
+      <div class="card"><div class="card-h"><h3>健康发现</h3><span class="sub">按近 1 小时 / 24 小时 / 7 天的规则判断</span></div><div id="ov-find"></div></div>
+      <div class="card"><div class="card-h"><h3>最近事件</h3><span class="sub">关联握手太多，这里不列，完整记录在事件页</span><div class="act"><a class="link-btn" href="#/events">全部 ›</a></div></div><div id="ov-ev"></div></div>
+    </div>`;
+  const chBusy = chartCard($("#ov-charts"), "信道繁忙率", "两次射频计数之差，每点为采样间隔内的平均值");
+  const chThru = chartCard($("#ov-charts"), "无线下行吞吐", "AP 发给终端的流量，取自 ath0/ath1 接口计数");
+  return {
+    title: "概览",
+    async refresh() {
+      const [o, r0, r1] = await Promise.all([api("/api/overview"), api(`/api/series?key=radio0&range=${range}`), api(`/api/series?key=radio1&range=${range}`)]);
+      setConn(o);
+      $("#ov-banner").innerHTML = o.paused_since ? `<div class="banner" style="border-left-color:var(--warn)"><span class="dot"></span><div><b>采集已暂停</b><div class="muted">${fmtFull(o.paused_since)} 起不再连接 AP、不执行任何采集命令，页面上是暂停前的数据，图表上暂停这段是空白。在<a href="#/settings">设置</a>页恢复。</div></div></div>`
+        : o.connected ? "" : `<div class="banner"><span class="dot bad"></span><div><b>采集未连接 AP</b><div class="muted">${esc(o.last_error || "正在连接…")}。页面上是最后一次采到的数据；程序会自动重连（60 秒起退避，最长 10 分钟）。</div></div></div>`;
+      const ap = o.ap, memPct = ap.mem_total ? (1 - ap.mem_avail / ap.mem_total) * 100 : null;
+      const temps = o.radios.map((r, i) => r.temp != null ? `${bandName(i)} ${r.temp}°C` : "").filter(Boolean).join(" · ");
+      $("#ov-ap").innerHTML = `<div class="card-h"><h3>无线 AP</h3><span class="sub">TL-XDR5480 · 纯 AP</span></div>
+        <div class="row" style="margin-bottom:10px"><span class="dot ${o.paused_since ? "" : o.connected ? "ok" : "bad"}"></span><b>${esc(o.ap_host || "")}</b></div>
+        <dl class="kv"><dt>运行时间</dt><dd class="num">${ap.uptime ? fmtDur(ap.uptime) : "—"}</dd><dt>射频温度</dt><dd class="num">${esc(temps || "—")}</dd></dl>
+        <div style="margin-top:12px" class="row sp"><span class="muted">CPU</span><span class="num">${fmtNum(ap.cpu, 1)}%</span></div>
+        <div class="meter"><i style="width:${Math.min(100, ap.cpu || 0)}%"></i></div>
+        <div style="margin-top:8px" class="row sp"><span class="muted">内存</span><span class="num">${fmtNum(memPct, 0)}%</span></div>
+        <div class="meter"><i style="width:${Math.min(100, memPct || 0)}%"></i></div>`;
+      const nf = o.findings.length;
+      $("#ov-health").innerHTML = `<div class="card-h"><h3>健康指数</h3></div>${gauge(o.score)}
+        <div style="text-align:center;margin-top:4px" class="muted">${nf ? `${nf} 项值得关注` : "没有发现问题"}</div>`;
+      const on = o.online[0] + o.online[1];
+      $("#ov-online").innerHTML = `<div class="card-h"><h3>在线终端</h3><div class="act"><a class="link-btn" href="#/clients">详情 ›</a></div></div>
+        <div class="big num">${on}</div>
+        <div class="row" style="gap:18px;margin:8px 0 12px"><span><span class="band-tag">2.4G</span> <b class="num">${o.online[0]}</b></span><span><span class="band-tag">5G</span> <b class="num">${o.online[1]}</b></span></div>
+        <div class="stack-bar">${on ? `<i style="width:${o.online[0] / on * 100}%;background:var(--s2)"></i><i style="flex:1;background:var(--s1)"></i>` : ""}</div>
+        <div class="note">24 小时关联握手 <b class="num">${o.assoc24}</b> 次</div>`;
+      const c = await api("/api/collector");
+      const totalMs = Object.values(c.cmds).filter(x => x.every === "30 秒").reduce((a, x) => a + x.avg_ms, 0);
+      $("#ov-coll").innerHTML = `<div class="card-h"><h3>采集</h3><span class="sub">只读 · 长连接</span><div class="act"><a class="link-btn" href="#/settings">详情 ›</a></div></div>
+        <div class="row" style="margin-bottom:6px">${connPill(c)}<span class="muted">${c.last_poll ? "最近采样 " + fmtAgo(c.last_poll) : ""}</span></div>
+        <dl class="kv"><dt>每轮命令耗时</dt><dd class="num">${fmtNum(totalMs / 1000, 1)} 秒 / 30 秒</dd><dt>AP CPU（含采集）</dt><dd class="num">${fmtNum(c.ap_cpu, 1)}%</dd><dt>连接次数</dt><dd class="num">${c.connects}</dd></dl>
+        <div class="note">耗时大多是 AP 侧等待固件统计，不是 CPU 占用。</div>`;
+      $("#ov-radios").innerHTML = o.radios.map((r, i) => radioCard(r, i, o)).join("");
+      chBusy.set({ title: "信道繁忙率", t: unionT(r0, r1), from: r0.from, to: r0.to,
+        series: alignSeries([[r0, "busy", "2.4G", "--s2"], [r1, "busy", "5G", "--s1"]]), yMin: 0, yMax: 100, unit: "%", height: 200 });
+      chThru.set({ title: "无线下行吞吐", t: unionT(r0, r1), from: r0.from, to: r0.to,
+        series: alignSeries([[r0, "tx_mbps", "2.4G", "--s2"], [r1, "tx_mbps", "5G", "--s1"]]), yMin: 0, tipFmt: fmtMbps, height: 200 });
+      $("#ov-find").innerHTML = o.findings.length ? o.findings.map(f => `<div class="find"><span class="ic ${f.level}">${f.level === "info" ? "i" : "!"}</span><div><b>${f.mac ? `<a href="#/client/${esc(f.mac)}">${esc(f.title)}</a>` : esc(f.title)}</b><p>${esc(f.detail)}</p></div></div>`).join("")
+        : `<div class="empty">信号、信道、重连、温度、重传都在正常范围</div>`;
+      $("#ov-ev").innerHTML = o.events.length ? o.events.map(e => evRow(e, true)).join("") : `<div class="empty">暂无事件</div>`;
+    },
+  };
+};
+// 两个序列的时间轴可能不同，合并到同一时间轴
+function unionT(...ds) { const s = new Set(); for (const d of ds) for (const t of d.data.t) s.add(t); return [...s].sort((a, b) => a - b); }
+function alignSeries(specs) {
+  const T = unionT(...specs.map(s => s[0]));
+  return specs.map(([d, field, name, color, extra]) => {
+    const m = new Map(d.data.t.map((t, i) => [t, d.data.v[field][i]]));
+    return { name, color, values: T.map(t => m.has(t) ? m.get(t) : null), ...(extra || {}) };
+  });
+}
+function radioCard(r, i, o) {
+  const f = r.iface || {}, m = modeInfo(r.mode);
+  const busy = r.busy, tx = r.tx || 0, rx = r.rx || 0, other = Math.max(0, (busy || 0) - tx - rx);
+  return `<div class="card"><div class="card-h"><h3>${bandName(i)} 射频</h3><span class="sub">${esc(r.ssid || "")}</span><div class="act"><a class="link-btn" href="#/radio">详情 ›</a></div></div>
+    <div class="grid g2" style="margin:0;gap:12px">
+      <div>
+        <div class="muted" style="font-size:12.5px">信道繁忙</div>
+        <div class="big num" style="font-size:36px">${fmtNum(busy, 0)}<small>%</small></div>
+        <div class="stack-bar" style="margin:8px 0 6px">${busy != null ? `<i style="width:${tx}%;background:var(--s1)"></i><i style="width:${rx}%;background:var(--s2)"></i><i style="width:${other}%;background:var(--s3)"></i>` : ""}</div>
+        <div class="legend" style="margin:0"><span><i class="key box" style="background:var(--s1)"></i>发送 ${fmtNum(tx, 0)}%</span><span><i class="key box" style="background:var(--s2)"></i>接收 ${fmtNum(rx, 0)}%</span><span><i class="key box" style="background:var(--s3)"></i>其他 ${fmtNum(other, 0)}%</span></div>
+      </div>
+      <dl class="kv">
+        <dt>信道</dt><dd class="num">${f.chan ?? "—"}${f.width ? ` · ${f.width}MHz` : ""}</dd>
+        <dt>模式</dt><dd>${esc(r.mode ? m.gen : "—")}</dd>
+        <dt>终端</dt><dd class="num">${r.clients}</dd>
+        <dt>下行 / 上行</dt><dd class="num">${fmtMbps(r.tx_mbps)} / ${fmtMbps(r.rx_mbps)}</dd>
+        <dt>底噪</dt><dd class="num">${r.nf ?? "—"} dBm</dd>
+        <dt>发射功率</dt><dd class="num">${f.txpower ? f.txpower + " dBm" : "—"}</dd>
+      </dl>
+    </div></div>`;
+}
+
+VIEWS.clients = root => {
+  let sortK = store.get("csort", "rssi"), sortDir = +store.get("cdir", "-1"), band = "all", q = "", showOff = store.get("coff", "0") === "1", data = null;
+  root.innerHTML = `<div class="panel-title"><h2>终端</h2><span class="sub" id="cl-sum"></span><div class="grow" style="flex:1"></div>
+      <div class="chips" id="cl-band"></div><input class="search" id="cl-q" placeholder="搜索名称 / IP / MAC"><label class="row muted" style="font-size:13px;gap:6px"><input type="checkbox" id="cl-off" ${showOff ? "checked" : ""}>含 24 小时内离线</label></div>
+    <div class="card"><div class="tbl-wrap"><table class="t"><thead id="cl-h"></thead><tbody id="cl-b"></tbody></table></div>
+    <div class="note">信号为最近一次采样（RSSI，越接近 0 越好）；小图为近 1 小时信号。速率是最近一次协商速率，不是实际吞吐。信噪比 = 信号 − 该频段底噪。</div></div>`;
+  const COLS = [
+    // 第四项为 1 的列在窄屏隐藏
+    ["name", "设备"], ["band", "频段"], ["rssi", "信号", 1], ["snr", "信噪比", 1, 1], ["tx_rate", "发送速率", 1], ["rx_rate", "接收速率", 1, 1],
+    ["mode", "协议", 0, 1], ["assoc_secs", "本次连接", 1, 1], ["idle", "空闲", 1, 1], ["assoc24", "24h 握手", 1, 1],
+  ];
+  $("#cl-band").innerHTML = [["all", "全部"], ["0", "2.4G"], ["1", "5G"]].map(([k, n]) => `<button class="chip ${k === band ? "on" : ""}" data-b="${k}">${n}</button>`).join("");
+  $("#cl-band").onclick = e => { if (!e.target.dataset.b) return; band = e.target.dataset.b; for (const c of $("#cl-band").children) c.classList.toggle("on", c.dataset.b === band); draw(); };
+  $("#cl-q").oninput = e => { q = e.target.value.trim().toLowerCase(); draw(); };
+  $("#cl-off").onchange = e => { showOff = e.target.checked; store.set("coff", showOff ? "1" : "0"); draw(); };
+  const key = (c, k) => k === "name" ? (c.name || c.ip || c.mac).toLowerCase() : k === "mode" ? c.mode : c[k] ?? -1e9;
+  function spark(v) {
+    if (!v || v.length < 2) return "";
+    const lo = Math.min(...v, -90), hi = Math.max(...v, -40), w = 64, h = 18;
+    const p = v.map((x, i) => `${(i / (v.length - 1) * w).toFixed(1)},${(h - (x - lo) / (hi - lo || 1) * h).toFixed(1)}`).join(" ");
+    return `<svg width="${w}" height="${h}" viewBox="0 0 ${w} ${h}" style="vertical-align:middle"><polyline points="${p}" fill="none" stroke="var(--faint)" stroke-width="1.5"/></svg>`;
+  }
+  function draw() {
+    if (!data) return;
+    $("#cl-h").innerHTML = `<tr>${COLS.map(([k, n, r, hm]) => `<th class="s ${r ? "r" : ""} ${hm ? "hm" : ""}" data-k="${k}">${n}${k === sortK ? `<span class="arr">${sortDir > 0 ? "▲" : "▼"}</span>` : ""}</th>`).join("")}</tr>`;
+    let list = data.clients.filter(c => (showOff || c.online) && (band === "all" || String(c.band) === band));
+    if (q) list = list.filter(c => [c.name, c.ip, c.mac].some(x => (x || "").toLowerCase().includes(q)));
+    list.sort((a, b) => { const x = key(a, sortK), y = key(b, sortK); return (x > y ? 1 : x < y ? -1 : 0) * sortDir || (a.mac > b.mac ? 1 : -1); });
+    const on = data.clients.filter(c => c.online);
+    $("#cl-sum").textContent = `在线 ${on.length} 台（2.4G ${on.filter(c => c.band === 0).length} · 5G ${on.filter(c => c.band === 1).length}）`;
+    $("#cl-b").innerHTML = list.length ? list.map(c => {
+      const s = sigQ(c.rssi), m = modeInfo(c.mode);
+      return `<tr class="click ${c.online ? "" : "off"}" data-mac="${esc(c.mac)}">
+        <td class="dev"><b>${esc(c.name || c.ip || "未知设备")}${c.name_src === "alias" ? ' <span class="tag">备注</span>' : ""}</b><span>${esc(c.mac)}${c.ip && c.name ? " · " + esc(c.ip) : ""}${c.random_mac ? " · 随机 MAC" : ""}</span></td>
+        <td><span class="band-tag">${bandName(c.band)}</span></td>
+        <td class="r"><span class="sig">${spark(c.spark)}${sigBars(c.rssi)}<b class="num">${c.rssi}</b><span class="pill ${s.cls}">${s.label}</span></span></td>
+        <td class="r num hm">${c.snr ?? "—"} dB</td>
+        <td class="r num">${fmtNum(c.tx_rate)} M</td>
+        <td class="r num hm">${fmtNum(c.rx_rate)} M</td>
+        <td class="hm">${esc(m.gen)} <span class="muted">${esc(m.width)}${c.nss > 1 ? ` · ${c.nss}×${c.nss}` : ""}</span></td>
+        <td class="r num hm">${c.online ? fmtDur(c.assoc_secs) : `<span class="muted">${fmtAgo(c.last_seen)}离线</span>`}</td>
+        <td class="r num hm">${c.online ? fmtDur(c.idle) : "—"}</td>
+        <td class="r num hm">${c.assoc24 > 12 ? `<span class="pill warn">${c.assoc24}</span>` : c.assoc24}</td></tr>`;
+    }).join("") : `<tr><td colspan="${COLS.length}" class="empty">没有符合条件的终端</td></tr>`;
+  }
+  $("#cl-h").onclick = e => {
+    const k = e.target.closest("th")?.dataset.k; if (!k) return;
+    if (k === sortK) sortDir = -sortDir; else { sortK = k; sortDir = ["name", "band", "mode"].includes(k) ? 1 : -1; }
+    store.set("csort", sortK); store.set("cdir", String(sortDir)); draw();
+  };
+  $("#cl-b").onclick = e => { const tr = e.target.closest("tr[data-mac]"); if (tr) location.hash = "#/client/" + tr.dataset.mac; };
+  return { title: "终端", async refresh() { const [d, o] = await Promise.all([api("/api/clients"), api("/api/collector")]); setConn(o); data = d; draw(); } };
+};
+
+VIEWS.devices = root => {
+  let q = "", data = null, logged = false, blocked = new Set();
+  root.innerHTML = `<div class="panel-title"><h2>设备</h2><span class="sub" id="dv-sum"></span><div style="flex:1"></div><input class="search" id="dv-q" placeholder="搜索备注 / 名称 / IP / MAC"><button class="btn" id="dv-add">登记设备</button></div>
+    <div id="dv-edit"></div>
+    <div class="card"><div class="tbl-wrap"><table class="t"><thead><tr><th>设备</th><th class="hm">默认名</th><th class="hm">状态</th><th class="hm">首次见到</th><th class="r">操作</th></tr></thead><tbody id="dv-b"></tbody></table></div>
+    <div class="note">名册由 apwatch 自己维护：连过这台 AP 的设备都会记下，不随终端页的 24 小时窗口消失。备注只存在 apwatch 里（aliases.json），不写到 AP 上；没写备注时显示设备通过 DHCP 广播的主机名。改备注、禁用和解禁要先登录；不在线的设备也能禁用。</div></div>`;
+  $("#dv-q").oninput = e => { q = e.target.value.trim().toLowerCase(); draw(); };
+  $("#dv-add").onclick = () => aliasEditor($("#dv-edit"), { mac: "" }, () => refresh(true));
+  function status(d) {
+    if (blocked.has(d.mac)) return '<span class="pill bad">已禁用</span>';
+    if (d.online) return `<span class="pill ok"><span class="dot ok"></span>在线</span> <span class="band-tag">${bandName(d.band)}</span>`;
+    return d.last_seen ? `<span class="muted">${fmtAgo(d.last_seen)}离线</span>` : '<span class="muted">还没连过</span>';
+  }
+  function draw() {
+    if (!data) return;
+    let list = data.devices;
+    if (q) list = list.filter(d => [d.name, d.hostname, d.ip, d.mac].some(x => (x || "").toLowerCase().includes(q)));
+    const on = data.devices.filter(d => d.online).length;
+    $("#dv-sum").textContent = `共 ${data.devices.length} 台，在线 ${on}，有备注 ${data.devices.filter(d => d.alias).length}${logged ? `，已禁用 ${blocked.size}` : ""}`;
+    $("#dv-b").innerHTML = list.length ? list.map(d => `<tr class="${d.online ? "" : "off"}" data-mac="${esc(d.mac)}">
+        <td class="dev"><b><a href="#/client/${esc(d.mac)}">${esc(d.name || d.ip || "未知设备")}</a>${d.alias ? ' <span class="tag">备注</span>' : ""}</b><span>${esc(d.mac)}${d.ip && d.name ? " · " + esc(d.ip) : ""}${d.random_mac ? " · 随机 MAC" : ""}</span><div class="sm">${status(d)}</div></td>
+        <td class="hm">${esc(d.hostname || "—")}</td>
+        <td class="hm">${status(d)}</td>
+        <td class="hm muted">${d.first_seen ? fmtFull(d.first_seen).replace(/:\d\d$/, "") : "—"}</td>
+        <td class="r" style="white-space:nowrap"><button class="link-btn ed">备注</button> ${blocked.has(d.mac) ? '<button class="btn ub">解禁</button>' : '<button class="btn bk">禁用…</button>'}</td></tr>`).join("")
+      : '<tr><td colspan="5" class="empty">没有符合条件的设备</td></tr>';
+  }
+  $("#dv-b").onclick = async e => {
+    const tr = e.target.closest("tr[data-mac]"); if (!tr) return;
+    const d = data.devices.find(x => x.mac === tr.dataset.mac), box = $("#dv-edit");
+    if (e.target.closest(".ed")) aliasEditor(box, d, () => refresh(true));
+    else if (e.target.closest(".bk")) { blockConfirm(box, d, () => setTimeout(() => refresh(true), 1200)); scrollTo(0, 0); }
+    else if (e.target.closest(".ub")) {
+      box.innerHTML = '<div class="msg">执行中…（登录官方接口并读回确认，约几秒）</div>';
+      try { await apiPost("/api/ctl/block", { mac: d.mac, block: false }); box.innerHTML = `<div class="msg ok">已解禁 ${esc(d.name || d.mac)}</div>`; }
+      catch (err) { box.innerHTML = `<div class="msg bad">失败：${esc(err.message)}</div>`; }
+      setTimeout(() => refresh(true), 800);
+    }
+  };
+  return {
+    title: "设备",
+    async refresh() {
+      const [d, sess, o] = await Promise.all([api("/api/devices"), api("/api/session"), api("/api/collector")]);
+      setConn(o); data = d; logged = sess.logged_in;
+      if (logged) { try { blocked = new Set((await api("/api/ctl")).blocked.map(x => x.mac)); } catch { blocked = new Set(); } }
+      draw();
+    },
+  };
+};
+
+VIEWS.client = (root, mac) => {
+  root.innerHTML = `<div class="panel-title"><a class="btn" href="#/clients">← 返回</a><h2 id="cd-name">${esc(mac)}</h2><button class="link-btn" id="cd-rename">备注</button><span class="sub" id="cd-sub"></span><div style="flex:1"></div><button class="btn" id="cd-block">禁用联网</button></div>
+    <div id="cd-edit"></div>
+    <div class="grid g4" id="cd-tiles"></div>
+    <div class="grid g2" id="cd-charts"></div>
+    <div class="grid g21">
+      <div class="card"><div class="card-h"><h3>MCS 与 OFDMA</h3><span class="sub">按需从 AP 读取一次（apstats -s），10 秒内重复点击复用结果</span><div class="act"><button class="btn pri" id="cd-mcs-btn">读取</button></div></div><div id="cd-mcs"><div class="empty">点“读取”查看这台设备各调制档位的包数分布</div></div></div>
+      <div class="card"><div class="card-h"><h3>近 7 天事件</h3></div><div id="cd-ev" style="max-height:520px;overflow:auto"></div></div>
+    </div>`;
+  let info = null;
+  $("#cd-rename").onclick = () => aliasEditor($("#cd-edit"), { mac, alias: info?.alias, hostname: info?.hostname }, () => refresh(true));
+  $("#cd-block").onclick = () => {
+    const box = $("#cd-edit");
+    blockConfirm(box, { mac, name: info?.name, ip: info?.ip, random_mac: info?.random_mac, online: !!info?.live?.online }, () => setTimeout(() => refresh(true), 1500));
+  };
+  const chSig = chartCard($("#cd-charts"), "信号强度", "dBm；背景色带：绿 ≥ −65 良好，黄 −72～−80 偏弱");
+  const chRate = chartCard($("#cd-charts"), "协商速率", "Mbps，每点为区间平均");
+  $("#cd-mcs-btn").onclick = async () => {
+    const box = $("#cd-mcs"), b = $("#cd-mcs-btn");
+    b.disabled = true; b.textContent = "读取中…";
+    try {
+      const d = await api(`/api/sta?mac=${encodeURIComponent(mac)}`);
+      const sumTx = d.tx_mcs.reduce((a, x) => a + x[1], 0), sumRx = d.rx_mcs.reduce((a, x) => a + x[1], 0);
+      const ru = d.ru.filter(x => x[1] > 0);
+      box.innerHTML = `<div class="grid g2" style="margin:0"><div><div class="muted" style="margin-bottom:6px">发送（AP → 设备）· ${sumTx} 包</div>${hbars(d.tx_mcs, "--s1") || '<div class="empty">无</div>'}</div>
+        <div><div class="muted" style="margin-bottom:6px">接收（设备 → AP）· ${sumRx} 包</div>${hbars(d.rx_mcs, "--s2") || '<div class="empty">无</div>'}</div></div>
+        <div class="note">OFDMA 资源单元：${ru.length ? ru.map(x => `${esc(x[0])} ${x[1]}`).join("，") : "未使用（各 RU 计数为 0）"}。计数是本次连接以来的累计值。</div>
+        <dl class="kv" style="margin-top:10px">${d.stats.map(([k, v]) => `<dt>${esc(k)}</dt><dd class="num">${esc(v)}</dd>`).join("")}</dl>`;
+    } catch (e) { box.innerHTML = `<div class="empty">读取失败：${esc(e.message)}</div>`; }
+    finally { b.disabled = false; b.textContent = "重新读取"; }
+  };
+  return {
+    title: "终端详情",
+    async refresh() {
+      const [d, o] = await Promise.all([api(`/api/client?mac=${encodeURIComponent(mac)}&range=${range}`), api("/api/collector")]);
+      setConn(o);
+      const L = d.live, st = L || {};
+      info = d;
+      $("#cd-name").textContent = d.name || d.ip || mac;
+      const src = { alias: "备注", dhcp: "DHCP 主机名" }[d.name_src];
+      $("#cd-sub").textContent = [mac, d.ip, src, d.random_mac ? "随机 MAC" : "", L ? (L.online ? "在线" : "离线") : "当前不在实时列表"].filter(Boolean).join(" · ");
+      $("#crumb").innerHTML = `AP 观测 <span class="faint">›</span> 终端 <span class="faint">›</span> <b>${esc(d.name || mac)}</b>`;
+      const s = sigQ(st.rssi), m = modeInfo(st.mode);
+      const rs = d.series.v.rssi.filter(v => v != null).slice().sort((a, b) => a - b), med = rs.length ? rs[rs.length >> 1] : null;
+      $("#cd-tiles").innerHTML = `
+        <div class="card"><div class="muted">信号</div><div class="mid num">${st.rssi ?? "—"} <small class="muted" style="font-size:14px">dBm</small></div><div class="row" style="margin-top:6px">${sigBars(st.rssi)}<span class="pill ${s.cls}">${s.label}</span><span class="muted">区间中位 ${fmtNum(med)}，信噪比 ${st.snr ?? "—"} dB</span></div></div>
+        <div class="card"><div class="muted">协商速率</div><div class="mid num">${fmtNum(st.tx_rate)} / ${fmtNum(st.rx_rate)} <small class="muted" style="font-size:14px">Mbps</small></div><div class="muted" style="margin-top:6px">发 / 收；最高 ${st.max_rate ? fmtNum(st.max_rate / 1000) : "—"} Mbps</div></div>
+        <div class="card"><div class="muted">连接</div><div class="mid">${esc(m.gen)} <span class="muted" style="font-size:15px">${esc(m.width)}</span></div><div class="muted" style="margin-top:6px"><span class="band-tag">${bandName(st.band)}</span> 信道 ${st.chan ?? "—"} · ${st.nss || "—"} 条空间流${st.ps ? " · 省电模式" : ""}</div></div>
+        <div class="card"><div class="muted">本次连接</div><div class="mid num">${L?.online ? fmtDur(st.assoc_secs) : "—"}</div><div class="muted" style="margin-top:6px">空闲 ${L?.online ? fmtDur(st.idle) : "—"} · 7 天内事件 ${d.events.length} 条</div></div>`;
+      const t = d.series.t, v = d.series.v;
+      const from = Math.floor(Date.now() / 1000) - ({ "1h": 3600, "6h": 21600, "24h": 86400, "7d": 604800, "30d": 2592000 }[range]);
+      chSig.set({ title: "信号强度", t, from, series: [{ name: "信号", color: "--s1", values: v.rssi }, { name: "本次连接最低（AP 记录）", color: "--s2", values: v.rssi_min, dash: true }],
+        unit: "", tipFmt: v => v.toFixed(0) + " dBm", yMin: -95, yMax: -20, bands: [{ from: -65, to: 0, color: "var(--good)" }, { from: -80, to: -72, color: "var(--warn)" }], height: 210 });
+      chRate.set({ title: "协商速率", t, from, series: [{ name: "发送", color: "--s1", values: v.tx }, { name: "接收", color: "--s2", values: v.rx }], yMin: 0, tipFmt: v => v.toFixed(0) + " Mbps", height: 210 });
+      $("#cd-ev").innerHTML = d.events.length ? d.events.map(e => evRow(e, true)).join("") : `<div class="empty">近 7 天没有这台设备的事件</div>`;
+      const btn = $("#cd-mcs-btn"); btn.disabled = !L?.online; btn.title = L?.online ? "" : "设备不在线";
+    },
+  };
+};
+
+VIEWS.radio = root => {
+  let band = +store.get("rband", "1");
+  root.innerHTML = `<div class="panel-title"><h2>射频</h2><div class="seg" id="rb">${[[0, "2.4G"], [1, "5G"]].map(([k, n]) => `<button data-b="${k}" class="${k === band ? "on" : ""}">${n}</button>`).join("")}</div><span class="sub" id="rb-sub"></span></div>
+    <div class="grid g2" id="rc1"></div><div class="grid g2" id="rc2"></div><div class="grid g2" id="rc3"></div><div class="grid g2" id="rc4"></div><div class="grid g2" id="rc5"></div><div class="grid g2" id="rc6"></div>`;
+  $("#rb").onclick = e => { if (e.target.dataset.b == null) return; band = +e.target.dataset.b; store.set("rband", band); for (const b of $("#rb").children) b.classList.toggle("on", +b.dataset.b === band); refresh(true); };
+  const cBusy = chartCard($("#rc1"), "信道占用构成", "发送 = 本 AP 发出；接收 = 收到的帧（含本网终端上行和邻居网络）；其他 = 忙但没解出帧（干扰）");
+  const cPeak = chartCard($("#rc1"), "繁忙率：平均与峰值", "长时间范围下每个点是一段时间的平均，峰值保留其中最忙的一次采样");
+  const cThru = chartCard($("#rc2"), "吞吐", "Mbps，取自接口字节计数");
+  const cCli = chartCard($("#rc2"), "在线终端数", "");
+  const cRetry = chartCard($("#rc3"), "重传占比", "重传 ÷（成功发送 + 重传），每 5 分钟；流量很小时比例会被少数包放大");
+  const cAuth = chartCard($("#rc3"), "认证与发送失败", "每 5 分钟的增量");
+  const cWidth = chartCard($("#rc4"), "工作频宽", "MHz；下降通常是雷达避让或干扰导致");
+  const cNf = chartCard($("#rc4"), "底噪", "dBm，越低越好");
+  const cPhy = chartCard($("#rc5"), "PHY 错误", "每秒收到的无法解码的帧，反映干扰");
+  const cTemp = chartCard($("#rc5"), "射频温度", "°C，两个频段；降频门槛在 100°C 以上");
+  const cObss = chartCard($("#rc6"), "固件估算：本网 vs 邻居", "固件给的瞬时值，只作参考；总繁忙以“信道占用构成”为准");
+  return {
+    title: "射频",
+    async refresh() {
+      const k = band;
+      const [r, v, v0, v1, o, ov] = await Promise.all([api(`/api/series?key=radio${k}&range=${range}`), api(`/api/series?key=vap${k}&range=${range}`), api(`/api/series?key=vap0&range=${range}`), api(`/api/series?key=vap1&range=${range}`), api("/api/collector"), api("/api/overview")]);
+      setConn(o);
+      const t = r.data.t, x = r.data.v, base = { from: r.from, to: r.to };
+      cBusy.set({ ...base, t, stacked: true, series: [{ name: "发送", color: "--s1", values: x.tx }, { name: "接收", color: "--s2", values: x.rx }, { name: "其他", color: "--s3", values: x.other }], yMin: 0, unit: "%", height: 210 });
+      cPeak.set({ ...base, t, series: [{ name: "平均", color: "--s1", values: x.busy }, { name: "峰值", color: "--s2", values: x.busy_max }], yMin: 0, unit: "%", height: 210 });
+      cObss.set({ ...base, t, series: [{ name: "本网", color: "--s1", values: x.self }, { name: "邻居", color: "--s2", values: x.obss }], yMin: 0, unit: "%", height: 210 });
+      cThru.set({ ...base, t, series: [{ name: "下行（发给终端）", color: "--s1", values: x.tx_mbps }, { name: "上行（终端发来）", color: "--s2", values: x.rx_mbps }], yMin: 0, tipFmt: fmtMbps, height: 200 });
+      cCli.set({ ...base, t, series: [{ name: "终端", color: "--s1", values: x.clients }], yMin: 0, step: true, tipFmt: v => v.toFixed(0) + " 台", height: 200, area: true });
+      const vt = v.data.t, vv = v.data.v;
+      cRetry.set({ ...base, t: vt, series: [{ name: "重传占比", color: "--s1", values: vv.retry_pct }], yMin: 0, unit: "%", height: 200, area: true, empty: "每 5 分钟一个点，需要两次采样后才有" });
+      cAuth.set({ ...base, t: vt, series: [{ name: "认证尝试", color: "--s1", values: vv.auth_att }, { name: "认证成功", color: "--s2", values: vv.auth_ok }, { name: "发送失败", color: "--s3", values: vv.tx_fail }], yMin: 0, tipFmt: v => v.toFixed(0), height: 200, empty: "每 5 分钟一个点，需要两次采样后才有" });
+      cWidth.set({ ...base, t, series: [{ name: "频宽", color: "--s1", values: x.width }], yMin: 0, tipFmt: v => v.toFixed(0) + " MHz", height: 200, step: true });
+      cNf.set({ ...base, t, series: [{ name: "底噪", color: "--s1", values: x.nf }], unit: "", tipFmt: v => v.toFixed(0) + " dBm", height: 200, minSpan: 4 });
+      cPhy.set({ ...base, t, series: [{ name: "PHY 错误", color: "--s1", values: x.phy_err_ps }], yMin: 0, tipFmt: v => v.toFixed(1) + " 个/秒", height: 200, area: true });
+      const T = unionT(v0, v1);
+      cTemp.set({ ...base, t: T, series: alignSeries([[v0, "temp", "2.4G", "--s2"], [v1, "temp", "5G", "--s1"]]), tipFmt: v => v.toFixed(0) + "°C", height: 200 });
+      const ifc = ov.radios[k];
+      $("#rb-sub").textContent = ifc?.iface ? `${ifc.ssid || ""} · 信道 ${ifc.iface.chan} · ${ifc.iface.width}MHz · 中心 ${ifc.iface.center}MHz · ${ifc.iface.txpower} dBm` : "";
+    },
+  };
+};
+
+VIEWS.events = root => {
+  let kinds = new Set((store.get("evk", "") || "").split(",").filter(Boolean)), mac = "", data = null;
+  root.innerHTML = `<div class="panel-title"><h2>事件</h2><span class="sub" id="ev-sum"></span><div style="flex:1"></div><input class="search" id="ev-q" placeholder="按设备名 / MAC 过滤"></div>
+    <div class="card" style="margin-bottom:16px"><div class="chips" id="ev-k"></div></div>
+    <div class="card" id="ev-radar" style="margin-bottom:16px;display:none"></div>
+    <div class="card"><div id="ev-list"></div></div>`;
+  $("#ev-q").oninput = e => { mac = e.target.value.trim().toLowerCase(); draw(); };
+  $("#ev-k").onclick = e => {
+    const k = e.target.closest(".chip")?.dataset.k; if (k == null) return;
+    if (k === "") kinds.clear(); else if (kinds.has(k)) kinds.delete(k); else kinds.add(k);
+    store.set("evk", [...kinds].join(",")); draw();
+  };
+  function draw() {
+    if (!data) return;
+    const order = ["online", "offline", "assoc", "roam", "control", "radar", "dfs", "precac", "width", "chan", "radio_restart", "ap_reboot", "thermal", "collector", "gap"];
+    $("#ev-k").innerHTML = `<button class="chip ${kinds.size ? "" : "on"}" data-k="">全部<span class="n">${data.total}</span></button>` +
+      order.filter(k => data.counts[k]).map(k => `<button class="chip ${kinds.has(k) ? "on" : ""}" data-k="${k}">${EV[k]?.[0] || k}<span class="n">${data.counts[k]}</span></button>`).join("");
+    let list = data.events.filter(e => !kinds.size || kinds.has(e.kind));
+    if (mac) list = list.filter(e => (e.mac || "").includes(mac) || (e.name || "").toLowerCase().includes(mac));
+    $("#ev-sum").textContent = `${({ "1h": "1 小时", "6h": "6 小时", "24h": "24 小时", "7d": "7 天", "30d": "30 天" })[range]}内 ${list.length} 条${list.length >= 3000 ? "（只显示最近 3000 条）" : ""}`;
+    let html = "", day = "";
+    for (const e of list.slice(0, 3000)) {
+      const d = new Date(e.t * 1000), dk = `${d.getFullYear()}-${d.getMonth() + 1}-${d.getDate()}`;
+      if (dk !== day) { day = dk; html += `<div class="day-h">${d.getMonth() + 1}月${d.getDate()}日 星期${"日一二三四五六"[d.getDay()]}</div>`; }
+      html += evRow(e, false);
+    }
+    $("#ev-list").innerHTML = html || `<div class="empty">没有符合条件的事件</div>`;
+  }
+  return {
+    title: "事件",
+    async refresh() {
+      const [d, o, ov] = await Promise.all([api(`/api/events?range=${range}&limit=3000`), api("/api/collector"), api("/api/overview")]);
+      setConn(o); data = d; draw();
+      const box = $("#ev-radar");
+      if (ov.radar.length) {
+        box.style.display = "";
+        box.innerHTML = `<div class="card-h"><h3>5G 雷达避让</h3><span class="sub">近 7 天。160MHz 必然覆盖 DFS 频段，检测到雷达时 AP 会断开 5G 终端、临时降到非 DFS 信道，后台检测通过后再回来</span></div>` +
+          ov.radar.map(r => `<div class="ev"><time>${fmtClock(r.t, true)}</time><span class="ek bad">${svgIcon("radar")}</span><div>${esc(r.msg)}；${r.end ? `约 ${fmtDur(r.end - r.t)} 后恢复（${fmtClock(r.end, true)}）` : "未见恢复记录"}</div></div>`).join("");
+      } else box.style.display = "none";
+    },
+  };
+};
+
+VIEWS.manage = root => {
+  root.innerHTML = `<div class="panel-title"><h2>管理</h2><span class="sub">通过 AP 官方接口执行，和官方页面 / App 看到的一致；每次操作单独登录、用完退出</span><div style="flex:1"></div><button class="btn" id="mg-out" style="display:none">退出登录</button></div>
+    <div id="mg-body"></div>`;
+  let data = null, devices = [], ov = null;
+  $("#mg-out").onclick = async () => { await fetch("/api/logout", { method: "POST", headers: { "X-Apw": "1" } }); refresh(true); };
+  function radioCard(b) {
+    const on = data.radio[b], r = ov.radios[b], n = ov.online[b];
+    return `<div class="card sw-card"><div class="card-h"><h3>${bandName(b)}</h3><span class="sub">${esc(r.ssid || "")}</span><div class="act"><span class="pill ${on ? "ok" : "bad"}"><span class="dot ${on ? "ok" : "bad"}"></span>${on ? "开启" : "已关闭"}</span></div></div>
+      <div class="row sp"><div><div class="big num">${on ? n : "—"}</div><div class="muted">${on ? "台设备在线" : "射频已关闭"}</div></div>
+      <button class="btn ${on ? "" : "pri"} tg" data-b="${b}">${on ? "关闭" : "打开"} ${bandName(b)}</button></div><div class="cf"></div></div>`;
+  }
+  function draw() {
+    const body = $("#mg-body");
+    const blockedMacs = new Set(data.blocked.map(x => x.mac));
+    // 在线的排前面；同组里有名字的排前面，再按名字排
+    const byName = (a, b) => (!a.name - !b.name) || (a.name || a.ip || a.mac).localeCompare(b.name || b.ip || b.mac, "zh");
+    const cand = devices.filter(d => !blockedMacs.has(d.mac));
+    const opt = d => `<option value="${esc(d.mac)}">${esc(d.name || d.ip || d.mac)}${d.online ? " · " + bandName(d.band) : d.last_seen ? " · " + fmtAgo(d.last_seen) + "离线" : ""}${d.ip && d.name ? " · " + esc(d.ip) : ""}</option>`;
+    const grp = (label, l) => l.length ? `<optgroup label="${label}">${l.sort(byName).map(opt).join("")}</optgroup>` : "";
+    body.innerHTML = `<div class="grid g2" id="mg-radio">${radioCard(0)}${radioCard(1)}</div>
+      <div class="grid g2">
+        <div class="card"><div class="card-h"><h3>已禁用的设备</h3><span class="sub">${data.blocked.length} 台</span></div><div id="mg-blocked">${data.blocked.length ? data.blocked.map(d => `<div class="list-row"><div class="grow dev"><b>${esc(d.name || d.ip || d.mac)}</b><span>${esc(d.mac)}${d.ip ? " · " + esc(d.ip) : ""}${d.random_mac ? " · 随机 MAC" : ""}</span></div><button class="btn ub" data-mac="${esc(d.mac)}">解禁</button></div>`).join("") : '<div class="empty">没有被禁用的设备</div>'}</div><div class="msg" id="mg-bmsg"></div></div>
+        <div class="card"><div class="card-h"><h3>禁用一台设备</h3><span class="sub">名册里的设备都能选，不在线的也可以</span></div>
+          <div class="btn-row"><select class="inp" id="mg-dev" style="flex:1;min-width:180px"><option value="">选择设备…</option>${grp("在线", cand.filter(d => d.online))}${grp("不在线", cand.filter(d => !d.online))}</select></div>
+          <div class="btn-row"><input class="inp" id="mg-mac" placeholder="或直接填 MAC：aa:bb:cc:dd:ee:ff" style="flex:1;min-width:180px"><button class="btn" id="mg-bgo">禁用…</button></div><div id="mg-bcf"></div></div>
+      </div>
+      <div class="grid g2">
+        <div class="card"><div class="card-h"><h3>自动恢复计划</h3><span class="sub">到点自动执行；程序重启后照样执行</span></div><div>${data.plans.length ? data.plans.map(p => `<div class="list-row"><div class="grow"><b>${esc(p.desc)}</b><div class="muted" style="font-size:12.5px">${fmtFull(p.at)}（${p.at > Date.now() / 1000 ? fmtDur(p.at - Date.now() / 1000) + "后" : "即将执行"}）</div></div><button class="btn cx" data-id="${p.id}">取消</button></div>`).join("") : '<div class="empty">没有待执行的计划</div>'}</div></div>
+        <div class="card"><div class="card-h"><h3>说明</h3></div><ul class="muted" style="margin:0;padding-left:18px;font-size:13px;line-height:1.8">
+          <li>禁用是官方的 WiFi 黑名单：设备连不上 WiFi，局域网也用不了；插网线的设备不受影响。</li>
+          <li>随机 MAC 的设备换地址后可能重新连上，要彻底禁用得在设备上关掉“私有地址”。</li>
+          <li>两个频段名称不同，关掉一个频段时设备不会自动转到另一个频段。</li>
+          <li>2026-10-27 实测：关 5G 约 35 秒，重开 6 秒内开始回连；关 2.4G 后 15 台约 140 秒全部回来；禁用 6 秒内踢下线，解禁 6 秒内重连。</li></ul></div>
+      </div>`;
+    body.querySelectorAll(".tg").forEach(btn => btn.onclick = () => {
+      const b = +btn.dataset.b, on = data.radio[b], cf = btn.closest(".card").querySelector(".cf");
+      if (!on) { act("/api/ctl/radio", { band: b, enable: true }, cf); return; }
+      cf.innerHTML = `<div class="confirm"><p><b>关闭 ${bandName(b)}</b>：${ov.online[b]} 台设备会断开；它们不会自动转到另一个频段。如果你正通过 ${bandName(b)} 打开本页，页面也会断开，建议选自动恢复。</p>
+        <div class="btn-row">${restoreSelect(30)}<button class="btn danger go">确认关闭</button><button class="btn no">取消</button></div><div class="msg"></div></div>`;
+      cf.querySelector(".no").onclick = () => { cf.innerHTML = ""; };
+      cf.querySelector(".go").onclick = () => act("/api/ctl/radio", { band: b, enable: false, restore_mins: +cf.querySelector(".rs").value }, cf);
+    });
+    body.querySelectorAll(".ub").forEach(btn => btn.onclick = () => act("/api/ctl/block", { mac: btn.dataset.mac, block: false }, $("#mg-bmsg")));
+    body.querySelectorAll(".cx").forEach(btn => btn.onclick = async () => { try { await apiPost("/api/ctl/cancel", { id: +btn.dataset.id }); } catch (e) { alertMsg(e); } refresh(true); });
+    const go = $("#mg-bgo");
+    $("#mg-mac").oninput = () => { if ($("#mg-mac").value.trim()) $("#mg-dev").value = ""; };
+    $("#mg-dev").onchange = () => { $("#mg-mac").value = ""; };
+    if (go) go.onclick = () => {
+      const typed = $("#mg-mac").value.trim(), box = $("#mg-bcf");
+      let d = cand.find(x => x.mac === $("#mg-dev").value);
+      if (typed) {
+        const m = normMac(typed);
+        if (!m) { box.innerHTML = '<div class="msg bad">MAC 格式不对</div>'; return; }
+        if (blockedMacs.has(m)) { box.innerHTML = '<div class="msg bad">这台设备已经在禁用名单里</div>'; return; }
+        d = devices.find(x => x.mac === m) || { mac: m, online: false, random_mac: (parseInt(m.slice(0, 2), 16) & 2) !== 0 };
+      }
+      if (!d) { box.innerHTML = '<div class="msg bad">先选设备或填 MAC</div>'; return; }
+      blockConfirm(box, d, () => setTimeout(() => refresh(true), 1200));
+    };
+  }
+  function alertMsg(e) { const m = $("#mg-bmsg"); if (m) { m.className = "msg bad"; m.textContent = e.message; } }
+  async function act(path, body, box) {
+    box.querySelectorAll?.("button").forEach(b => b.disabled = true);
+    const show = (cls, t) => { if (box.classList?.contains("msg")) { box.className = "msg " + cls; box.textContent = t; } else box.innerHTML = `<div class="msg ${cls}">${esc(t)}</div>`; };
+    show("", "执行中…（登录官方接口并读回确认，约几秒）");
+    try { data = await apiPost(path, body); show("ok", "已完成"); setTimeout(() => refresh(true), 800); }
+    catch (e) { show("bad", "失败：" + e.message); }
+  }
+  return {
+    title: "管理",
+    async refresh() {
+      const [sess, dv, o, co] = await Promise.all([api("/api/session"), api("/api/devices"), api("/api/overview"), api("/api/collector")]);
+      setConn(co); devices = dv.devices; ov = o;
+      $("#mg-out").style.display = sess.logged_in ? "" : "none";
+      if (!sess.logged_in) {
+        $("#mg-body").innerHTML = `<div class="card"><div class="empty" style="padding:40px 0">管理功能需要先用 AP 管理员密码登录<div style="margin-top:14px"><button class="btn pri" id="mg-login">登录</button></div></div></div>`;
+        $("#mg-login").onclick = async () => { if (await loginDialog()) refresh(true); };
+        return;
+      }
+      try { data = await apiAuthGet("/api/ctl"); draw(); }
+      catch (e) { $("#mg-body").innerHTML = `<div class="card"><div class="empty">读取官方状态失败：${esc(e.message)}</div></div>`; }
+    },
+  };
+};
+
+VIEWS.settings = root => {
+  root.innerHTML = `<div class="card" style="margin-bottom:16px" id="set-card"><div class="card-h"><h3>设置</h3><span class="sub">保存后立即生效；改连接或采集间隔会让采集按新设置重新连接</span></div><form id="set-form"></form></div>
+    <div class="grid g3" id="co-top"></div>
+    <div class="grid g2" id="co-ch"></div>
+    <div class="card" style="margin-bottom:16px"><div class="card-h"><h3>采集命令</h3><span class="sub">全部经同一个 telnet 会话串行执行，任意时刻 AP 上最多一条</span></div><div class="tbl-wrap"><table class="t"><thead><tr><th>命令</th><th>周期</th><th class="r">次数</th><th class="r">最近耗时</th><th class="r">平均耗时</th><th class="r">回传字节</th><th class="r">失败</th><th class="r">最近</th></tr></thead><tbody id="co-cmds"></tbody></table></div></div>
+    <div class="card"><div class="card-h"><h3>采集的只读保证与开销</h3></div>
+      <p class="muted" style="margin-top:0">采集只通过 telnet 发送下面这份固定命令（“管理”页的控制操作另走官方 Web 接口）；唯一带参数的是终端详情页的 <code>apstats -s -m &lt;MAC&gt;</code>，MAC 先经严格格式校验。不会发送 <code>dmesg -c</code>、<code>iwpriv … set</code>、<code>cfg80211tool … s*</code>、<code>reboot</code> 等会改变状态的命令，AP 上也不落任何文件。</p>
+      <div id="co-wl" style="display:flex;flex-wrap:wrap;gap:6px"></div>
+      <p class="muted">2026-10-26 实测（同一会话比较 <code>/proc/stat</code> 增量，每项 10 次）：每条命令在 AP 上的 CPU 开销都不超过约 0.1 秒，最贵的是全量 <code>dmesg</code>（只在连上时拉一次）；AP 自身空闲基线约占两核的 5%。按 30 秒一轮估算，采集约占 AP 总 CPU 能力的 0.3%。上方 AP CPU 曲线已包含采集本身，可直接对照。</p>
+    </div>`;
+  const cCpu = chartCard($("#co-ch"), "AP CPU", "两核合计的忙碌比例，含采集本身");
+  let setLoaded = false;
+  async function loadSettings() {
+    const s = await api("/api/settings");
+    const b = s.bounds;
+    const num = (k, label, unit, hint) => `<div class="field"><label>${label}（${unit}）</label><input class="inp" name="${k}" type="number" min="${b[k][0]}" max="${b[k][1]}" value="${s[k]}"><span class="hint">${hint} · 范围 ${b[k][0]}～${b[k][1]}</span></div>`;
+    $("#set-form").innerHTML = `<div class="form-grid">
+      <div class="form-sec">连接 AP</div>
+      <div class="field"><label>AP 地址</label><input class="inp" name="ap_host" value="${esc(s.ap_host)}"><span class="hint">改地址时必须同时重新输入密码和解锁串</span></div>
+      <div class="field"><label>管理员密码</label><input class="inp" name="password" type="password" autocomplete="new-password" placeholder="${s.password_set ? "已设置，留空不改" : "未设置"}"><span class="hint">telnet 登录与官方页面共用；只写不读</span></div>
+      <div class="field"><label>goash 解锁串</label><input class="inp" name="unlock" type="password" autocomplete="off" placeholder="${s.unlock_set ? "已设置，留空不改" : "未设置"}"><span class="hint">只写不读</span></div>
+      <div class="form-sec">采集间隔</div>
+      ${num("fast_secs", "快速轮询", "秒", "终端、信道、射频计数")}
+      ${num("dmesg_secs", "内核日志", "秒", "连接 / 雷达等事件")}
+      ${num("slow_secs", "慢速统计", "秒", "重传、温度、设备名")}
+      <div class="form-sec">数据与设备名</div>
+      ${num("save_mins", "保存间隔", "分钟", "内存数据追加写盘")}
+      <div class="field"><label>DHCP 租约文件</label><input class="inp" name="leases_path" value="${esc(s.leases_path)}" placeholder="留空不用"><span class="hint">设备广播的主机名从这里读；主路由上是 /tmp/dhcp.leases</span></div>
+      </div>
+      <div class="btn-row"><button class="btn pri">保存</button><span class="muted" id="set-est"></span></div><div class="msg" id="set-msg"></div>`;
+    const est = () => { const f = +$("#set-form").fast_secs.value || s.fast_secs; $("#set-est").textContent = `按 2026-10-26 实测估算，采集约占 AP CPU ${(0.24 * 30 / f).toFixed(2)}%`; };
+    $("#set-form").fast_secs.oninput = est; est();
+    $("#set-form").onsubmit = async e => {
+      e.preventDefault();
+      const f = e.target, body = {};
+      for (const k of ["ap_host", "leases_path"]) body[k] = f[k].value.trim();
+      for (const k of ["fast_secs", "dmesg_secs", "slow_secs", "save_mins"]) body[k] = +f[k].value;
+      for (const k of ["password", "unlock"]) if (f[k].value) body[k] = f[k].value;
+      const m = $("#set-msg");
+      try {
+        const r = await apiPost("/api/settings", body);
+        m.className = "msg ok"; m.textContent = r.reconnect ? "已保存，采集正在按新设置重新连接" : "已保存";
+        f.password.value = ""; f.unlock.value = "";
+      } catch (err) { m.className = "msg bad"; m.textContent = "保存失败：" + err.message; }
+    };
+    setLoaded = true;
+  }
+  const cMem = chartCard($("#co-ch"), "AP 内存", "占用比例（不含可回收缓存）");
+  return {
+    title: "设置",
+    async refresh() {
+      if (!setLoaded) await loadSettings();
+      const [c, ap, sv] = await Promise.all([api("/api/collector"), api(`/api/series?key=ap&range=${range}`), api("/api/settings")]);
+      const lbl = x => x % 60 === 0 ? `${x / 60} 分钟` : `${x} 秒`;
+      setConn(c);
+      $("#co-top").innerHTML = `
+        <div class="card"><div class="card-h"><h3>连接</h3><div class="act">${c.paused_since ? '<button class="btn pri" id="co-resume">恢复采集</button>' : '<button class="btn" id="co-pause">暂停采集</button>'}</div></div><div class="row" style="margin-bottom:8px">${connPill(c)}${c.paused_since ? `<span class="muted">${fmtFull(c.paused_since)} 起</span>` : ""}</div><div id="co-pcf"></div>
+          <dl class="kv"><dt>本次连接于</dt><dd class="num">${c.connected_since ? fmtClock(c.connected_since, true) : "—"}</dd><dt>最近采样</dt><dd class="num">${c.last_poll ? fmtAgo(c.last_poll) : "—"}</dd><dt>累计连接</dt><dd class="num">${c.connects} 次</dd><dt>程序启动</dt><dd class="num">${fmtClock(c.started, true)}</dd></dl>
+          ${c.last_error ? `<div class="note" style="color:var(--bad-ink)">最近错误（${c.last_error_t ? fmtClock(c.last_error_t, true) : ""}）：${esc(c.last_error)}</div>` : ""}</div>
+        <div class="card"><div class="card-h"><h3>节奏</h3></div><dl class="kv"><dt>系统、信道、终端、射频计数</dt><dd>${lbl(sv.fast_secs)}</dd><dt>内核日志末 40 行</dt><dd>${lbl(sv.dmesg_secs)}</dd><dt>VAP 统计、温度、SSID、设备名</dt><dd>${lbl(sv.slow_secs)}</dd><dt>单终端 MCS</dt><dd>按需</dd><dt>设备 IP</dt><dd>DHCP 租约，静态 IP 取本机 ARP 表</dd></dl></div>
+        <div class="card"><div class="card-h"><h3>存储</h3></div><dl class="kv"><dt>序列</dt><dd class="num">${c.store.series}</dd><dt>数据点（内存）</dt><dd class="num">${c.store.samples.toLocaleString()}</dd><dt>事件</dt><dd class="num">${c.store.events.toLocaleString()}</dd><dt>保留</dt><dd>原始 6 小时 · 2 分钟 24 小时 · 15 分钟 7 天 · 1 小时 30 天</dd><dt>写盘</dt><dd>每 ${sv.save_mins} 分钟追加（压缩）</dd></dl></div>`;
+      const pcf = $("#co-pcf"), setPause = async paused => {
+        pcf.innerHTML = '<div class="msg">执行中…</div>';
+        try { await apiPost("/api/collector/pause", { paused }); pcf.innerHTML = ""; setTimeout(() => refresh(true), paused ? 300 : 3000); }
+        catch (e) { pcf.innerHTML = `<div class="msg bad">失败：${esc(e.message)}</div>`; }
+      };
+      if ($("#co-resume")) $("#co-resume").onclick = () => setPause(false);
+      if ($("#co-pause")) $("#co-pause").onclick = () => {
+        pcf.innerHTML = `<div class="confirm"><p><b>暂停采集</b>：断开到 AP 的连接，AP 上不再执行任何采集命令。历史数据照常可看，管理功能照常可用；暂停这段在图表上是空白。程序或路由重启后仍保持暂停，要回这里手动恢复。</p>
+          <div class="btn-row"><button class="btn danger go">确认暂停</button><button class="btn no">取消</button></div></div>`;
+        pcf.querySelector(".no").onclick = () => { pcf.innerHTML = ""; };
+        pcf.querySelector(".go").onclick = () => setPause(true);
+      };
+      const rows = Object.entries(c.cmds).sort((a, b) => a[0].localeCompare(b[0]));
+      $("#co-cmds").innerHTML = rows.map(([k, s]) => `<tr><td><code>${esc(s.cmd)}</code></td><td>${esc(s.every)}</td><td class="r num">${s.count}</td><td class="r num">${fmtNum(s.last_ms)} ms</td><td class="r num">${fmtNum(s.avg_ms)} ms</td><td class="r num">${s.last_bytes.toLocaleString()}</td><td class="r num">${s.errors}</td><td class="r num">${s.last_t ? fmtAgo(s.last_t) : "—"}</td></tr>`).join("") || `<tr><td colspan="8" class="empty">还没有执行过命令</td></tr>`;
+      $("#co-wl").innerHTML = c.whitelist.map(x => `<code>${esc(x)}</code>`).join("");
+      const base = { from: ap.from, to: ap.to };
+      cCpu.set({ ...base, t: ap.data.t, series: [{ name: "CPU", color: "--s1", values: ap.data.v.cpu }], yMin: 0, unit: "%", tipFmt: v => v.toFixed(1) + "%", height: 200, area: true });
+      cMem.set({ ...base, t: ap.data.t, series: [{ name: "内存", color: "--s1", values: ap.data.v.mem_pct }], yMin: 0, yMax: 100, unit: "%", height: 200, area: true });
+    },
+  };
+};
+
+applyTheme();
+route();
+</script>
+</body>
+</html>

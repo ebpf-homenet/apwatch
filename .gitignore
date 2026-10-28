@@ -1,0 +1,5 @@
+target/
+# 本地运维与设计记录，含家里网络的部署细节，不进公开仓库
+SPEC.md
+OPS.md
+router-restore.sh
