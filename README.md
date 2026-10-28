@@ -17,7 +17,7 @@ TP-Link 易展 AP（在 TL-XDR5480 易展 Turbo 版、IPQ5018 + QCN9074 上开�
 
 ## 下载
 
-[Releases](../../releases) 里按架构下载 `apwatch-linux-<架构>`（musl 静态链接，直接运行），`SHA256SUMS` 是校验值。每次推送到 main 由 GitHub Actions 自动编译发布。
+[Releases](https://github.com/ebpf-homenet/apwatch/releases) 里按架构下载 `apwatch-linux-<架构>`（musl 静态链接，直接运行），`SHA256SUMS` 是校验值。每次推送到 main 由 GitHub Actions 自动编译发布。
 
 ## 运行
 
