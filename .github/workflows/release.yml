@@ -98,6 +98,8 @@ jobs:
           name: apwatch-linux-${{ matrix.name }}
           path: dist/apwatch-linux-${{ matrix.name }}
           if-no-files-found: error
+          # 只是交给发布那一步的中转，发布完就没用了；默认留 90 天会占满账号的存储配额（2026-10-29 发布失败）
+          retention-days: 1
 
   release:
     needs: build
