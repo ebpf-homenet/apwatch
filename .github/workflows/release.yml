@@ -1,6 +1,9 @@
 # 交叉编译多架构静态二进制（musl）。
 # - 推送到 main：全部架构成功才发一个 Release。
-# - 推送到其他分支 / 手动运行：只编译并上传构建产物，不发 Release（在 main 上手动运行并勾选 release 才发）。
+# - 推送到其他分支 / 手动运行：只编译与核对，不发 Release
+#   （在 main 上手动运行并勾选 release 才发）。
+# - 不用中间产物（upload-artifact）：各架构编好直接传进草稿 Release，全部成功才转正，
+#   有失败就删掉草稿。中间产物占账号存储配额，2026-10-29、30 连续撞满导致发不出版本。
 # 本地复现某个架构：rustup target add <target>，再 cargo zigbuild --locked --release --target <target>
 name: build-release
 
@@ -42,9 +45,38 @@ jobs:
       - run: cargo test --locked
       - run: cargo clippy --locked -- -D warnings
 
+  # 要发版时先建草稿 Release（或找到同一提交已有的），各架构直接往里传
+  prepare:
+    runs-on: ubuntu-24.04
+    outputs:
+      tag: ${{ steps.p.outputs.tag }}
+      fresh: ${{ steps.p.outputs.fresh }}
+    steps:
+      - id: p
+        if: >-
+          github.ref == 'refs/heads/main' &&
+          (github.event_name == 'push' || inputs.release)
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+        run: |
+          short=${GITHUB_SHA::8}
+          # 同一提交重跑时复用已有 release，只覆盖文件；上次失败留下的草稿也接着用，最后照样转正
+          existing=$(gh release list --limit 100 --json tagName,isDraft --jq ".[] | select(.tagName | endswith(\"-$short\")) | \"\(.tagName) \(.isDraft)\"" | head -n1)
+          if [ -n "$existing" ]; then
+            echo "tag=${existing% *}" >> "$GITHUB_OUTPUT"
+            echo "fresh=${existing#* }" >> "$GITHUB_OUTPUT"
+            echo "reuse $existing"
+            exit 0
+          fi
+          tag="build-$(TZ=Asia/Shanghai date +%Y%m%d-%H%M)-$short"
+          gh release create "$tag" --draft --target "$GITHUB_SHA" --title "apwatch $tag" --notes "编译中"
+          echo "tag=$tag" >> "$GITHUB_OUTPUT"
+          echo "fresh=true" >> "$GITHUB_OUTPUT"
+
   build:
     name: build ${{ matrix.name }}
-    needs: test
+    needs: [test, prepare]
     runs-on: ubuntu-24.04
     strategy:
       fail-fast: false
@@ -93,59 +125,53 @@ jobs:
           grep -Eq "${{ matrix.file_arch }}" <<<"$info" || { echo "::error::架构不符，期望 ${{ matrix.file_arch }}"; exit 1; }
           grep -Eq "statically linked|static-pie linked" <<<"$info" || { echo "::error::不是静态链接"; exit 1; }
 
-      - uses: actions/upload-artifact@v4
-        with:
-          name: apwatch-linux-${{ matrix.name }}
-          path: dist/apwatch-linux-${{ matrix.name }}
-          if-no-files-found: error
-          # 只是交给发布那一步的中转，发布完就没用了；默认留 90 天会占满账号的存储配额（2026-10-29 发布失败）
-          retention-days: 1
-
-  release:
-    needs: build
-    if: >-
-      github.ref == 'refs/heads/main' &&
-      (github.event_name == 'push' || inputs.release)
-    runs-on: ubuntu-24.04
-    steps:
-      - uses: actions/download-artifact@v4
-        with:
-          pattern: apwatch-linux-*
-          path: dist
-          merge-multiple: true
-
-      - name: Checksums
-        working-directory: dist
-        run: |
-          chmod +x apwatch-linux-*
-          sha256sum apwatch-linux-* > SHA256SUMS
-          cat SHA256SUMS
-
-      - name: Publish release
+      - name: Upload to release
+        if: needs.prepare.outputs.tag != ''
         env:
           GH_TOKEN: ${{ github.token }}
           GH_REPO: ${{ github.repository }}
+        run: gh release upload "${{ needs.prepare.outputs.tag }}" "dist/apwatch-linux-${{ matrix.name }}" --clobber
+
+  release:
+    needs: [prepare, build]
+    if: needs.prepare.outputs.tag != ''
+    runs-on: ubuntu-24.04
+    env:
+      GH_TOKEN: ${{ github.token }}
+      GH_REPO: ${{ github.repository }}
+      TAG: ${{ needs.prepare.outputs.tag }}
+    steps:
+      - name: Checksums
         run: |
-          short=${GITHUB_SHA::8}
-          tag="build-$(TZ=Asia/Shanghai date +%Y%m%d-%H%M)-$short"
-          existing=$(gh release list --limit 100 --json tagName --jq ".[].tagName | select(endswith(\"-$short\"))" | head -n1)
-          if [ -n "$existing" ]; then
-            gh release upload "$existing" dist/* --clobber
-            echo "updated $existing"
-            exit 0
-          fi
+          mkdir dist
+          cd dist
+          gh release download "$TAG" --pattern 'apwatch-linux-*'
+          sha256sum apwatch-linux-* > SHA256SUMS
+          cat SHA256SUMS
+          gh release upload "$TAG" SHA256SUMS --clobber
+
+      - name: Publish release
+        if: needs.prepare.outputs.fresh == 'true'
+        run: |
           {
             echo "提交: ${GITHUB_SHA}"
             echo
-            echo "静态链接（musl），下载对应架构的文件即可运行。"
+            echo "静态链接（musl），直接下载对应架构的文件即可运行。"
             echo
             echo '```'
             cat dist/SHA256SUMS
             echo '```'
           } > notes.md
-          gh release create "$tag" dist/* \
-            --target "$GITHUB_SHA" \
-            --title "apwatch $tag" \
-            --notes-file notes.md \
-            --latest
-          echo "created $tag"
+          gh release edit "$TAG" --draft=false --latest --notes-file notes.md
+          echo "published $TAG"
+
+  # 有架构失败：删掉这次新建的草稿，不留半成品
+  cleanup:
+    needs: [prepare, build]
+    if: failure() && needs.prepare.outputs.fresh == 'true'
+    runs-on: ubuntu-24.04
+    env:
+      GH_TOKEN: ${{ github.token }}
+      GH_REPO: ${{ github.repository }}
+    steps:
+      - run: gh release delete "${{ needs.prepare.outputs.tag }}" --yes
