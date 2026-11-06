@@ -19,7 +19,7 @@ pub struct Settings {
     pub dmesg_secs: u64,
     /// VAP 统计、温度、SSID、设备名
     pub slow_secs: u64,
-    /// 内存数据追加写盘的间隔
+    /// 内存数据追加写盘的间隔。默认 6 小时：用户偏好写盘次数少（2026-11-06）；断电或强杀最多丢这段，正常退出照常写。
     pub save_mins: u64,
     /// dnsmasq 租约文件；空串或文件不存在表示不用
     pub leases_path: String,
@@ -36,7 +36,7 @@ impl Default for Settings {
             fast_secs: 30,
             dmesg_secs: 60,
             slow_secs: 300,
-            save_mins: 30,
+            save_mins: 360,
             leases_path: "/tmp/dhcp.leases".into(),
             paused_since: None,
         }
@@ -45,7 +45,7 @@ impl Default for Settings {
 
 /// (字段, 下限, 上限)。下限护住 AP：快速轮询最短 10 秒。
 pub const BOUNDS: [(&str, u64, u64); 4] =
-    [("fast_secs", 10, 600), ("dmesg_secs", 30, 3600), ("slow_secs", 60, 3600), ("save_mins", 5, 240)];
+    [("fast_secs", 10, 600), ("dmesg_secs", 30, 3600), ("slow_secs", 60, 3600), ("save_mins", 5, 1440)];
 
 /// 2026-10-26 A/B 实测：30 秒一轮时扣除软中断后多约 0.24 个百分点（AP 两核总能力）。按轮次频率线性估算。
 pub fn est_ap_cpu_pct(fast_secs: u64) -> f64 {

@@ -6,6 +6,8 @@ mod cmds;
 mod collector;
 mod ctl;
 mod http;
+#[cfg(test)]
+mod memprof;
 mod names;
 mod parse;
 mod settings;

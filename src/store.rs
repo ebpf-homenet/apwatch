@@ -2,7 +2,8 @@
 //!
 //! 只存前端显示需要的精度（SPEC“数据与存储”）：
 //! 档 0 原始样本留 6 小时，档 1 两分钟桶留 24 小时，档 2 十五分钟桶留 7 天，档 3 一小时桶留 30 天。
-//! 每档直接由原始样本聚合。新数据先进内存的 pending，按保存间隔（默认 30 分钟）追加写盘，退出时再写一次：
+//! 每档直接由原始样本聚合。新数据只在内存各档序列里，按保存间隔（默认 6 小时）把各档末尾还没写过的行
+//! 追加写盘，退出时再写一次（被挤出保留期前还没写的行先转进待写区）：
 //! `tN-YYYY-MM-DD.jsonl.gz` 存各档、`ev-YYYY-MM-DD.jsonl.gz` 存事件，每次追加是一个新的 gzip 成员，不重写旧内容。
 
 use flate2::read::MultiGzDecoder;
@@ -125,57 +126,169 @@ pub fn bucketize(rows: &[(i64, Vec<f32>)], step: i64, aggs: &[Agg]) -> Vec<(i64,
     out
 }
 
+/// 一档的数据：时刻与数值分别连续存放，一行 = 一个时刻 + 固定列数的值。
+///
+/// 原先每行是 `(i64, Vec<f32>)`，每个样本一次小分配，分配器开销比数据本身还大；容器按倍数
+/// 扩容，滑动窗口稳定后常空着近一半。现在按 1/8 增长，容量贴近实际行数。
+#[derive(Default)]
+pub struct Rows {
+    t: VecDeque<i64>,
+    v: VecDeque<f32>,
+    /// 列数：首行定下。同一序列各行列数相同（采集端按 schema 生成，读盘时 dec 补齐）。
+    w: usize,
+}
+
+fn reserve_step<T>(d: &mut VecDeque<T>, n: usize) {
+    if d.len() + n > d.capacity() {
+        d.reserve_exact((d.len() / 8).max(n).max(16));
+    }
+}
+
+impl Rows {
+    pub fn len(&self) -> usize {
+        self.t.len()
+    }
+    #[allow(dead_code)]
+    pub fn is_empty(&self) -> bool {
+        self.t.is_empty()
+    }
+    fn push_back(&mut self, t: i64, v: &[f32]) {
+        if self.t.is_empty() {
+            self.w = v.len();
+            self.v.clear();
+        }
+        reserve_step(&mut self.t, 1);
+        reserve_step(&mut self.v, self.w);
+        self.t.push_back(t);
+        let n = v.len().min(self.w);
+        self.v.extend(v[..n].iter().copied());
+        self.v.extend(std::iter::repeat_n(f32::NAN, self.w - n));
+    }
+    fn pop_front(&mut self) {
+        if self.t.pop_front().is_some() {
+            self.v.drain(..self.w);
+        }
+    }
+    pub fn t(&self, i: usize) -> i64 {
+        self.t[i]
+    }
+    pub fn front_t(&self) -> Option<i64> {
+        self.t.front().copied()
+    }
+    pub fn back_t(&self) -> Option<i64> {
+        self.t.back().copied()
+    }
+    /// 第 i 行的第 field 列；列不存在时 None。
+    pub fn get(&self, i: usize, field: usize) -> Option<f32> {
+        (field < self.w).then(|| self.v[i * self.w + field])
+    }
+    /// 第 i 行（复制出来）。
+    pub fn row(&self, i: usize) -> (i64, Vec<f32>) {
+        (self.t[i], self.v.range(i * self.w..(i + 1) * self.w).copied().collect())
+    }
+    fn row_iter(&self, i: usize) -> impl Iterator<Item = f32> + '_ {
+        self.v.range(i * self.w..(i + 1) * self.w).copied()
+    }
+}
+
+/// 尚未关闭的桶：逐样本递推，结果与对桶内原始样本做 bucketize 逐位相同。
+/// 原先把桶内原始样本各复制一份存着（1 小时档每序列 120 份），关闭或查询时再 bucketize。
+struct Open {
+    b: i64,
+    acc: Vec<f64>,
+    n: Vec<u32>,
+}
+
+impl Open {
+    fn start(b: i64, v: &[f32]) -> Self {
+        Open { b, acc: v.iter().map(|x| *x as f64).collect(), n: v.iter().map(|x| u32::from(!x.is_nan())).collect() }
+    }
+    fn add(&mut self, v: &[f32], aggs: &[Agg]) {
+        for i in 0..self.acc.len().min(v.len()) {
+            let x = v[i] as f64;
+            self.acc[i] = combine(aggs[i], self.acc[i], self.n[i], x);
+            if !x.is_nan() {
+                self.n[i] += 1;
+            }
+        }
+    }
+    fn value(&self) -> Vec<f32> {
+        self.acc.iter().map(|x| *x as f32).collect()
+    }
+}
+
 #[derive(Default)]
 pub struct Series {
     /// 各档已有的数据：档 0 是原始样本，其余是已关闭的桶
-    pub rows: [VecDeque<(i64, Vec<f32>)>; 4],
-    /// 档 1～3 正在累积、尚未关闭的桶里的原始样本
-    open: [Vec<(i64, Vec<f32>)>; 4],
+    pub rows: [Rows; 4],
+    /// 档 1～3 正在累积、尚未关闭的桶
+    open: [Option<Open>; 4],
+    /// 各档末尾还没写盘的行数。写盘直接从 rows 取，不另存一份待写文本。
+    unflushed: [usize; 4],
 }
 
-type Closed = Vec<(usize, i64, Vec<f32>)>;
+/// 超出保留期被挤掉、却还没写盘的行（档, 时刻, 值），要先存进待写区。
+type Spilled = Vec<(usize, i64, Vec<f32>)>;
 
 impl Series {
-    /// feed[i]=false 表示该档这一桶已经在文件里（回放时用）。返回本次关闭的桶（档, 时刻, 值）。
-    fn push(&mut self, t: i64, v: Vec<f32>, now: i64, aggs: &[Agg], feed: [bool; 4]) -> Closed {
-        let mut closed = Vec::new();
+    /// feed[i]=false 表示该档这一桶已经在文件里（回放时用）。
+    fn push(&mut self, t: i64, v: Vec<f32>, now: i64, aggs: &[Agg], feed: [bool; 4]) -> Spilled {
         for (i, tier) in TIERS.iter().enumerate().skip(1) {
             if !feed[i] {
                 continue;
             }
             let b = t - t.rem_euclid(tier.step);
-            if self.open[i].first().is_some_and(|(ot, _)| ot - ot.rem_euclid(tier.step) != b) {
-                for (bt, bv) in bucketize(&self.open[i], tier.step, aggs) {
-                    self.rows[i].push_back((bt, bv.clone()));
-                    closed.push((i, bt, bv));
+            match &mut self.open[i] {
+                Some(o) if o.b == b => o.add(&v, aggs),
+                slot => {
+                    if let Some(o) = slot.take() {
+                        self.rows[i].push_back(o.b, &o.value());
+                        self.unflushed[i] += 1;
+                    }
+                    *slot = Some(Open::start(b, &v));
                 }
-                self.open[i].clear();
             }
-            self.open[i].push((t, v.clone()));
         }
         if feed[0] && t >= now - TIERS[0].keep {
-            self.rows[0].push_back((t, v));
+            self.rows[0].push_back(t, &v);
+            self.unflushed[0] += 1;
         }
+        let mut spilled = Vec::new();
         for (i, tier) in TIERS.iter().enumerate() {
-            while self.rows[i].front().is_some_and(|(x, _)| *x < now - tier.keep) {
+            while self.rows[i].front_t().is_some_and(|x| x < now - tier.keep) {
+                if self.unflushed[i] >= self.rows[i].len() {
+                    let (rt, rv) = self.rows[i].row(0);
+                    spilled.push((i, rt, rv));
+                    self.unflushed[i] -= 1;
+                }
                 self.rows[i].pop_front();
             }
         }
-        closed
+        spilled
     }
 
     /// 最近 secs 秒的原始样本某一列（健康规则、小图用）。
     pub fn recent(&self, field: usize, secs: i64, now: i64) -> Vec<f32> {
-        self.rows[0].iter().filter(|(x, _)| *x >= now - secs).filter_map(|(_, v)| v.get(field).copied()).collect()
+        let r = &self.rows[0];
+        (0..r.len()).filter(|&i| r.t(i) >= now - secs).filter_map(|i| r.get(i, field)).collect()
     }
 
     /// 取 [from, to] 的数据：按跨度选档，必要时再降采样到不超过 max_points 个点。
     pub fn query(&self, from: i64, to: i64, max_points: usize, aggs: &[Agg]) -> Vec<(i64, Vec<f32>)> {
         let ti = tier_for(to - from);
-        let mut rows: Vec<(i64, Vec<f32>)> = self.rows[ti].iter().filter(|(t, _)| *t >= from && *t <= to).cloned().collect();
+        let r = &self.rows[ti];
+        let mut rows: Vec<(i64, Vec<f32>)> = (0..r.len())
+            .filter(|&i| {
+                let t = r.t(i);
+                t >= from && t <= to
+            })
+            .map(|i| r.row(i))
+            .collect();
         if ti > 0 {
             // 当前未满的桶也算进去，图的右端才不会缺一段
-            rows.extend(bucketize(&self.open[ti], TIERS[ti].step, aggs).into_iter().filter(|(t, _)| *t >= from && *t <= to));
+            if let Some(o) = self.open[ti].as_ref().filter(|o| o.b >= from && o.b <= to) {
+                rows.push((o.b, o.value()));
+            }
         }
         if rows.len() > max_points && max_points > 0 {
             let step = ((to - from) / max_points as i64).max(1);
@@ -213,6 +326,30 @@ enum Rec {
 
 fn enc(v: &[f32]) -> Vec<Option<f32>> {
     v.iter().map(|x| (!x.is_nan()).then_some(*x)).collect()
+}
+
+/// 写盘用的行，字段与顺序同 Rec::S / Rec::B（输出文本逐字相同），键借用、不复制。
+#[derive(Serialize)]
+struct SOut<'a> {
+    s: &'a str,
+    t: i64,
+    v: Vec<Option<f32>>,
+}
+#[derive(Serialize)]
+struct BOut<'a> {
+    k: usize,
+    a: &'a str,
+    t: i64,
+    v: Vec<Option<f32>>,
+}
+
+/// 一行写盘文本（不含换行）。
+fn line(tier: usize, key: &str, t: i64, v: Vec<Option<f32>>) -> serde_json::Result<String> {
+    if tier == 0 {
+        serde_json::to_string(&SOut { s: key, t, v })
+    } else {
+        serde_json::to_string(&BOut { k: tier, a: key, t, v })
+    }
 }
 
 fn dec(key: &str, v: Vec<Option<f32>>) -> Vec<f32> {
@@ -267,8 +404,9 @@ pub struct Store {
     pub aliases: BTreeMap<String, String>,
     /// 设备名册：连过 AP 的终端，不随实时列表的 24 小时窗口过期
     pub seen: BTreeMap<String, Seen>,
-    pending: [Vec<String>; 4],
-    pending_ev: Vec<String>,
+    /// 待写区：被挤出保留期前没来得及写盘的行（少见），每行以换行结尾
+    pending: [String; 4],
+    pending_ev: String,
     dir: Option<PathBuf>,
     names_dirty: bool,
     /// 内核日志去重游标：(AP 开机时刻, 已处理到的最大时间戳)
@@ -283,14 +421,12 @@ pub fn atomic_write(dir: &Path, name: &str, data: &[u8]) -> std::io::Result<()> 
     std::fs::rename(&tmp, dir.join(name))
 }
 
-fn append_gz(path: &Path, lines: &[String]) -> std::io::Result<()> {
+/// 追加一个 gzip 成员：`write` 往里写若干行。
+fn append_gz(path: &Path, write: impl FnOnce(&mut dyn Write) -> std::io::Result<()>) -> std::io::Result<()> {
     let f = std::fs::OpenOptions::new().create(true).append(true).open(path)?;
-    let mut g = GzEncoder::new(f, flate2::Compression::default());
-    for l in lines {
-        g.write_all(l.as_bytes())?;
-        g.write_all(b"\n")?;
-    }
-    g.finish()?.sync_all()
+    let mut g = GzEncoder::new(std::io::BufWriter::new(f), flate2::Compression::default());
+    write(&mut g)?;
+    g.finish()?.into_inner().map_err(|e| e.into_error())?.sync_all()
 }
 
 /// 读压缩或明文的行文件；末尾残缺的 gzip 成员（写到一半断电）读到哪算哪。
@@ -328,7 +464,7 @@ impl Store {
             aliases: BTreeMap::new(),
             seen: BTreeMap::new(),
             pending: Default::default(),
-            pending_ev: Vec::new(),
+            pending_ev: String::new(),
             dir,
             names_dirty: false,
             kstate: None,
@@ -339,19 +475,22 @@ impl Store {
     pub fn push(&mut self, key: &str, t: i64, v: Vec<f32>, now: i64) {
         let s = schema(key);
         debug_assert_eq!(v.len(), s.names.len(), "{key}");
-        if t >= now - TIERS[0].keep {
-            if let Ok(l) = serde_json::to_string(&Rec::S { s: key.to_string(), t, v: enc(&v) }) {
-                self.pending[0].push(l);
-            }
-        }
-        let closed = self.series.entry(key.to_string()).or_default().push(t, v, now, s.aggs, [true; 4]);
-        self.queue(key, closed);
+        let ser = match self.series.get_mut(key) {
+            Some(x) => x,
+            None => self.series.entry(key.to_string()).or_default(),
+        };
+        let spilled = ser.push(t, v, now, s.aggs, [true; 4]);
+        self.spill(key, spilled);
     }
 
-    fn queue(&mut self, key: &str, closed: Closed) {
-        for (k, t, v) in closed {
-            if let Ok(l) = serde_json::to_string(&Rec::B { k, a: key.to_string(), t, v: enc(&v) }) {
-                self.pending[k].push(l);
+    fn spill(&mut self, key: &str, rows: Spilled) {
+        if self.dir.is_none() {
+            return;
+        }
+        for (k, t, v) in rows {
+            if let Ok(l) = line(k, key, t, enc(&v)) {
+                self.pending[k].push_str(&l);
+                self.pending[k].push('\n');
             }
         }
     }
@@ -361,8 +500,11 @@ impl Store {
     }
 
     pub fn event(&mut self, e: Event) {
-        if let Ok(l) = serde_json::to_string(&Rec::E { e: e.clone() }) {
-            self.pending_ev.push(l);
+        if self.dir.is_some() {
+            if let Ok(l) = serde_json::to_string(&Rec::E { e: e.clone() }) {
+                self.pending_ev.push_str(&l);
+                self.pending_ev.push('\n');
+            }
         }
         self.insert_event(e);
     }
@@ -409,11 +551,19 @@ impl Store {
             if self.seen.contains_key(mac) {
                 continue;
             }
-            let first = s.rows.iter().filter_map(|r| r.front().map(|x| x.0)).min();
-            let last = s.rows.iter().filter_map(|r| r.back()).max_by_key(|x| x.0);
-            if let (Some(first), Some((lt, v))) = (first, last) {
-                let band = v.get(5).copied().filter(|b| b.is_finite()).unwrap_or(0.0) as u8;
-                self.seen.insert(mac.to_string(), Seen { first, last: *lt, band });
+            let first = s.rows.iter().filter_map(|r| r.front_t()).min();
+            // 各档最后一行里时刻最大的那个（同为最大取后一档，与 max_by_key 一致）
+            let mut last: Option<(i64, &Rows)> = None;
+            for r in &s.rows {
+                if let Some(t) = r.back_t() {
+                    if last.is_none_or(|(lt, _)| t >= lt) {
+                        last = Some((t, r));
+                    }
+                }
+            }
+            if let (Some(first), Some((lt, r))) = (first, last) {
+                let band = r.get(r.len() - 1, 5).filter(|b| b.is_finite()).unwrap_or(0.0) as u8;
+                self.seen.insert(mac.to_string(), Seen { first, last: lt, band });
                 self.names_dirty = true;
             }
         }
@@ -476,27 +626,27 @@ impl Store {
         self.kstate_dirty = true;
     }
 
-    /// 把 pending 追加写到当天的压缩文件。返回写入的行数。
+    /// 把还没写盘的行追加写到当天的压缩文件（每档一个 gzip 成员）。返回写入的行数。
     pub fn flush(&mut self, now: i64) -> std::io::Result<usize> {
         let Some(dir) = self.dir.clone() else {
-            self.pending.iter_mut().for_each(Vec::clear);
+            self.pending.iter_mut().for_each(String::clear);
             self.pending_ev.clear();
+            self.series.values_mut().for_each(|s| s.unflushed = [0; 4]);
             return Ok(0);
         };
         std::fs::create_dir_all(&dir)?;
         let day = ymd(now);
         let mut n = 0;
         for i in 0..TIERS.len() {
-            if !self.pending[i].is_empty() {
-                append_gz(&dir.join(format!("{}{day}.jsonl.gz", file_prefix(i))), &self.pending[i])?;
-                n += self.pending[i].len();
-                self.pending[i].clear();
-            }
+            n += self.flush_tier(&dir, &day, i)?;
         }
         if !self.pending_ev.is_empty() {
-            append_gz(&dir.join(format!("ev-{day}.jsonl.gz")), &self.pending_ev)?;
-            n += self.pending_ev.len();
-            self.pending_ev.clear();
+            let text = std::mem::take(&mut self.pending_ev);
+            if let Err(e) = append_gz(&dir.join(format!("ev-{day}.jsonl.gz")), |w| w.write_all(text.as_bytes())) {
+                self.pending_ev = text;
+                return Err(e);
+            }
+            n += text.lines().count();
         }
         if self.names_dirty {
             let nf = NameFile { lan: BTreeMap::new(), dhcp: self.dhcp.clone(), seen: self.seen.clone() };
@@ -509,6 +659,32 @@ impl Store {
             }
             self.kstate_dirty = false;
         }
+        Ok(n)
+    }
+
+    /// 某一档：先写待写区（被挤出保留期的行，更早），再写各序列末尾没写过的行。成功后才清计数。
+    fn flush_tier(&mut self, dir: &Path, day: &str, i: usize) -> std::io::Result<usize> {
+        if self.pending[i].is_empty() && self.series.values().all(|s| s.unflushed[i] == 0) {
+            return Ok(0);
+        }
+        let mut n = self.pending[i].lines().count();
+        let (pending, series) = (&self.pending[i], &self.series);
+        append_gz(&dir.join(format!("{}{day}.jsonl.gz", file_prefix(i))), |w| {
+            w.write_all(pending.as_bytes())?;
+            for (key, s) in series {
+                let r = &s.rows[i];
+                for j in r.len() - s.unflushed[i]..r.len() {
+                    let v = r.row_iter(j).map(|x| (!x.is_nan()).then_some(x)).collect();
+                    let l = line(i, key, r.t(j), v).map_err(std::io::Error::other)?;
+                    w.write_all(l.as_bytes())?;
+                    w.write_all(b"\n")?;
+                    n += 1;
+                }
+            }
+            Ok(())
+        })?;
+        self.pending[i].clear();
+        self.series.values_mut().for_each(|s| s.unflushed[i] = 0);
         Ok(n)
     }
 
@@ -609,7 +785,7 @@ impl Store {
                     if let Ok(Rec::B { k, a, t, v }) = serde_json::from_str::<Rec>(&line) {
                         if k == i && t >= now - TIERS[i].keep {
                             let v = dec(&a, v);
-                            self.series.entry(a).or_default().rows[i].push_back((t, v));
+                            self.series.entry(a).or_default().rows[i].push_back(t, &v);
                             n += 1;
                         }
                     }
@@ -621,7 +797,7 @@ impl Store {
         let last: HashMap<String, [Option<i64>; 4]> = self
             .series
             .iter()
-            .map(|(k, s)| (k.clone(), std::array::from_fn(|i| s.rows[i].back().map(|(t, _)| *t))))
+            .map(|(k, s)| (k.clone(), std::array::from_fn(|i| s.rows[i].back_t())))
             .collect();
         for p in list(&dir, |x| x.starts_with(&file_prefix(0)) && x.ends_with(".jsonl.gz")) {
             for line in read_lines(&p) {
@@ -633,12 +809,14 @@ impl Store {
                     let feed: [bool; 4] =
                         std::array::from_fn(|i| i == 0 || l[i].is_none_or(|lt| t >= lt + TIERS[i].step));
                     let v = dec(&s, v);
-                    let closed = self.series.entry(s.clone()).or_default().push(t, v, now, schema(&s).aggs, feed);
-                    self.queue(&s, closed);
+                    let spilled = self.series.entry(s.clone()).or_default().push(t, v, now, schema(&s).aggs, feed);
+                    self.spill(&s, spilled);
                     n += 1;
                 }
             }
         }
+        // 原始样本本来就在文件里；重建时关闭的桶上次没写盘（异常退出），保留计数等下次写
+        self.series.values_mut().for_each(|s| s.unflushed[0] = 0);
         n
     }
 }
@@ -766,14 +944,68 @@ mod tests {
         s.flush(NOW).unwrap();
         // 之后又采了 50 分钟，只有原始样本落了盘（模拟桶尚未写盘时断电）
         fill(&mut s, NOW - 3570, NOW - 600);
-        let raw: Vec<String> = s.pending[0].drain(..).collect();
-        append_gz(&dir.join(format!("t0-{}.jsonl.gz", ymd(NOW))), &raw).unwrap();
-        s.pending.iter_mut().for_each(Vec::clear);
+        s.flush_tier(&dir, &ymd(NOW), 0).unwrap();
         let mut s2 = Store::new(Some(dir.clone()));
         s2.load(NOW);
         assert_eq!(views(&s), views(&s2));
-        assert!(!s2.pending[1].is_empty(), "重建的桶应进 pending 以便下次写盘");
+        assert_eq!(s2.series["ap"].unflushed[0], 0, "回放的原始样本本来就在盘上");
+        assert!(s2.series["ap"].unflushed[1] > 0, "重建的桶应记为待写，以便下次写盘");
+        // 再写一次盘后重启，桶不重复也不缺
+        s2.flush(NOW).unwrap();
+        let mut s3 = Store::new(Some(dir.clone()));
+        s3.load(NOW);
+        assert_eq!(views(&s), views(&s3));
         let _ = std::fs::remove_dir_all(&dir);
+    }
+
+    /// 写盘间隔长于原始样本保留期时，被挤出的样本先进待写区，一行不丢、不重复。
+    #[test]
+    fn rows_evicted_before_flush_are_spilled_not_lost() {
+        let dir = tmpdir("spill");
+        let mut s = Store::new(Some(dir.clone()));
+        // 按实时采集推进（now 随样本走），20 小时不写盘
+        let mut t = NOW - 20 * 3600;
+        while t <= NOW {
+            s.push("ap", t, vec![(t % 600) as f32 / 10.0, 50.0, 1.0], t);
+            t += 30;
+        }
+        assert!(!s.pending[0].is_empty(), "超过 6 小时没写盘，最老的原始样本应已转进待写区");
+        assert!(s.series["ap"].unflushed[0] <= s.series["ap"].rows[0].len());
+        s.flush(NOW).unwrap();
+        let t0: Vec<i64> = read_lines(&dir.join(format!("t0-{}.jsonl.gz", ymd(NOW))))
+            .iter()
+            .filter_map(|l| match serde_json::from_str::<Rec>(l) {
+                Ok(Rec::S { t, .. }) => Some(t),
+                _ => None,
+            })
+            .collect();
+        let want: Vec<i64> = (0..).map(|i| NOW - 20 * 3600 + i * 30).take_while(|t| *t <= NOW).collect();
+        assert_eq!(t0, want, "每个原始样本恰好写一次、按时间顺序");
+        let mut s2 = Store::new(Some(dir.clone()));
+        s2.load(NOW);
+        assert_eq!(views(&s), views(&s2));
+        let _ = std::fs::remove_dir_all(&dir);
+    }
+
+    #[test]
+    fn rows_storage_roundtrip_and_width() {
+        let mut r = Rows::default();
+        r.push_back(1, &[1.0, 2.0, 3.0]);
+        r.push_back(2, &[4.0]); // 少列补 NaN
+        r.push_back(3, &[5.0, 6.0, 7.0, 8.0]); // 多列截断
+        assert_eq!(r.len(), 3);
+        assert_eq!(r.row(0), (1, vec![1.0, 2.0, 3.0]));
+        assert!(r.get(1, 1).unwrap().is_nan());
+        assert_eq!(r.row(2), (3, vec![5.0, 6.0, 7.0]));
+        assert_eq!(r.get(0, 3), None);
+        r.pop_front();
+        assert_eq!((r.front_t(), r.back_t(), r.get(0, 0)), (Some(2), Some(3), Some(4.0)));
+        r.pop_front();
+        r.pop_front();
+        r.pop_front();
+        assert!(r.is_empty());
+        r.push_back(9, &[1.0, 2.0]); // 清空后新宽度
+        assert_eq!(r.row(0), (9, vec![1.0, 2.0]));
     }
 
     #[test]
