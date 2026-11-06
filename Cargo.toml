@@ -15,6 +15,15 @@ tokio = { version = "1", features = ["io-util", "macros", "net", "rt-multi-threa
 tracing = "0.1"
 tracing-subscriber = { version = "0.3", features = ["env-filter"] }
 
+[profile.dev]
+# 调试构建（cargo test/build/run）只留行号表，依赖库不带调试信息：panic 回溯里本项目代码仍有文件名
+# 和行号，调试器看不了变量（需要时临时加 CARGO_PROFILE_DEV_DEBUG=full）。发布构建不受影响。
+# 依据：2026-11-06 phdns 实测改一个文件重编测试写盘 4.35→1.19 GB、耗时减半（.107 写 SSD 的主要来源）。
+debug = "line-tables-only"
+
+[profile.dev.package."*"]
+debug = false
+
 [profile.release]
 opt-level = 3
 lto = true
