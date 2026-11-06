@@ -71,21 +71,86 @@ mod tests {
 
     fn sample(key: &str, r: &mut Rng) -> Vec<f32> {
         let n = schema(key).names.len();
-        (0..n).map(|i| if i == 3 && r.f() < 5.0 { f32::NAN } else { r.f() }).collect()
+        (0..n)
+            .map(|i| {
+                if i == 3 && r.f() < 5.0 {
+                    f32::NAN
+                } else {
+                    r.f()
+                }
+            })
+            .collect()
     }
 
     const NOW: i64 = 1_800_000_000;
 
+    fn views_of(s: &Store) -> Vec<serde_json::Value> {
+        let ranges = [3600, 6 * 3600, 86400, 7 * 86400, 30 * 86400];
+        let keys = [
+            "ap",
+            "radio0",
+            "vap1",
+            "c:02:00:00:00:00:00",
+            "c:02:00:00:00:00:1f",
+        ];
+        let mut out = Vec::new();
+        for k in keys {
+            for rg in ranges {
+                for pts in [100_000, 300] {
+                    let q = s.series[k].query(NOW - rg, NOW, pts, schema(k).aggs);
+                    let q: Vec<(i64, Vec<Option<f32>>)> = q
+                        .into_iter()
+                        .map(|(t, v)| {
+                            (
+                                t,
+                                v.into_iter().map(|x| (!x.is_nan()).then_some(x)).collect(),
+                            )
+                        })
+                        .collect();
+                    out.push(serde_json::json!({"k": k, "range": rg, "pts": pts, "rows": q}));
+                }
+            }
+            out.push(serde_json::json!({"k": k, "recent": s.series[k].recent(0, 600, NOW).iter().map(|x| (!x.is_nan()).then_some(*x)).collect::<Vec<_>>()}));
+        }
+        out
+    }
+
     #[test]
     #[ignore]
     fn memprofile() {
-        let save = std::env::var("AP_SAVE_MINS").ok().and_then(|x| x.parse().ok()).unwrap_or(360i64) * 60;
-        let dir = std::env::temp_dir().join(format!("apwatch-memprof-{}", std::process::id()));
+        let save = std::env::var("AP_SAVE_MINS")
+            .ok()
+            .and_then(|x| x.parse().ok())
+            .unwrap_or(360i64)
+            * 60;
+        // AP_LOAD_ONLY=<目录>：只读入别的版本写的数据目录，把视图写到 AP_DUMP（新旧版本互读对拍）
+        if let Ok(src) = std::env::var("AP_LOAD_ONLY") {
+            let mut s = Store::new(Some(src.into()));
+            let n = s.load(NOW);
+            let v = views_of(&s);
+            println!("读入 {n} 条");
+            std::fs::write(
+                std::env::var("AP_DUMP").unwrap(),
+                serde_json::to_vec(&v).unwrap(),
+            )
+            .unwrap();
+            return;
+        }
+        // AP_KEEP_DIR=<目录>：数据写到这里且不删
+        let keep_dir = std::env::var("AP_KEEP_DIR").ok();
+        let dir = keep_dir
+            .clone()
+            .map(std::path::PathBuf::from)
+            .unwrap_or_else(|| {
+                std::env::temp_dir().join(format!("apwatch-memprof-{}", std::process::id()))
+            });
         let _ = std::fs::remove_dir_all(&dir);
         let base = live();
         let mut s = Store::new(Some(dir.clone()));
         let mut r = Rng(0x9e3779b97f4a7c15);
-        let clients: Vec<String> = (0..39).map(|i| format!("c:02:00:00:00:00:{i:02x}")).collect();
+        let clients: Vec<String> = (0..39)
+            .map(|i| format!("c:02:00:00:00:00:{i:02x}"))
+            .collect();
         let start = NOW - 30 * 86400;
         let mut last_save = start;
         let mut peak_last_day = 0usize;
@@ -111,7 +176,14 @@ mod tests {
                 }
             }
             if t % 3600 == 0 {
-                s.event(Event { t, kind: "online".into(), band: Some(1), mac: Some(clients[0][2..].into()), msg: "上线".into(), kts: None });
+                s.event(Event {
+                    t,
+                    kind: "online".into(),
+                    band: Some(1),
+                    mac: Some(clients[0][2..].into()),
+                    msg: "上线".into(),
+                    kts: None,
+                });
             }
             if t - last_save >= save {
                 last_save = t;
@@ -126,7 +198,11 @@ mod tests {
         let before_flush = live() - base;
         writes += s.flush(NOW).unwrap();
         let after_flush = live() - base;
-        let rows: usize = s.series.values().map(|x| x.rows.iter().map(|r| r.len()).sum::<usize>()).sum();
+        let rows: usize = s
+            .series
+            .values()
+            .map(|x| x.rows.iter().map(|r| r.len()).sum::<usize>())
+            .sum();
         println!(
             "落盘间隔 {} 分钟：30 天采集耗时 {:.2?}；最后一天存活峰值 {}；结束时（写盘前）{}，写盘后 {}；序列 {} 条、各档共 {} 行；写出 {} 行",
             save / 60,
@@ -138,44 +214,48 @@ mod tests {
             rows,
             writes
         );
-        let disk: u64 = std::fs::read_dir(&dir).unwrap().flatten().map(|e| e.metadata().unwrap().len()).sum();
+        let disk: u64 = std::fs::read_dir(&dir)
+            .unwrap()
+            .flatten()
+            .map(|e| e.metadata().unwrap().len())
+            .sum();
         println!("数据目录 {disk} 字节");
 
-        let ranges = [3600, 6 * 3600, 86400, 7 * 86400, 30 * 86400];
-        let keys = ["ap", "radio0", "vap1", "c:02:00:00:00:00:00", "c:02:00:00:00:00:1f"];
-        let views = |s: &Store| -> Vec<serde_json::Value> {
-            let mut out = Vec::new();
-            for k in keys {
-                for rg in ranges {
-                    for pts in [100_000, 300] {
-                        let q = s.series[k].query(NOW - rg, NOW, pts, schema(k).aggs);
-                        let q: Vec<(i64, Vec<Option<f32>>)> =
-                            q.into_iter().map(|(t, v)| (t, v.into_iter().map(|x| (!x.is_nan()).then_some(x)).collect())).collect();
-                        out.push(serde_json::json!({"k": k, "range": rg, "pts": pts, "rows": q}));
-                    }
-                }
-                out.push(serde_json::json!({"k": k, "recent": s.series[k].recent(0, 600, NOW).iter().map(|x| (!x.is_nan()).then_some(*x)).collect::<Vec<_>>()}));
-            }
-            out
-        };
-        let mem_views = views(&s);
+        let mem_views = views_of(&s);
         drop(s);
         let b2 = live();
         let t1 = Instant::now();
         let mut s2 = Store::new(Some(dir.clone()));
         let n = s2.load(NOW);
-        println!("重启回放 {n} 条，耗时 {:.2?}，存活 {}", t1.elapsed(), mib(live() - b2));
-        let disk_views = views(&s2);
+        println!(
+            "重启回放 {n} 条，耗时 {:.2?}，存活 {}",
+            t1.elapsed(),
+            mib(live() - b2)
+        );
+        let disk_views = views_of(&s2);
         if let Ok(p) = std::env::var("AP_DUMP") {
-            std::fs::write(format!("{p}.disk"), serde_json::to_vec(&disk_views).unwrap()).unwrap();
+            std::fs::write(
+                format!("{p}.disk"),
+                serde_json::to_vec(&disk_views).unwrap(),
+            )
+            .unwrap();
             std::fs::write(&p, serde_json::to_vec(&mem_views).unwrap()).unwrap();
         }
         // 已下线终端最后那个未关闭的桶从未写盘，重启后会少一格（旧版就如此，不在本次改动范围），比较时排除它
         let keep = |v: &Vec<serde_json::Value>| -> Vec<serde_json::Value> {
-            v.iter().filter(|x| x["k"] != "c:02:00:00:00:00:1f").cloned().collect()
+            v.iter()
+                .filter(|x| x["k"] != "c:02:00:00:00:00:1f")
+                .cloned()
+                .collect()
         };
-        assert_eq!(keep(&mem_views), keep(&disk_views), "重启回放后的视图应与内存里的一致");
+        assert_eq!(
+            keep(&mem_views),
+            keep(&disk_views),
+            "重启回放后的视图应与内存里的一致"
+        );
         assert_eq!(s2.events.len(), 30 * 24 + 1);
-        let _ = std::fs::remove_dir_all(&dir);
+        if keep_dir.is_none() {
+            let _ = std::fs::remove_dir_all(&dir);
+        }
     }
 }
