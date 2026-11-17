@@ -6,44 +6,22 @@
 <title>AP 观测</title>
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%232b6583'/%3E%3Cpath d='M8 14a11 11 0 0 1 16 0M11 17.5a6.5 6.5 0 0 1 10 0' stroke='%23fff' stroke-width='2.4' fill='none' stroke-linecap='round'/%3E%3Ccircle cx='16' cy='22' r='2.4' fill='%2336c4c6'/%3E%3C/svg%3E">
 <style>
-/*
- * 设计语言参考 ros-dpi：淡灰紫底 + 白色大圆角卡片 + 左侧图标导航；品牌钢蓝，关键数字青绿。
- * 序列色取 dataviz 参考调色板前三槽（蓝/橙/青），已用 validate_palette.js 在本页卡片底色上校验（两种主题全对通过）。
- * 浅色下青色对比度 2.82:1，所以每张图都带图例和数据表视图。
- */
-:root {
-  --paper: #eef0f6; --panel: #ffffff; --sunk: #f4f5f9;
-  --ink: #1f2933; --muted: #5f6b77; --faint: #8a949e;
-  --line: #e5e8f0; --line-strong: #cdd3de; --grid: #edf0f5;
-  --brand: #2b6583; --brand-ink: #2b6583; --brand-weak: #e8ebf8; --accent: #129ea2;
-  --s1: #2a78d6; --s2: #eb6834; --s3: #1baf7a;
-  --good: #0ca30c; --warn: #fab219; --serious: #ec835a; --bad: #d03b3b;
-  --good-ink: #08800a; --warn-ink: #9a6a00; --bad-ink: #b42f2f;
-  --r-sm: 8px; --r: 14px; --side: 208px; --top: 58px;
-  --sans: "Barlow", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Noto Sans CJK SC", system-ui, sans-serif;
-  --cond: "Barlow Semi Condensed", "Barlow", "PingFang SC", "Microsoft YaHei", system-ui, sans-serif;
-  color-scheme: light;
+/* Rosé Pine Dawn / Moon, aligned with hnm and xdp-tool. */
+:root { --paper:#faf4ed; --panel:#fffaf3; --sunk:#f2e9e1; --ink:#464261; --muted:#6e687e; --faint:#857f94;
+  --line:#e6ddd6; --line-strong:#d3c7c0; --grid:#eee5dd; --brand:#286983; --brand-ink:#286983; --brand-weak:#e9e3ed; --on-brand:#fffaf3;
+  --accent:#286983; --s1:#286983; --s2:#b07720; --s3:#907aa9; --good:#398578; --good-ink:#286983; --warn:#d3a456; --warn-ink:#92631e; --serious:#d7827e; --bad:#b4637a; --bad-ink:#a44f68;
+  --shadow:0 1px 3px #57527908; color-scheme:light;
+  --r-sm:8px; --r:12px; --side:208px; --top:48px;
+  --sans:Inter,-apple-system,BlinkMacSystemFont,"Segoe UI","Noto Sans CJK SC","Microsoft YaHei",sans-serif; --cond:var(--sans);
 }
-@media (prefers-color-scheme: dark) {
-  :root:not([data-theme="light"]) {
-    --paper: #11161b; --panel: #1a2128; --sunk: #151b21;
-    --ink: #e4e9ee; --muted: #a0abb5; --faint: #77838e;
-    --line: #29323b; --line-strong: #3a4550; --grid: #232b33;
-    --brand-ink: #74b0d1; --brand-weak: #22303c; --accent: #36c4c6;
-    --s1: #3987e5; --s2: #d95926; --s3: #199e70;
-    --good-ink: #3fc65a; --warn-ink: #f2b84b; --bad-ink: #f07171;
-    color-scheme: dark;
-  }
-}
-:root[data-theme="dark"] {
-  --paper: #11161b; --panel: #1a2128; --sunk: #151b21;
-  --ink: #e4e9ee; --muted: #a0abb5; --faint: #77838e;
-  --line: #29323b; --line-strong: #3a4550; --grid: #232b33;
-  --brand-ink: #74b0d1; --brand-weak: #22303c; --accent: #36c4c6;
-  --s1: #3987e5; --s2: #d95926; --s3: #199e70;
-  --good-ink: #3fc65a; --warn-ink: #f2b84b; --bad-ink: #f07171;
-  color-scheme: dark;
-}
+:root[data-theme="dark"] { --paper:#232136; --panel:#2a273f; --sunk:#302c46; --ink:#e0def4; --muted:#b1abc9; --faint:#9991ad;
+  --line:#3d3852; --line-strong:#524b69; --grid:#39344d; --brand:#c4a7e7; --brand-ink:#c4a7e7; --brand-weak:#39334f; --on-brand:#232136;
+  --accent:#9ccfd8; --s1:#9ccfd8; --s2:#f6c177; --s3:#c4a7e7; --good:#72b7ad; --good-ink:#9ccfd8; --warn:#f6c177; --warn-ink:#f6c177; --serious:#ea9a97; --bad:#eb6f92; --bad-ink:#eb6f92;
+  --shadow:0 1px 3px #19172415; color-scheme:dark; }
+@media(prefers-color-scheme:dark) { :root:not([data-theme="light"]) { --paper:#232136; --panel:#2a273f; --sunk:#302c46; --ink:#e0def4; --muted:#b1abc9; --faint:#9991ad;
+  --line:#3d3852; --line-strong:#524b69; --grid:#39344d; --brand:#c4a7e7; --brand-ink:#c4a7e7; --brand-weak:#39334f; --on-brand:#232136;
+  --accent:#9ccfd8; --s1:#9ccfd8; --s2:#f6c177; --s3:#c4a7e7; --good:#72b7ad; --good-ink:#9ccfd8; --warn:#f6c177; --warn-ink:#f6c177; --serious:#ea9a97; --bad:#eb6f92; --bad-ink:#eb6f92;
+  --shadow:0 1px 3px #19172415; color-scheme:dark; } }
 * { box-sizing: border-box; }
 html, body { margin: 0; background: var(--paper); color: var(--ink); font: 14px/1.5 var(--sans); }
 button, input, select { font: inherit; color: inherit; }
@@ -63,10 +41,6 @@ a { color: var(--brand-ink); text-decoration: none; }
 .side-foot { margin-top: auto; padding: 14px 20px; font-size: 12px; color: var(--muted); display: flex; align-items: center; gap: 8px; border-top: 1px solid var(--line); }
 .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--faint); flex: none; display: inline-block; }
 .dot.ok { background: var(--good); } .dot.bad { background: var(--bad); } .dot.warn { background: var(--warn); }
-.top { position: fixed; top: 0; left: var(--side); right: 0; height: var(--top); background: var(--panel); border-bottom: 1px solid var(--line); display: flex; align-items: center; gap: 16px; padding: 0 24px; z-index: 4; }
-.crumb { color: var(--muted); font-size: 14px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.crumb b { color: var(--ink); font-weight: 600; }
-.top .grow { flex: 1; }
 .seg { display: inline-flex; gap: 2px; background: var(--sunk); border-radius: 10px; padding: 3px; }
 .seg button { border: 0; background: transparent; padding: 4px 12px; border-radius: 8px; cursor: pointer; color: var(--muted); font-size: 13px; }
 .seg button.on { background: var(--panel); color: var(--brand-ink); font-weight: 600; box-shadow: 0 1px 2px rgba(0,0,0,.08); }
@@ -222,21 +196,285 @@ table.t .sm { display: none; margin-top: 4px; }
   table.t .sm { display: block; }
   table.t td, table.t th { padding: 8px 6px; }
 }
+
+html { scroll-padding-top:90px; }
+body { font-size:13px; }
+button,a,input,select { -webkit-tap-highlight-color:transparent; }
+:focus-visible { outline:3px solid var(--brand-ink); outline-offset:3px; }
+button,a { touch-action:manipulation; }
+.skip { position:fixed; top:-60px; left:16px; z-index:100; padding:12px; background:var(--panel); }
+.skip:focus { top:8px; }
+.side { padding:18px 14px 0; border-color:var(--line); }
+.logo { padding:9px 12px 25px; height:auto; gap:10px; font-style:normal; font-size:20px; letter-spacing:-.5px; color:var(--ink); }
+.logo svg { width:36px; height:36px; filter:drop-shadow(0 3px 5px rgb(53 108 240 / 15%)); }
+.nav { padding:0; gap:6px; }
+.nav-label { padding:19px 14px 7px; color:var(--faint); font-size:10px; letter-spacing:1.6px; font-weight:600; }
+.nav a { min-height:44px; padding:11px 14px; color:var(--muted); font-size:13px; border-radius:9px; }
+.nav a.on { background:var(--brand-weak); box-shadow:none; }
+.nav a svg { width:19px; height:19px; }
+.side-foot { margin: auto -1px 0; padding:22px 12px; font-size:11px; line-height:1.8; }
+.iconbtn { width:36px; height:36px; border:1px solid var(--line); background:var(--panel); flex:none; }
+main { max-width:1920px; padding:calc(var(--top) + 30px) 32px 40px; }
+.grid { gap:20px; margin-bottom:20px; }
+.card { padding:22px; border:1px solid var(--line); box-shadow:var(--shadow); }
+.card-h { margin-bottom:20px; gap:7px 10px; }
+.card-h h3 { font-size:14px; font-weight:650; }
+.card-h .sub { font-size:11px; line-height:1.7; flex-basis:80px; }
+.card-h .act { flex:none; }
+.panel-title { border:1px solid var(--line); padding:16px 20px; gap:12px; box-shadow:var(--shadow); }
+.panel-title h2 { font-size:14px; }
+.panel-title .sub { font-size:11px; line-height:1.7; }
+.big { color:var(--ink); font-size:38px; font-weight:650; letter-spacing:-1.2px; margin:12px 0; }
+.big small { font-size:17px; letter-spacing:0; }
+.mid { color:var(--ink); font-size:26px; font-weight:650; letter-spacing:-.6px; margin:10px 0; }
+.tiles .card { position:relative; overflow:hidden; min-height:150px; }
+.tiles .card::before { content:""; position:absolute; top:22px; right:22px; width:8px; height:8px; background:var(--brand); border-radius:3px; box-shadow:0 0 0 7px var(--brand-weak); }
+.tiles .card:nth-child(2)::before { background:var(--good); }
+.tiles .card:nth-child(3)::before { background:var(--warn); }
+.tiles .card>.muted { font-size:11px; line-height:1.8; }
+.tiles .card>.muted:first-child { padding-right:18px; font-size:12px; }
+.kv { font-size:12px; gap:12px 16px; line-height:1.7; }
+.kv dd { overflow-wrap:anywhere; min-width:0; }
+.kv dt { min-width:0; }
+.meter { height:5px; margin-top:6px; }
+.pill { padding:4px 9px; font-size:11px; border:1px solid var(--line); }
+.pill.ok { background:color-mix(in srgb,var(--good) 9%,var(--panel)); border-color:color-mix(in srgb,var(--good) 15%,var(--line)); }
+.pill.warn { background:color-mix(in srgb,var(--warn) 10%,var(--panel)); }
+.pill.bad { background:color-mix(in srgb,var(--bad) 8%,var(--panel)); }
+.band-tag { background:var(--sunk); border:0; padding:5px 8px; }
+.btn { min-height:36px; padding:8px 14px; font-size:12px; font-weight:550; border-color:var(--line-strong); border-radius:8px; display:inline-flex; justify-content:center; align-items:center; }
+.btn.pri { box-shadow:0 3px 8px rgb(53 108 240 / 15%); }
+.btn:hover { background:var(--sunk); }
+.btn.pri:hover { background:var(--brand-ink); color:white; }
+.btn.danger:hover { background:var(--bad-ink); color:white; }
+.btn.mini { min-height:28px; padding:4px 10px; }
+.link-btn { font-size:12px; min-height:30px; }
+.inp,.search { min-height:39px; font-size:12px; background:var(--sunk); border-color:var(--line); }
+.search { min-width:0; width:240px; max-width:100%; }
+.field label { font-size:12px; font-weight:550; color:var(--ink); }
+.field .hint,.note { font-size:11px; line-height:1.9; color:var(--muted); }
+.form-sec { margin:20px 0 16px; padding-bottom:10px; border-bottom:1px solid var(--line); }
+.form-sec:first-child { margin-top:0; }
+.form-grid { gap:0 22px; }
+.field { margin-bottom:20px; gap:8px; }
+.chip { font-size:12px; padding:7px 12px; border-radius:7px; border-color:var(--line); }
+.seg { border:1px solid var(--line); padding:3px; border-radius:8px; }
+.seg button { font-size:11px; padding:6px 11px; border-radius:5px; }
+.tbl-wrap { scrollbar-width:thin; border-radius:9px; }
+table.t th,table.t td,table.t th.r,table.t td.r { text-align:center; }
+table.t th { background:var(--sunk); font-size:11px; padding:12px 10px; }
+table.t td { padding:16px 10px; font-size:12px; }
+table.t tbody tr:last-child td { border-bottom:0; }
+.dev b { font-size:12px; margin-bottom:5px; }
+.dev span { font-size:10px; }
+.ev { padding:13px 0; font-size:12px; grid-template-columns:100px 26px minmax(0,1fr); gap:10px; }
+.ev time { font-size:10px; padding-top:3px; }
+.ev .ek { width:26px; height:26px; border-radius:8px; }
+.ev>div { overflow-wrap:anywhere; line-height:1.8; }
+.empty { padding:42px 12px; line-height:1.9; font-size:12px; }
+.confirm { border:1px solid color-mix(in srgb,var(--warn) 40%,var(--line)); padding:16px; }
+.confirm p { line-height:1.9; font-size:12px; }
+.modal { background:rgb(10 24 45 / 45%); backdrop-filter:blur(4px); }
+.modal .box { padding:28px; border:1px solid var(--line); }
+.banner { line-height:1.9; font-size:12px; }
+#page-error { margin-bottom:16px; }
+#page-error:empty { display:none; }
+.resource-list { display:grid; gap:18px; }
+.resource-item .row { font-size:12px; margin-bottom:8px; }
+.resource-item .row a { flex:1; }
+.resource-item .meter { height:6px; }
+.appcard { transition:border-color .15s,transform .15s; }
+.appcard:hover { border-color:var(--brand); transform:translateY(-2px); box-shadow:var(--shadow); }
+.appcard .app-icon { width:42px; height:42px; display:grid; place-items:center; border-radius:12px; background:var(--brand-weak); color:var(--brand-ink); margin-bottom:20px; }
+.app-icon svg { width:22px; height:22px; stroke:currentColor; fill:none; stroke-width:1.5; }
+.appcard .card-h { display:block; }
+.appcard .card-h h3 { font-size:17px; margin-bottom:6px; }
+.appcard .card-h .act { margin-top:15px; }
+.appcard .kv { border-top:1px solid var(--line); padding-top:18px; }
+.log { background:#101e32; color:#d7e3f5; border:1px solid #253750; padding:18px; line-height:1.9; scrollbar-width:thin; }
+.log .t { color:#8fa4bf; } .log .e { color:#ffaaaa; }
+#ov-radios .card { background:linear-gradient(120deg,var(--panel),var(--sunk)); }
+@media(min-width:1450px) { .overview-bottom { grid-template-columns:minmax(0,1.65fr) minmax(0,1fr); } }
+@media(max-width:1180px) { :root { --side:208px; } main { padding-left:22px; padding-right:22px; } .top { padding:0 22px; } .card { padding:18px; } }
+@media(max-width:860px) {
+  :root { --side:0px; --top:62px; }
+  .side { inset:var(--top) 0 auto; padding:0; height:54px; background:var(--panel); border-bottom:1px solid var(--line); border-top:0; }
+  .brand-note,.nav-label { display:none; }
+  .nav { overflow-x:auto; justify-content:flex-start; padding:6px 12px; gap:5px; scrollbar-width:none; }
+  .nav a { flex:0 0 auto; min-height:40px; flex-direction:row; font-size:12px; padding:9px 11px; gap:7px; }
+  .nav a svg { width:16px; height:16px; }
+  .nav a.on { box-shadow:none; }
+  .top { padding:0 16px; gap:8px; }
+  .top .crumb { display:block; font-size:11px; }
+  .top-badge { display:none; }
+  .crumb .faint { margin:0 5px; }
+  main { padding:140px 16px 30px; }
+  .page-head { margin-bottom:20px; }
+  .page-head h1 { font-size:23px; }
+  .sync { display:none; }
+  .grid { gap:14px; margin-bottom:14px; }
+  .g4 { grid-template-columns:repeat(2,minmax(0,1fr)); }
+  .card { padding:18px; border-radius:13px; }
+  .card-h { margin-bottom:16px; }
+  .ev { grid-template-columns:80px 24px minmax(0,1fr); gap:8px; }
+  .panel-title { padding:14px; }
+  .panel-title .search { flex:1 1 160px; }
+  .top:has(#range) .crumb { display:none; }
+  .top:has(#range)::before { content:"APWATCH"; font-size:12px; font-weight:700; letter-spacing:.5px; }
+  #range button { padding:6px 7px; }
+  .tiles .card { min-height:145px; }
+  .tiles .big { font-size:28px !important; }
+  .tiles .mid { font-size:22px; }
+}
+@media(max-width:540px) {
+  .g4:not(.tiles) { grid-template-columns:minmax(0,1fr); }
+  .tiles .card { padding:15px; }
+  .tiles .card::before { top:20px; right:19px; width:6px; height:6px; box-shadow:0 0 0 5px var(--brand-weak); }
+  .tiles .card>.muted { font-size:10px; }
+  .tiles .card>.muted:first-child { font-size:11px; }
+  .kv { gap:10px; }
+  .ev { grid-template-columns:24px minmax(0,1fr); }
+  .ev time { grid-column:2; grid-row:auto; margin-bottom:-10px; }
+  .ev .ek { grid-column:1; grid-row:span 2; }
+  .ev>div { grid-column:2; }
+  .top:has(#range)::before { display:none; }
+  .top:has(#range) .grow { display:none; }
+  #range { flex:1; justify-content:space-between; }
+  .tbl-wrap:has(tr[data-app]),.tbl-wrap:has(tr[data-mac]) { overflow:visible; }
+  table.t:has(tr[data-app]) thead,table.t:has(tr[data-mac]) thead { display:none; }
+  table.t:has(tr[data-app]),table.t:has(tr[data-mac]),table.t:has(tr[data-app]) tbody,table.t:has(tr[data-mac]) tbody { display:block; }
+  tr[data-app],tr[data-mac] { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); padding:14px 0; border-bottom:1px solid var(--line); gap:6px; }
+  table.t tr[data-app] td,table.t tr[data-mac] td { display:block; white-space:normal; overflow-wrap:anywhere; border:0; padding:5px; }
+  table.t tr[data-app] td.hm,table.t tr[data-mac] td.hm { display:none; }
+  table.t td.dev { grid-column:1/-1; }
+  td[data-label]:not(.dev)::before { content:attr(data-label); display:block; font-size:10px; color:var(--muted); margin-bottom:5px; }
+  .dev b { font-size:14px; }
+  .dev span { font-size:11px; }
+  .btn-row .inp { max-width:100%; }
+}
+@media(prefers-reduced-motion:reduce) { *,*::before,*::after { transition:none !important; scroll-behavior:auto !important; } }
+
+
+/* The workspace starts with data. Utility controls live in the sidebar on desktop. */
+[hidden] { display:none !important; }
+.sr-only { position:absolute; width:1px; height:1px; padding:0; margin:-1px; overflow:hidden; clip:rect(0,0,0,0); white-space:nowrap; border:0; }
+html { scroll-padding-top:60px; }
+.side { width:var(--side); padding:16px 12px; border:0; background:var(--panel); }
+.logo { padding:7px 10px 22px; font-size:19px; height:auto; }
+.logo svg { width:30px; height:30px; filter:none; }
+.nav { flex:1; min-height:0; overflow-y:auto; padding:0; gap:4px; scrollbar-width:thin; }
+.nav a { padding:10px 12px; min-height:40px; font-size:13px; }
+.nav a.on { box-shadow:none; background:var(--brand-weak); }
+.nav-label,.brand-note { display:none; }
+.side-foot { margin:12px 0 0; padding:0 10px; border:0; font-size:10px; }
+.side-tools { padding:16px 8px 0; }
+.console-tools { display:flex; flex-wrap:wrap; align-items:center; gap:8px; }
+.tool-actions { display:flex; align-items:center; gap:8px; }
+#ui-switch { display:inline-flex; align-items:center; padding:4px 8px; font-size:12px; white-space:nowrap; }
+.sync-time { font-size:10px; color:var(--faint); margin-top:10px; }
+#range { width:100%; display:flex; justify-content:space-between; margin-bottom:4px; border:0; background:var(--sunk); }
+#range button { padding:6px 5px; font-size:10px; }
+#range button.on { background:var(--panel); }
+.iconbtn { border:0; background:var(--sunk); color:var(--muted); width:32px; height:32px; }
+.mobile-toolbar,.sidebar-mask { display:none; }
+main { margin-left:var(--side); max-width:none; padding:20px 22px 28px; }
+.grid { gap:14px; margin-bottom:14px; }
+.card { padding:16px 18px; border:0; border-radius:var(--r); box-shadow:var(--shadow); }
+.card-h { margin-bottom:12px; min-height:20px; }
+.card-h h3 { font-size:13px; }
+.card-h .sub { font-size:11px; }
+.panel-title { padding:12px 16px; border:0; margin-bottom:14px; }
+.tiles .card { min-height:114px; }
+.tiles .card::before { content:none; }
+.big { font-size:32px; margin:7px 0; line-height:1.2; }
+.mid { font-size:23px; margin:7px 0; }
+.tiles .card>.muted:first-child { padding-right:0; }
+.kv { gap:8px 12px; margin-bottom:0; }
+.btn.pri { color:var(--on-brand); box-shadow:none; }
+.btn.pri:hover { color:var(--on-brand); background:var(--brand-ink); filter:brightness(.94); }
+.btn { min-height:32px; padding:6px 12px; }
+.btn-row { gap:8px; }
+.card-h .act { gap:6px; }
+.btn-row .inp { max-width:100%; }
+.appcard .app-icon { width:32px; height:32px; margin-bottom:12px; border-radius:9px; }
+.appcard .card-h h3 { font-size:16px; }
+.appcard .card-h .act { margin-top:10px; }
+.appcard .kv { padding-top:12px; }
+.ev { padding:9px 0; }
+.empty { padding:26px 12px; }
+table.t td { padding:12px 8px; }
+table.t th { padding:10px 8px; }
+#ov-ap,#ov-health,#ov-online,#ov-coll { border:0; }
+#ov-radios .card { background:var(--panel); }
+#ov-radios .grid { grid-template-columns:minmax(0,1fr) minmax(0,1.35fr); }
+#ov-radios .big { font-size:30px !important; }
+#ov-health .gauge { width:min(150px,100%); height:auto; max-height:none; aspect-ratio:150/112; }
+#ov-health .gauge svg { width:100%; height:auto; }
+#ov-health .gauge .v { top:41%; font-size:32px; }
+.log { background:#232136; color:#e0def4; border:0; padding:14px; }
+.log .t { color:#9991ad; } .log .e { color:#eb6f92; }
+@media(min-width:1181px) { .overview-bottom { grid-template-columns:minmax(0,1.55fr) minmax(0,1fr); } }
+@media(max-width:1180px) { .g4 { grid-template-columns:repeat(2,minmax(0,1fr)); } }
+@media(max-width:860px) {
+  :root { --side:208px; }
+  .side { position:fixed; inset:0 auto 0 0; width:232px; height:100dvh; flex-direction:column; padding:16px 12px; z-index:70; transform:translateX(-100%); visibility:hidden; transition:transform .18s,visibility .18s; }
+  body.nav-open .side { transform:none; visibility:visible; box-shadow:12px 0 40px #19172422; }
+  body.nav-open { overflow:hidden; }
+  .side .logo { display:flex; }
+  .side-foot { display:flex; }
+  .nav { flex-direction:column; justify-content:flex-start; gap:4px; padding:0; }
+  .nav a { flex:none; flex-direction:row; text-align:left; font-size:13px; gap:12px; }
+  .nav a svg { width:19px; height:19px; }
+  .mobile-toolbar { display:flex; position:sticky; top:0; z-index:40; align-items:center; gap:8px; min-height:48px; padding:7px 12px; background:var(--paper); }
+  #mobile-page { font-size:12px; flex:1; color:var(--muted); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  #mobile-tools { margin-left:auto; }
+  .mobile-toolbar .console-tools { flex-wrap:nowrap; gap:6px; }
+  .mobile-toolbar .tool-actions { gap:6px; }
+  .mobile-toolbar #range { width:auto; margin:0; gap:1px; padding:2px; }
+  .mobile-toolbar #range button { font-size:10px; padding:6px; }
+  .mobile-toolbar:has(#range:not([hidden])) #mobile-page { display:none; }
+  .sidebar-mask { display:block; position:fixed; inset:0; border:0; padding:0; z-index:65; background:#19172466; visibility:hidden; opacity:0; pointer-events:none; }
+  body.nav-open .sidebar-mask { visibility:visible; opacity:1; pointer-events:auto; }
+  main { margin:0; padding:8px 12px 24px; }
+  .card { padding:14px; border-radius:11px; }
+  .grid { gap:12px; margin-bottom:12px; }
+  .g4,.grid.tiles { grid-template-columns:repeat(2,minmax(0,1fr)); }
+  .g2,.g3,.g21,.form-grid { grid-template-columns:minmax(0,1fr); }
+  .tiles .card { min-height:110px; }
+  .tiles .big { font-size:27px !important; }
+  .tiles .mid { font-size:20px; }
+  .panel-title { padding:12px; }
+  #ov-radios .grid { grid-template-columns:minmax(0,1fr) minmax(0,1.2fr); gap:12px; }
+}
+@media(max-width:540px) {
+  .g4:not(.tiles) { grid-template-columns:repeat(2,minmax(0,1fr)); }
+  #ov-ap,#ov-coll { grid-column:1/-1; }
+  #ov-ap .kv { grid-template-columns:1fr 1fr; }
+  #ov-health,#ov-online { padding:14px 10px; }
+  #ov-online .row { gap:6px !important; flex-wrap:wrap; }
+  #ov-health .card-h,#ov-online .card-h { gap:4px; }
+  #ov-online .act { display:none; }
+  #ov-radios .grid { grid-template-columns:minmax(0,1fr) minmax(0,1.2fr); }
+  #ov-radios .kv { font-size:11px; gap:8px; }
+  #ov-radios .legend { font-size:10px; gap:4px; }
+  .mobile-toolbar .console-tools { gap:4px; }
+  .mobile-toolbar .iconbtn { width:28px; }
+  .mobile-toolbar #range button { padding:5px 4px; }
+}
+
 </style>
 </head>
 <body>
-<aside class="side">
-  <div class="logo"><svg viewBox="0 0 32 32"><rect width="32" height="32" rx="8" fill="#2b6583"/><path d="M8 14a11 11 0 0 1 16 0M11 17.5a6.5 6.5 0 0 1 10 0" stroke="#fff" stroke-width="2.4" fill="none" stroke-linecap="round"/><circle cx="16" cy="22" r="2.4" fill="#36c4c6"/></svg>APWATCH</div>
-  <nav class="nav" id="nav"></nav>
+<a class="skip" href="#workspace">跳到内容</a>
+<button class="sidebar-mask" id="sidebar-mask" aria-label="关闭导航" tabindex="-1"></button>
+<aside class="side" id="sidebar" aria-label="控制台导航">
+  <div class="logo"><svg viewBox="0 0 32 32"><rect width="32" height="32" rx="8" fill="var(--brand)"/><path d="M8 14a11 11 0 0 1 16 0M11 17.5a6.5 6.5 0 0 1 10 0" stroke="var(--on-brand)" stroke-width="2.4" fill="none" stroke-linecap="round"/><circle cx="16" cy="22" r="2.4" fill="var(--s3)"/></svg>APWATCH</div>
+  <nav class="nav" id="nav" aria-label="主导航"></nav>
+  <div class="side-tools"><div id="desktop-tools"><div class="console-tools" id="console-tools"><div class="seg" id="range" aria-label="图表时间范围"></div><div class="tool-actions"><button class="iconbtn" id="theme" aria-label="切换主题" title="切换主题"></button><a class="btn" id="ui-switch" href="/classic/" aria-label="切换到旧版界面">旧版</a></div></div></div><div class="sync-time" id="sync-text" role="status">等待数据</div></div>
   <div class="side-foot"><span class="dot" id="conn-dot"></span><span id="conn-txt">连接中…</span></div>
 </aside>
-<header class="top">
-  <div class="crumb" id="crumb"></div>
-  <div class="grow"></div>
-  <div class="seg" id="range"></div>
-  <button class="iconbtn" id="theme" title="切换主题" aria-label="切换主题"></button>
-</header>
-<main id="view"></main>
+<header class="mobile-toolbar"><button class="iconbtn" id="menu-toggle" aria-label="打开导航" aria-expanded="false" aria-controls="sidebar"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h16"/></svg></button><span id="mobile-page"></span><div id="mobile-tools"></div></header>
+<main id="workspace" tabindex="-1"><h1 class="sr-only" id="page-title"></h1><div id="page-error" role="status"></div><div id="view"></div></main>
 <div class="tip" id="tip"></div>
 
 <script>
@@ -248,15 +486,21 @@ const store = {
   get(k, d) { try { const v = localStorage.getItem("apw." + k); return v == null ? d : v; } catch { return d; } },
   set(k, v) { try { localStorage.setItem("apw." + k, v); } catch {} },
 };
+let generation = 0;
+const reads = new Set();
 async function api(path) {
-  const ctl = new AbortController();
+  const epoch = generation, ctl = new AbortController();
+  reads.add(ctl);
   const timer = setTimeout(() => ctl.abort(), 50000);
   try {
     const r = await fetch(path, { signal: ctl.signal });
-    if (!r.ok) throw new Error((await r.text()) || r.status);
-    return await r.json();
-  } finally { clearTimeout(timer); }
+    const j = await r.json().catch(() => ({}));
+    if (epoch !== generation) throw new DOMException("页面已切换", "AbortError");
+    if (!r.ok) throw new Error(j.error || `HTTP ${r.status}`);
+    return j;
+  } finally { clearTimeout(timer); reads.delete(ctl); }
 }
+
 // 改动类请求：带防跨站头；未登录时弹出密码框，登录后重试一次
 async function apiPost(path, body) {
   const send = async () => {
@@ -272,8 +516,10 @@ async function apiPost(path, body) {
   return j;
 }
 async function apiAuthGet(path) {
+  const epoch = generation;
   const r = await fetch(path);
   const j = await r.json().catch(() => ({}));
+  if (epoch !== generation) throw new DOMException("页面已切换", "AbortError");
   if (r.status === 401) { const e = new Error(j.error || "未登录"); e.unauth = true; throw e; }
   if (!r.ok) throw new Error(j.error || `HTTP ${r.status}`);
   return j;
@@ -282,15 +528,22 @@ function loginDialog() {
   return new Promise(resolve => {
     const m = document.createElement("div");
     m.className = "modal";
+    const previousFocus = document.activeElement;
+    m.setAttribute("role", "dialog"); m.setAttribute("aria-modal", "true"); m.setAttribute("aria-label", "登录管理");
     m.innerHTML = `<form class="box"><h3>登录管理</h3><p class="muted" style="margin:0 0 14px;font-size:13px">输入 AP 管理员密码（和官方管理页面同一个），12 小时内不用再输。</p>
       <div class="field"><input class="inp" type="password" autocomplete="current-password" placeholder="AP 管理员密码" required></div>
       <div class="msg bad" style="margin:-4px 0 10px"></div>
       <div class="btn-row" style="justify-content:flex-end"><button type="button" class="btn cancel">取消</button><button class="btn pri">登录</button></div></form>`;
     document.body.appendChild(m);
     const f = m.querySelector("form"), inp = m.querySelector("input"), msg = m.querySelector(".msg");
-    const done = ok => { m.remove(); resolve(ok); };
+    const siblings = [...document.body.children].filter(el => el !== m && el.tagName !== "SCRIPT");
+    const priorInert = siblings.map(el => el.inert);
+    siblings.forEach(el => el.inert = true);
+    let closed = false;
+    const done = ok => { if (closed) return; closed = true; m.remove(); siblings.forEach((el,i) => el.inert = priorInert[i]); previousFocus?.focus(); resolve(ok); };
     m.querySelector(".cancel").onclick = () => done(false);
-    m.addEventListener("keydown", e => { if (e.key === "Escape") done(false); });
+    m.addEventListener("keydown", e => { if (e.key === "Escape") done(false);
+      if (e.key === "Tab") { const items = [...m.querySelectorAll("input,button")].filter(el => !el.disabled); const first = items[0], last = items.at(-1); if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); } else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); } } });
     f.onsubmit = async e => {
       e.preventDefault();
       msg.textContent = "";
@@ -439,9 +692,71 @@ function showTip(x, y, html) {
 }
 const hideTip = () => { tip.style.display = "none"; };
 
+// BEGIN TREND GEOMETRY
+// Shape-preserving Hermite: each tangent is bounded by both adjacent secants.
+// Every Bézier control stays between its segment endpoints, with a shared tangent
+// at each sample. Peaks/plateaus stay at the recorded values; no spline overshoot.
+function trendSlopes(points) {
+  const d = points.slice(1).map((p, i) => (p[1] - points[i][1]) / (p[0] - points[i][0]));
+  return points.map((_, i) => {
+    if (!d.length) return 0;
+    if (!i) return d[0];
+    if (i === points.length - 1) return d[i - 1];
+    return d[i - 1] * d[i] > 0 ? Math.sign(d[i]) * Math.min(Math.abs(d[i - 1]), Math.abs(d[i])) : 0;
+  });
+}
+function trendPath(points, step = false, slopes = trendSlopes(points)) {
+  if (!points.length) return '';
+  let path = `M${points[0][0]},${points[0][1]}`;
+  for (let i = 1; i < points.length; i++) {
+    const [x0, y0] = points[i - 1], [x, y] = points[i];
+    if (step) path += `H${x}V${y}`;
+    else if (points.length === 2) path += `L${x},${y}`;
+    else {
+      const h = (x - x0) / 3;
+      path += `C${x0 + h},${y0 + h * slopes[i - 1]} ${x - h},${y - h * slopes[i]} ${x},${y}`;
+    }
+  }
+  return path;
+}
+// Keep missing/invalid samples and long sampling interruptions as separate paths.
+function trendSegments(t, values) {
+  const gaps = t.slice(1).map((v, i) => v - t[i]).filter(v => Number.isFinite(v) && v > 0).sort((a, b) => a - b);
+  const gap = gaps.length ? gaps[Math.floor((gaps.length - 1) / 2)] * 3.5 : Infinity;
+  const result = []; let segment = [];
+  for (let i = 0; i < t.length; i++) {
+    const valid = Number.isFinite(t[i]) && Number.isFinite(values[i]);
+    if (!valid || (i && (t[i] <= t[i - 1] || t[i] - t[i - 1] > gap))) {
+      if (segment.length) result.push(segment);
+      segment = [];
+    }
+    if (valid) segment.push(i);
+  }
+  if (segment.length) result.push(segment);
+  return result;
+}
+// END TREND GEOMETRY
+
+// Scale all stacked boundary tangents together at each sample so adjacent
+// Bézier control points cannot cross. Shared node scales retain C1 continuity.
+function stackedTrendSlopes(rows) {
+  const slopes = rows.map(trendSlopes);
+  for (let i = 0; i < rows[0].length; i++) {
+    const p = rows[0];
+    const h = Math.max(i ? p[i][0] - p[i - 1][0] : 0, i + 1 < p.length ? p[i + 1][0] - p[i][0] : 0) / 3;
+    let scale = 1;
+    for (let k = 1; k < rows.length; k++) {
+      const delta = Math.abs(slopes[k][i] - slopes[k - 1][i]) * h;
+      if (delta) scale = Math.min(scale, Math.abs(rows[k][i][1] - rows[k - 1][i][1]) / delta);
+    }
+    for (const m of slopes) m[i] *= scale;
+  }
+  return slopes;
+}
+
 /**
- * 时间折线 / 堆叠面积。opts:
- *   t: [秒]，series: [{name, color: "--s1", values, fmt?}]，stacked, area, step, height,
+ * 保形曲线 / 阶梯线 / 堆叠面积。opts:
+ *   t: [秒]，series: [{name, color: "--s1", values, fmt?, step?}]，stacked, area, step, height,
  *   yMin, yMax, fmt(v) 轴与提示格式，bands: [{from, to, color}] 背景分区
  */
 function chart(el, opts) {
@@ -489,40 +804,31 @@ function chart(el, opts) {
       const tv = t0 + (t1 - t0) * i / nx;
       g += `<text class="ax" x="${X(tv)}" y="${H - 5}" text-anchor="${i === 0 ? "start" : i === nx ? "end" : "middle"}">${fmtClock(tv, withDate)}</text>`;
     }
-    // 采样间隔的 3 倍以上视为缺口，不连线
-    const gaps = []; for (let i = 1; i < t.length; i++) gaps.push(t[i] - t[i - 1]);
-    const med = gaps.length ? gaps.slice().sort((a, b) => a - b)[gaps.length >> 1] : 30;
-    const brk = i => i > 0 && t[i] - t[i - 1] > med * 3.5;
-    const pathOf = (arr, step) => {
-      let d = "", pen = false, py = 0;
-      for (let i = 0; i < t.length; i++) {
-        const v = arr[i];
-        if (v == null || brk(i)) { pen = false; if (v == null) continue; }
-        const x = X(t[i]).toFixed(1), y = Y(v).toFixed(1);
-        if (!pen) { d += `M${x},${y}`; pen = true; }
-        else d += step ? `H${x}V${y}` : `L${x},${y}`;
-        py = y;
-      }
-      return d;
-    };
-    const areaOf = (upper, lower) => {
-      let d = "", seg = [];
-      const flush = () => {
-        if (seg.length) {
-          d += "M" + seg.map(i => `${X(t[i]).toFixed(1)},${Y(upper[i]).toFixed(1)}`).join("L");
-          d += "L" + seg.slice().reverse().map(i => `${X(t[i]).toFixed(1)},${Y(lower ? (lower[i] ?? lo) : Math.max(lo, 0)).toFixed(1)}`).join("L") + "Z";
+    const points = (seg, arr) => seg.map(i => [X(t[i]), Y(arr[i])]);
+    const pathOf = (arr, step) => trendSegments(t, arr).map(seg => trendPath(points(seg, arr), step)).join('');
+    const areaOf = (arr, step) => trendSegments(t, arr).map(seg => {
+      const p = points(seg, arr), base = Y(Math.max(lo, 0));
+      return `${trendPath(p, step)}L${p[p.length - 1][0]},${base}L${p[0][0]},${base}Z`;
+    }).join('');
+    const stacked = S.map(() => '');
+    if (o.stacked) {
+      // A missing component means the stack is incomplete: leave a gap.
+      const valid = t.map((_, i) => vals.every(v => v[i] != null) ? 0 : null);
+      for (const seg of trendSegments(t, valid)) {
+        const rows = [seg.map(i => [X(t[i]), Y(0)]), ...top.map(arr => points(seg, arr))];
+        const slopes = stackedTrendSlopes(rows);
+        for (let k = 0; k < S.length; k++) {
+          const upper = trendPath(rows[k + 1], false, slopes[k + 1]);
+          const lower = trendPath(rows[k].slice().reverse(), false, slopes[k].slice().reverse());
+          stacked[k] += upper + lower.replace(/^M/, 'L') + 'Z';
         }
-        seg = [];
-      };
-      for (let i = 0; i < t.length; i++) { if (upper[i] == null || brk(i)) flush(); if (upper[i] != null) seg.push(i); }
-      flush();
-      return d;
-    };
+      }
+    }
     for (let k = 0; k < S.length; k++) {
       const col = `var(${S[k].color})`;
-      if (o.stacked) g += `<path d="${areaOf(top[k], k ? top[k - 1] : null)}" fill="${col}" opacity=".85"/>`;
-      else if (o.area) g += `<path d="${areaOf(top[k], null)}" fill="${col}" opacity=".1"/>`;
-      if (!o.stacked) g += `<path d="${pathOf(top[k], o.step)}" fill="none" stroke="${col}" stroke-width="2" stroke-linejoin="round" stroke-linecap="round" ${S[k].dash ? 'stroke-dasharray="4 4"' : ""}/>`;
+      if (o.stacked) g += `<path d="${stacked[k]}" fill="${col}" opacity=".85"/>`;
+      else if (o.area) g += `<path d="${areaOf(top[k], S[k].step ?? o.step)}" fill="${col}" opacity=".1"/>`;
+      if (!o.stacked) g += `<path d="${pathOf(top[k], S[k].step ?? o.step)}" fill="none" stroke="${col}" stroke-width="2" stroke-linejoin="round" stroke-linecap="round" ${S[k].dash ? 'stroke-dasharray="4 4"' : ""}/>`;
       // 末端圆点：数据少、时间跨度大时线段很短，靠它看得见当前值
       let li = top[k].length - 1; while (li >= 0 && top[k][li] == null) li--;
       if (li >= 0 && !S[k].dash) g += `<circle cx="${X(t[li]).toFixed(1)}" cy="${Y(top[k][li]).toFixed(1)}" r="4" fill="${col}" stroke="var(--panel)" stroke-width="2"/>`;
@@ -590,7 +896,7 @@ function gauge(score) {
 
 // ---------- 框架 ----------
 $("#nav").innerHTML = NAV.map(([k, n]) => `<a href="#/${k}" data-k="${k}">${svgIcon(k)}<span>${n}</span></a>`).join("");
-$("#range").innerHTML = RANGES.map(([k, n]) => `<button data-r="${k}" class="${k === range ? "on" : ""}">${n}</button>`).join("");
+$("#range").innerHTML = RANGES.map(([k, n]) => `<button data-r="${k}" title="${n}" aria-label="${n}" class="${k === range ? "on" : ""}">${k}</button>`).join("");
 $("#range").onclick = e => {
   const r = e.target.dataset?.r; if (!r) return;
   range = r; store.set("range", r);
@@ -607,28 +913,61 @@ function setConn(c) {
 }
 const connPill = c => c.paused_since ? '<span class="pill warn"><span class="dot"></span>已暂停</span>'
   : `<span class="pill ${c.connected ? "ok" : "bad"}"><span class="dot ${c.connected ? "ok" : "bad"}"></span>${c.connected ? "已连接" : "未连接"}</span>`;
+let refreshPending = false;
+function decorateTables() {
+  for (const table of view.querySelectorAll("table.t")) {
+    const heads = [...table.querySelectorAll("thead th")].map(h => h.textContent.replace(/[▲▼]/g, "").trim());
+    for (const row of table.querySelectorAll("tbody tr")) [...row.cells].forEach((cell, i) => { if (heads[i]) cell.dataset.label = heads[i]; });
+  }
+}
 async function refresh(user) {
-  if (!cur || busy) return;
+  if (!cur) return;
+  if (busy) { if (user) refreshPending = true; return; }
   busy = true;
+  const epoch = generation;
   if (user) document.body.classList.add("loading");
-  try { await cur.refresh(); } catch (e) { console.error(e); }
-  finally { busy = false; document.body.classList.remove("loading"); }
+  try {
+    await cur.refresh();
+    if (epoch !== generation) return;
+    decorateTables();
+    $("#page-error").replaceChildren();
+    $("#sync-text").textContent = "更新于 " + new Date().toLocaleTimeString("zh-CN", {hour12:false});
+  } catch (e) {
+    if (epoch === generation) {
+      $("#page-error").innerHTML = `<div class="banner"><div><b>数据更新失败</b><div class="muted">${esc(e.name === "AbortError" ? "请求超时，请重试" : e.message)}</div></div><button class="btn" id="retry">重试</button></div>`;
+      $("#retry").onclick = () => refresh(true);
+      $("#sync-text").textContent = "连接异常";
+    }
+  } finally {
+    busy = false; document.body.classList.remove("loading");
+    if (refreshPending) { refreshPending = false; queueMicrotask(() => refresh(true)); }
+  }
 }
 function route() {
+  generation++;
+  for (const ctl of reads) ctl.abort();
+  view.onclick = null;
+  $("#page-error").replaceChildren();
+  $("#ui-switch").hash = location.hash.startsWith("#/") ? location.hash : "";
   const h = location.hash.replace(/^#\/?/, "") || "overview";
   const [name, arg] = h.split("/");
   const V = VIEWS[name === "collector" ? "settings" : name] || VIEWS.overview;
-  for (const a of $("#nav").children) a.classList.toggle("on", a.dataset.k === (name === "client" ? "clients" : name));
+  for (const a of $("#nav").querySelectorAll("a[data-k]")) a.classList.toggle("on", a.dataset.k === (name === "client" ? "clients" : name));
   charts.clear(); hideTip();
   view.innerHTML = "";
+  view.dataset.page = name;
   cur = V(view, decodeURIComponent(arg || ""));
-  $("#crumb").innerHTML = `AP 观测 <span class="faint">›</span> <b>${esc(cur.title)}</b>`;
+  $("#page-title").textContent = cur.title;
+  $("#mobile-page").textContent = cur.title;
+  setNav(false);
+  $("#range").hidden = !["overview","radio","client","events","settings","collector"].includes(name);
+  for (const a of $("#nav").querySelectorAll("a")) { if (a.classList.contains("on")) a.setAttribute("aria-current", "page"); else a.removeAttribute("aria-current"); }
   document.title = `${cur.title} · AP 观测`;
   scrollTo(0, 0);
   refresh(true);
 }
 addEventListener("hashchange", route);
-function tick() { if (!document.hidden) refresh(false); }
+function tick() { if (!document.hidden && !document.querySelector(".confirm, .modal") && !document.querySelector("#view input:focus, #view select:focus")) refresh(false); }
 setInterval(tick, 30000);
 document.addEventListener("visibilitychange", tick);
 
@@ -658,8 +997,8 @@ VIEWS.overview = root => {
       <div class="card" id="ov-online"></div>
       <div class="card" id="ov-coll"></div>
     </div>
-    <div class="grid g2" id="ov-radios"></div>
     <div class="grid g2" id="ov-charts"></div>
+    <div class="grid g2" id="ov-radios"></div>
     <div class="grid g2">
       <div class="card"><div class="card-h"><h3>健康发现</h3><span class="sub">按近 1 小时 / 24 小时 / 7 天的规则判断</span></div><div id="ov-find"></div></div>
       <div class="card"><div class="card-h"><h3>最近事件</h3><span class="sub">关联握手太多，这里不列，完整记录在事件页</span><div class="act"><a class="link-btn" href="#/events">全部 ›</a></div></div><div id="ov-ev"></div></div>
@@ -757,9 +1096,11 @@ VIEWS.clients = root => {
   const key = (c, k) => k === "name" ? (c.name || c.ip || c.mac).toLowerCase() : k === "mode" ? c.mode : c[k] ?? -1e9;
   function spark(v) {
     if (!v || v.length < 2) return "";
-    const lo = Math.min(...v, -90), hi = Math.max(...v, -40), w = 64, h = 18;
-    const p = v.map((x, i) => `${(i / (v.length - 1) * w).toFixed(1)},${(h - (x - lo) / (hi - lo || 1) * h).toFixed(1)}`).join(" ");
-    return `<svg width="${w}" height="${h}" viewBox="0 0 ${w} ${h}" style="vertical-align:middle"><polyline points="${p}" fill="none" stroke="var(--faint)" stroke-width="1.5"/></svg>`;
+    const valid = v.filter(Number.isFinite);
+    const lo = Math.min(...valid, -90), hi = Math.max(...valid, -40), w = 64, h = 18;
+    const t = v.map((_, i) => i);
+    const p = trendSegments(t, v).map(seg => trendPath(seg.map(i => [i / (v.length - 1) * w, h - (v[i] - lo) / (hi - lo || 1) * h]))).join('');
+    return `<svg width="${w}" height="${h}" viewBox="0 0 ${w} ${h}" style="vertical-align:middle"><path d="${p}" fill="none" stroke="var(--faint)" stroke-width="1.5"/></svg>`;
   }
   function draw() {
     if (!data) return;
@@ -794,6 +1135,7 @@ VIEWS.clients = root => {
 };
 
 VIEWS.devices = root => {
+  const epoch = generation;
   let q = "", data = null, logged = false, blocked = new Set();
   root.innerHTML = `<div class="panel-title"><h2>设备</h2><span class="sub" id="dv-sum"></span><div style="flex:1"></div><input class="search" id="dv-q" placeholder="搜索备注 / 名称 / IP / MAC"><button class="btn" id="dv-add">登记设备</button></div>
     <div id="dv-edit"></div>
@@ -838,7 +1180,7 @@ VIEWS.devices = root => {
       const [d, sess, o] = await Promise.all([api("/api/devices"), api("/api/session"), api("/api/collector")]);
       setConn(o); data = d; logged = sess.logged_in;
       if (logged) { try { blocked = new Set((await api("/api/ctl")).blocked.map(x => x.mac)); } catch { blocked = new Set(); } }
-      draw();
+      if (epoch === generation) draw();
     },
   };
 };
@@ -884,7 +1226,6 @@ VIEWS.client = (root, mac) => {
       $("#cd-name").textContent = d.name || d.ip || mac;
       const src = { alias: "备注", dhcp: "DHCP 主机名" }[d.name_src];
       $("#cd-sub").textContent = [mac, d.ip, src, d.random_mac ? "随机 MAC" : "", L ? (L.online ? "在线" : "离线") : "当前不在实时列表"].filter(Boolean).join(" · ");
-      $("#crumb").innerHTML = `AP 观测 <span class="faint">›</span> 终端 <span class="faint">›</span> <b>${esc(d.name || mac)}</b>`;
       const s = sigQ(st.rssi), m = modeInfo(st.mode);
       const rs = d.series.v.rssi.filter(v => v != null).slice().sort((a, b) => a - b), med = rs.length ? rs[rs.length >> 1] : null;
       $("#cd-tiles").innerHTML = `
@@ -894,9 +1235,9 @@ VIEWS.client = (root, mac) => {
         <div class="card"><div class="muted">本次连接</div><div class="mid num">${L?.online ? fmtDur(st.assoc_secs) : "—"}</div><div class="muted" style="margin-top:6px">空闲 ${L?.online ? fmtDur(st.idle) : "—"} · 7 天内事件 ${d.events.length} 条</div></div>`;
       const t = d.series.t, v = d.series.v;
       const from = Math.floor(Date.now() / 1000) - ({ "1h": 3600, "6h": 21600, "24h": 86400, "7d": 604800, "30d": 2592000 }[range]);
-      chSig.set({ title: "信号强度", t, from, series: [{ name: "信号", color: "--s1", values: v.rssi }, { name: "本次连接最低（AP 记录）", color: "--s2", values: v.rssi_min, dash: true }],
+      chSig.set({ title: "信号强度", t, from, series: [{ name: "信号", color: "--s1", values: v.rssi }, { name: "本次连接最低（AP 记录）", color: "--s2", values: v.rssi_min, dash: true, step: true }],
         unit: "", tipFmt: v => v.toFixed(0) + " dBm", yMin: -95, yMax: -20, bands: [{ from: -65, to: 0, color: "var(--good)" }, { from: -80, to: -72, color: "var(--warn)" }], height: 210 });
-      chRate.set({ title: "协商速率", t, from, series: [{ name: "发送", color: "--s1", values: v.tx }, { name: "接收", color: "--s2", values: v.rx }], yMin: 0, tipFmt: v => v.toFixed(0) + " Mbps", height: 210 });
+      chRate.set({ title: "协商速率", t, from, step: true, series: [{ name: "发送", color: "--s1", values: v.tx }, { name: "接收", color: "--s2", values: v.rx }], yMin: 0, tipFmt: v => v.toFixed(0) + " Mbps", height: 210 });
       $("#cd-ev").innerHTML = d.events.length ? d.events.map(e => evRow(e, true)).join("") : `<div class="empty">近 7 天没有这台设备的事件</div>`;
       const btn = $("#cd-mcs-btn"); btn.disabled = !L?.online; btn.title = L?.online ? "" : "设备不在线";
     },
@@ -933,7 +1274,7 @@ VIEWS.radio = root => {
       cCli.set({ ...base, t, series: [{ name: "终端", color: "--s1", values: x.clients }], yMin: 0, step: true, tipFmt: v => v.toFixed(0) + " 台", height: 200, area: true });
       const vt = v.data.t, vv = v.data.v;
       cRetry.set({ ...base, t: vt, series: [{ name: "重传占比", color: "--s1", values: vv.retry_pct }], yMin: 0, unit: "%", height: 200, area: true, empty: "每 5 分钟一个点，需要两次采样后才有" });
-      cAuth.set({ ...base, t: vt, series: [{ name: "认证尝试", color: "--s1", values: vv.auth_att }, { name: "认证成功", color: "--s2", values: vv.auth_ok }, { name: "发送失败", color: "--s3", values: vv.tx_fail }], yMin: 0, tipFmt: v => v.toFixed(0), height: 200, empty: "每 5 分钟一个点，需要两次采样后才有" });
+      cAuth.set({ ...base, t: vt, step: true, series: [{ name: "认证尝试", color: "--s1", values: vv.auth_att }, { name: "认证成功", color: "--s2", values: vv.auth_ok }, { name: "发送失败", color: "--s3", values: vv.tx_fail }], yMin: 0, tipFmt: v => v.toFixed(0), height: 200, empty: "每 5 分钟一个点，需要两次采样后才有" });
       cWidth.set({ ...base, t, series: [{ name: "频宽", color: "--s1", values: x.width }], yMin: 0, tipFmt: v => v.toFixed(0) + " MHz", height: 200, step: true });
       cNf.set({ ...base, t, series: [{ name: "底噪", color: "--s1", values: x.nf }], unit: "", tipFmt: v => v.toFixed(0) + " dBm", height: 200, minSpan: 4 });
       cPhy.set({ ...base, t, series: [{ name: "PHY 错误", color: "--s1", values: x.phy_err_ps }], yMin: 0, tipFmt: v => v.toFixed(1) + " 个/秒", height: 200, area: true });
@@ -989,6 +1330,7 @@ VIEWS.events = root => {
 };
 
 VIEWS.manage = root => {
+  const epoch = generation;
   root.innerHTML = `<div class="panel-title"><h2>管理</h2><span class="sub">通过 AP 官方接口执行，和官方页面 / App 看到的一致；每次操作单独登录、用完退出</span><div style="flex:1"></div><button class="btn" id="mg-out" style="display:none">退出登录</button></div>
     <div id="mg-body"></div>`;
   let data = null, devices = [], ov = null;
@@ -1068,7 +1410,7 @@ VIEWS.manage = root => {
         return;
       }
       try { data = await apiAuthGet("/api/ctl"); draw(); }
-      catch (e) { $("#mg-body").innerHTML = `<div class="card"><div class="empty">读取官方状态失败：${esc(e.message)}</div></div>`; }
+      catch (e) { if (epoch !== generation) return; $("#mg-body").innerHTML = `<div class="card"><div class="empty">读取官方状态失败：${esc(e.message)}</div></div>`; }
     },
   };
 };
@@ -1157,6 +1499,45 @@ VIEWS.settings = root => {
 };
 
 applyTheme();
+// Attribute-only enhancement keeps native links, sorting and form handlers intact.
+const enhance = () => {
+  decorateTables();
+  for (const input of view.querySelectorAll("input,select")) {
+    if (input.labels?.length || input.hasAttribute("aria-label")) continue;
+    const label = input.closest(".field")?.querySelector("label")?.textContent;
+    input.setAttribute("aria-label", label || input.placeholder || input.name || "筛选选项");
+  }
+  for (const row of view.querySelectorAll("tr.click")) { row.tabIndex = 0; row.onkeydown = e => { if (e.target === row && (e.key === "Enter" || e.key === " ")) { e.preventDefault(); row.click(); } }; }
+  for (const th of view.querySelectorAll("th.s")) { th.tabIndex = 0; th.onkeydown = e => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); th.click(); } }; }
+};
+new MutationObserver(records => {
+  // Pointer tooltips mutate chart nodes frequently; they need no table/form enhancement.
+  if (records.every(r => r.target.nodeType === 1 && r.target.closest(".chart"))) return;
+  enhance();
+}).observe(view, {childList:true, subtree:true});
+$(".skip").onclick = e => { e.preventDefault(); $("#workspace").focus(); scrollTo(0, 0); };
+
+// Keep one set of controls: sidebar on desktop, compact action bar on phones.
+const narrow = matchMedia("(max-width:860px)");
+function setNav(open) {
+  document.body.classList.toggle("nav-open", open);
+  $("#menu-toggle").setAttribute("aria-expanded", String(open));
+  $("#sidebar").inert = narrow.matches && !open;
+  if (open) $("#nav a.on")?.focus();
+}
+function placeTools() {
+  $(narrow.matches ? "#mobile-tools" : "#desktop-tools").appendChild($("#console-tools"));
+  setNav(false);
+}
+$("#menu-toggle").onclick = () => setNav(!document.body.classList.contains("nav-open"));
+$("#nav").addEventListener("click", e => { if (e.target.closest("a")) setNav(false); });
+$("#sidebar-mask").onclick = () => { setNav(false); $("#menu-toggle").focus(); };
+addEventListener("keydown", e => {
+  if (e.key === "Escape" && document.body.classList.contains("nav-open")) { setNav(false); $("#menu-toggle").focus(); }
+});
+narrow.addEventListener("change", placeTools);
+placeTools();
+
 route();
 </script>
 </body>

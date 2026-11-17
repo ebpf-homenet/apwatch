@@ -51,7 +51,8 @@ cargo build --release --target x86_64-unknown-linux-musl
 
 | 路径 | 内容 |
 |---|---|
-| `GET /` | 页面 |
+| `GET /` | 新版界面 |
+| `GET /classic/` | 旧版界面 |
 | `GET /api/overview` | AP 与两个频段的当前状态、健康发现与评分、重要事件、雷达避让时段 |
 | `GET /api/clients` | 实时终端列表（含 24 小时内离线的），附设备名、24 小时握手次数、近 1 小时信号 |
 | `GET /api/devices` | 设备名册：连过 AP 的全部设备与只登记了备注的设备 |
@@ -68,3 +69,9 @@ cargo build --release --target x86_64-unknown-linux-musl
 | `POST /api/collector/pause` | `{paused}` 暂停 / 恢复采集 |
 
 改动类接口要登录并带 `X-Apw: 1`。`range` 可选 `1h` `6h` `24h` `7d` `30d`。
+
+## 界面
+
+首页默认打开新版。桌面可从新版侧栏或旧版顶栏切换，手机上两套界面均从顶栏切换。点击“旧版”或“新版”会打开另一套界面中的同一页面。两套界面共用登录、主题、设置与历史数据，由同一个二进制提供。
+
+新版采用 Rosé Pine Dawn / Moon 配色，支持键盘操作及手机导航抽屉。设计范围、验证覆盖与复现命令见 [UI 验证记录](tests/ui/README.md)。

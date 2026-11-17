@@ -10,7 +10,7 @@ use crate::settings::Settings;
 use crate::store::{now, schema, Event, Store};
 use axum::extract::{ConnectInfo, Query, State};
 use axum::http::{header, HeaderMap, StatusCode};
-use axum::response::{IntoResponse, Response};
+use axum::response::{IntoResponse, Redirect, Response};
 use axum::routing::{get, post};
 use axum::{Json, Router};
 use std::net::SocketAddr;
@@ -36,6 +36,8 @@ pub struct App {
 pub fn router(app: App) -> Router {
     Router::new()
         .route("/", get(index))
+        .route("/classic", get(|| async { Redirect::permanent("/classic/") }))
+        .route("/classic/", get(classic_index))
         .route("/api/overview", get(overview))
         .route("/api/clients", get(clients))
         .route("/api/devices", get(devices))
@@ -57,10 +59,16 @@ pub fn router(app: App) -> Router {
         .with_state(app)
 }
 
-const INDEX: &str = include_str!("../assets/index.html");
-
 async fn index() -> Response {
-    ([(header::CONTENT_TYPE, "text/html; charset=utf-8"), (header::CACHE_CONTROL, "no-cache")], INDEX).into_response()
+    html_page(include_str!("../assets/index.html"))
+}
+
+async fn classic_index() -> Response {
+    html_page(include_str!("../assets/classic/index.html"))
+}
+
+fn html_page(page: &'static str) -> Response {
+    ([(header::CONTENT_TYPE, "text/html; charset=utf-8"), (header::CACHE_CONTROL, "no-cache")], page).into_response()
 }
 
 pub fn range_secs(r: Option<&str>) -> i64 {
