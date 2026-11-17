@@ -6,11 +6,11 @@
 //! 追加写盘，退出时再写一次（被挤出保留期前还没写的行先转进待写区）：
 //! `tN-YYYY-MM-DD.jsonl.gz` 存各档、`ev-YYYY-MM-DD.jsonl.gz` 存事件，每次追加是一个新的 gzip 成员，不重写旧内容。
 
-use flate2::read::MultiGzDecoder;
+use flate2::bufread::GzDecoder;
 use flate2::write::GzEncoder;
 use serde::{Deserialize, Serialize};
 use std::collections::{BTreeMap, HashMap, VecDeque};
-use std::io::{BufRead, Write};
+use std::io::{BufRead, BufReader, Read, Seek, Write};
 use std::path::{Path, PathBuf};
 
 pub struct Tier {
@@ -232,27 +232,41 @@ type Spilled = Vec<(usize, i64, Vec<f32>)>;
 
 impl Series {
     /// feed[i]=false 表示该档这一桶已经在文件里（回放时用）。
-    fn push(&mut self, t: i64, v: Vec<f32>, now: i64, aggs: &[Agg], feed: [bool; 4]) -> Spilled {
+    fn push(&mut self, t: i64, v: &[f32], now: i64, aggs: &[Agg], feed: [bool; 4]) -> Spilled {
         for (i, tier) in TIERS.iter().enumerate().skip(1) {
             if !feed[i] {
                 continue;
             }
             let b = t - t.rem_euclid(tier.step);
             match &mut self.open[i] {
-                Some(o) if o.b == b => o.add(&v, aggs),
+                Some(o) if o.b == b => o.add(v, aggs),
                 slot => {
                     if let Some(o) = slot.take() {
                         self.rows[i].push_back(o.b, &o.value());
                         self.unflushed[i] += 1;
                     }
-                    *slot = Some(Open::start(b, &v));
+                    *slot = Some(Open::start(b, v));
                 }
             }
         }
         if feed[0] && t >= now - TIERS[0].keep {
-            self.rows[0].push_back(t, &v);
+            self.rows[0].push_back(t, v);
             self.unflushed[0] += 1;
         }
+        self.prune(now)
+    }
+
+    fn close_elapsed(&mut self, through: i64) {
+        for (i, open) in self.open.iter_mut().enumerate().skip(1) {
+            if open.as_ref().is_some_and(|o| o.b + TIERS[i].step <= through) {
+                let o = open.take().unwrap();
+                self.rows[i].push_back(o.b, &o.value());
+                self.unflushed[i] += 1;
+            }
+        }
+    }
+
+    fn prune(&mut self, now: i64) -> Spilled {
         let mut spilled = Vec::new();
         for (i, tier) in TIERS.iter().enumerate() {
             while self.rows[i].front_t().is_some_and(|x| x < now - tier.keep) {
@@ -313,22 +327,44 @@ pub struct Event {
     pub kts: Option<f64>,
 }
 
-/// 文件里的一行。字段名互不相同，untagged 才能区分。
-#[derive(Serialize, Deserialize)]
+/// 旧明文文件混存原始样本和事件。压缩日文件按类型直接解码。
+#[derive(Deserialize)]
 #[serde(untagged)]
 enum Rec {
-    /// 档 0 原始样本（与旧版明文文件格式相同）
-    S { s: String, t: i64, v: Vec<Option<f32>> },
-    /// 档 k 的已关闭桶
-    B { k: usize, a: String, t: i64, v: Vec<Option<f32>> },
-    E { e: Event },
+    S(SIn),
+    E(EventIn),
+}
+
+#[derive(Deserialize)]
+struct SIn {
+    s: String,
+    t: i64,
+    v: Vec<Option<f32>>,
+}
+
+#[derive(Deserialize)]
+struct BIn {
+    k: usize,
+    a: String,
+    t: i64,
+    v: Vec<Option<f32>>,
+}
+
+#[derive(Deserialize)]
+struct EventIn {
+    e: Event,
+}
+
+#[derive(Serialize)]
+struct EventOut<'a> {
+    e: &'a Event,
 }
 
 fn enc(v: &[f32]) -> Vec<Option<f32>> {
     v.iter().map(|x| (!x.is_nan()).then_some(*x)).collect()
 }
 
-/// 写盘用的行，字段与顺序同 Rec::S / Rec::B（输出文本逐字相同），键借用、不复制。
+/// 写盘用的行，字段和顺序与旧版相同，键借用、不复制。
 #[derive(Serialize)]
 struct SOut<'a> {
     s: &'a str,
@@ -412,29 +448,104 @@ pub struct Store {
     /// 内核日志去重游标：(AP 开机时刻, 已处理到的最大时间戳)
     kstate: Option<(i64, f64)>,
     kstate_dirty: bool,
+    /// 一轮采集开始的时刻。命令执行中不能关闭它还可能写入的桶。
+    pub sample_started: Option<i64>,
 }
 
 pub fn atomic_write(dir: &Path, name: &str, data: &[u8]) -> std::io::Result<()> {
     std::fs::create_dir_all(dir)?;
+    let parent = std::fs::File::open(dir)?;
     let tmp = dir.join(format!("{name}.tmp"));
-    std::fs::write(&tmp, data)?;
-    std::fs::rename(&tmp, dir.join(name))
+    let mut f = std::fs::File::create(&tmp)?;
+    f.write_all(data)?;
+    f.sync_all()?;
+    std::fs::rename(&tmp, dir.join(name))?;
+    parent.sync_all()
 }
 
 /// 追加一个 gzip 成员：`write` 往里写若干行。
 fn append_gz(path: &Path, write: impl FnOnce(&mut dyn Write) -> std::io::Result<()>) -> std::io::Result<()> {
     let f = std::fs::OpenOptions::new().create(true).append(true).open(path)?;
-    let mut g = GzEncoder::new(std::io::BufWriter::new(f), flate2::Compression::default());
-    write(&mut g)?;
-    g.finish()?.into_inner().map_err(|e| e.into_error())?.sync_all()
+    let len = f.metadata()?.len();
+    let result = (|| {
+        let mut g = GzEncoder::new(std::io::BufWriter::new(&f), flate2::Compression::default());
+        write(&mut g)?;
+        g.finish()?.into_inner().map_err(|e| e.into_error())?.sync_all()
+    })();
+    if result.is_err() {
+        // 编码器及其缓冲已释放。保留内存中的整批数据，下次从原长度重试。
+        if let Err(e) = f.set_len(len).and_then(|()| f.sync_all()) {
+            tracing::warn!(?path, "撤回未完成的写盘失败：{e}");
+        }
+    }
+    result
 }
 
-/// 读压缩或明文的行文件；末尾残缺的 gzip 成员（写到一半断电）读到哪算哪。
-fn read_lines(path: &Path) -> Vec<String> {
-    let Ok(f) = std::fs::File::open(path) else { return Vec::new() };
-    let r: Box<dyn std::io::Read> =
-        if path.extension().is_some_and(|x| x == "gz") { Box::new(MultiGzDecoder::new(f)) } else { Box::new(f) };
-    std::io::BufReader::new(r).lines().map_while(Result::ok).collect()
+fn visit_lines(r: &mut impl BufRead, complete_only: bool, visit: &mut impl FnMut(&str)) -> std::io::Result<()> {
+    let mut line = Vec::new();
+    while r.read_until(b'\n', &mut line)? > 0 {
+        if !complete_only || line.ends_with(b"\n") {
+            if let Ok(s) = std::str::from_utf8(&line) {
+                visit(s.trim_end_matches(['\r', '\n']));
+            }
+        }
+        line.clear();
+    }
+    Ok(())
+}
+
+/// 从原成员之后找下一个 gzip 头。解码错误时可能已经读过真正的边界，因而要回退再找。
+fn seek_gzip(r: &mut BufReader<std::fs::File>) -> std::io::Result<bool> {
+    loop {
+        let buf = r.fill_buf()?;
+        if buf.is_empty() {
+            return Ok(false);
+        }
+        if let Some(i) = buf.iter().position(|&x| x == 0x1f) {
+            r.consume(i);
+            let mut header = [0; 10];
+            match r.read_exact(&mut header) {
+                Ok(()) => {
+                    // 本程序各版本都由 GzEncoder 写无可选字段、无 mtime 的成员。
+                    let found = header[..8] == [0x1f, 0x8b, 8, 0, 0, 0, 0, 0];
+                    r.seek_relative(if found { -10 } else { -9 })?;
+                    if found {
+                        return Ok(true);
+                    }
+                }
+                Err(e) if e.kind() == std::io::ErrorKind::UnexpectedEof => return Ok(false),
+                Err(e) => return Err(e),
+            }
+        } else {
+            let len = buf.len();
+            r.consume(len);
+        }
+    }
+}
+
+fn read_lines(path: &Path, mut visit: impl FnMut(&str)) -> std::io::Result<()> {
+    let mut r = BufReader::new(std::fs::File::open(path)?);
+    if path.extension().is_none_or(|x| x != "gz") {
+        return visit_lines(&mut r, false, &mut visit);
+    }
+    while !r.fill_buf()?.is_empty() {
+        let start = r.stream_position()?;
+        let mut member = BufReader::new(GzDecoder::new(&mut r));
+        if let Err(e) = visit_lines(&mut member, true, &mut visit) {
+            tracing::warn!(?path, start, "读取压缩成员失败，尝试读取后续成员：{e}");
+            r.seek(std::io::SeekFrom::Start(start + 1))?;
+            if !seek_gzip(&mut r)? {
+                break;
+            }
+        }
+    }
+    Ok(())
+}
+
+fn replay_lines(path: &Path, visit: impl FnMut(&str)) {
+    if let Err(e) = read_lines(path, visit) {
+        tracing::warn!(?path, "读取历史文件失败：{e}");
+    }
 }
 
 fn list(dir: &Path, f: impl Fn(&str) -> bool) -> Vec<PathBuf> {
@@ -469,10 +580,11 @@ impl Store {
             names_dirty: false,
             kstate: None,
             kstate_dirty: false,
+            sample_started: None,
         }
     }
 
-    pub fn push(&mut self, key: &str, t: i64, v: Vec<f32>, now: i64) {
+    pub fn push(&mut self, key: &str, t: i64, v: &[f32], now: i64) {
         let s = schema(key);
         debug_assert_eq!(v.len(), s.names.len(), "{key}");
         let ser = match self.series.get_mut(key) {
@@ -501,12 +613,31 @@ impl Store {
 
     pub fn event(&mut self, e: Event) {
         if self.dir.is_some() {
-            if let Ok(l) = serde_json::to_string(&Rec::E { e: e.clone() }) {
+            if let Ok(l) = serde_json::to_string(&EventOut { e: &e }) {
                 self.pending_ev.push_str(&l);
                 self.pending_ev.push('\n');
             }
         }
         self.insert_event(e);
+    }
+
+    pub fn maintain(&mut self, now: i64) {
+        let through = self.sample_started.map_or(now, |t| now.min(t));
+        let mut pending = Vec::new();
+        self.series.retain(|key, s| {
+            s.close_elapsed(through);
+            let spilled = s.prune(through);
+            if !spilled.is_empty() {
+                pending.push((key.clone(), spilled));
+            }
+            s.rows.iter().any(|r| !r.is_empty()) || s.open.iter().any(Option::is_some)
+        });
+        for (key, spilled) in pending {
+            self.spill(&key, spilled);
+        }
+        while self.events.front().is_some_and(|e| e.t < now - EVENT_KEEP) {
+            self.events.pop_front();
+        }
     }
 
     fn insert_event(&mut self, e: Event) {
@@ -586,13 +717,23 @@ impl Store {
 
     /// 设置或清除自定义名。用户操作，立即写盘。
     pub fn set_alias(&mut self, mac: &str, name: Option<String>) -> std::io::Result<()> {
+        let mut aliases = self.aliases.clone();
         match name.map(|s| s.trim().to_string()).filter(|s| !s.is_empty()) {
-            Some(n) => self.aliases.insert(mac.to_string(), n),
-            None => self.aliases.remove(mac),
+            Some(n) => aliases.insert(mac.to_string(), n),
+            None => aliases.remove(mac),
         };
         if let Some(dir) = &self.dir {
-            atomic_write(dir, "aliases.json", &serde_json::to_vec_pretty(&self.aliases).unwrap_or_default())?;
+            if let Err(e) = atomic_write(dir, "aliases.json", &serde_json::to_vec_pretty(&aliases)?) {
+                // rename 可能已经成功，只是目录同步失败。按实际文件更新内存，并向调用方报告持久化失败。
+                if let Some(on_disk) = std::fs::read(dir.join("aliases.json")).ok()
+                    .and_then(|data| serde_json::from_slice(&data).ok())
+                {
+                    self.aliases = on_disk;
+                }
+                return Err(e);
+            }
         }
+        self.aliases = aliases;
         Ok(())
     }
 
@@ -616,13 +757,18 @@ impl Store {
     /// 内核事件去重用：同一次开机内已处理到的最大时间戳；AP 重启过则从 0 开始。
     pub fn max_kts(&self, boot: i64) -> f64 {
         match self.kstate {
-            Some((b, k)) if (b - boot).abs() < 120 => k,
+            Some((b, k)) if b.abs_diff(boot) < 120 => k,
             _ => 0.0,
         }
     }
 
     pub fn set_kts(&mut self, boot: i64, k: f64) {
         self.kstate = Some((boot, k));
+        self.kstate_dirty = true;
+    }
+
+    pub fn reset_kts(&mut self) {
+        self.kstate = None;
         self.kstate_dirty = true;
     }
 
@@ -654,9 +800,7 @@ impl Store {
             self.names_dirty = false;
         }
         if self.kstate_dirty {
-            if let Some(k) = self.kstate {
-                atomic_write(&dir, "kstate.json", &serde_json::to_vec(&k).unwrap_or_default())?;
-            }
+            atomic_write(&dir, "kstate.json", &serde_json::to_vec(&self.kstate)?)?;
             self.kstate_dirty = false;
         }
         Ok(n)
@@ -742,20 +886,20 @@ impl Store {
         let legacy = list(&dir, is_legacy);
         if !legacy.is_empty() {
             for p in &legacy {
-                for line in read_lines(p) {
-                    match serde_json::from_str::<Rec>(&line) {
-                        Ok(Rec::S { s, t, v }) if t >= now - TIERS[3].keep => {
+                replay_lines(p, |line| {
+                    match serde_json::from_str::<Rec>(line) {
+                        Ok(Rec::S(SIn { s, t, v })) if t >= now - TIERS[3].keep => {
                             let v = dec(&s, v);
-                            self.push(&s, t, v, now);
+                            self.push(&s, t, &v, now);
                             n += 1;
                         }
-                        Ok(Rec::E { e }) if e.t >= now - EVENT_KEEP => {
+                        Ok(Rec::E(EventIn { e })) if e.t >= now - EVENT_KEEP => {
                             self.event(e);
                             n += 1;
                         }
                         _ => {}
                     }
-                }
+                });
             }
             match self.flush(now) {
                 Ok(_) => legacy.iter().for_each(|p| {
@@ -768,28 +912,28 @@ impl Store {
 
         // 2. 事件
         for p in list(&dir, |x| x.starts_with("ev-") && x.ends_with(".jsonl.gz")) {
-            for line in read_lines(&p) {
-                if let Ok(Rec::E { e }) = serde_json::from_str::<Rec>(&line) {
+            replay_lines(&p, |line| {
+                if let Ok(EventIn { e }) = serde_json::from_str(line) {
                     if e.t >= now - EVENT_KEEP {
                         self.insert_event(e);
                         n += 1;
                     }
                 }
-            }
+            });
         }
         // 3. 已关闭的桶
         #[allow(clippy::needless_range_loop)]
         for i in 1..TIERS.len() {
             for p in list(&dir, |x| x.starts_with(&file_prefix(i)) && x.ends_with(".jsonl.gz")) {
-                for line in read_lines(&p) {
-                    if let Ok(Rec::B { k, a, t, v }) = serde_json::from_str::<Rec>(&line) {
+                replay_lines(&p, |line| {
+                    if let Ok(BIn { k, a, t, v }) = serde_json::from_str(line) {
                         if k == i && t >= now - TIERS[i].keep {
                             let v = dec(&a, v);
                             self.series.entry(a).or_default().rows[i].push_back(t, &v);
                             n += 1;
                         }
                     }
-                }
+                });
             }
         }
         // 4. 原始样本：恢复档 0，并重建各档未关闭的桶；已写盘的桶不重复喂。
@@ -800,20 +944,20 @@ impl Store {
             .map(|(k, s)| (k.clone(), std::array::from_fn(|i| s.rows[i].back_t())))
             .collect();
         for p in list(&dir, |x| x.starts_with(&file_prefix(0)) && x.ends_with(".jsonl.gz")) {
-            for line in read_lines(&p) {
-                if let Ok(Rec::S { s, t, v }) = serde_json::from_str::<Rec>(&line) {
+            replay_lines(&p, |line| {
+                if let Ok(SIn { s, t, v }) = serde_json::from_str(line) {
                     if t < now - TIERS[0].keep {
-                        continue;
+                        return;
                     }
                     let l = last.get(&s).copied().unwrap_or_default();
                     let feed: [bool; 4] =
                         std::array::from_fn(|i| i == 0 || l[i].is_none_or(|lt| t >= lt + TIERS[i].step));
                     let v = dec(&s, v);
-                    let spilled = self.series.entry(s.clone()).or_default().push(t, v, now, schema(&s).aggs, feed);
+                    let spilled = self.series.entry(s.clone()).or_default().push(t, &v, now, schema(&s).aggs, feed);
                     self.spill(&s, spilled);
                     n += 1;
                 }
-            }
+            });
         }
         // 原始样本本来就在文件里；重建时关闭的桶上次没写盘（异常退出），保留计数等下次写
         self.series.values_mut().for_each(|s| s.unflushed[0] = 0);
@@ -841,6 +985,11 @@ pub fn ymd(t: i64) -> String {
     format!("{:04}-{:02}-{:02}", if m <= 2 { y + 1 } else { y }, m, d)
 }
 
+pub fn wall_time(t: i64) -> String {
+    let secs = (t + 8 * 3600).rem_euclid(86400);
+    format!("{} {:02}:{:02}:{:02}", ymd(t), secs / 3600, secs / 60 % 60, secs % 60)
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -859,6 +1008,77 @@ mod tests {
     }
 
     #[test]
+    fn recovers_members_after_every_truncation() {
+        let dir = tmpdir("gzip-truncated");
+        std::fs::create_dir_all(&dir).unwrap();
+        let path = dir.join("history.gz");
+        let member = |text: &str| {
+            let mut gz = GzEncoder::new(Vec::new(), flate2::Compression::default());
+            gz.write_all(text.as_bytes()).unwrap();
+            gz.finish().unwrap()
+        };
+        let before = member("before\n");
+        let broken = member("partial member\n");
+        let after = member("after\n");
+        for n in 1..broken.len() {
+            std::fs::write(&path, [&before[..], &broken[..n], &after[..]].concat()).unwrap();
+            let mut lines = Vec::new();
+            read_lines(&path, |line| lines.push(line.to_owned())).unwrap();
+            assert_eq!(lines.first().map(String::as_str), Some("before"), "cut at {n}");
+            assert_eq!(lines.last().map(String::as_str), Some("after"), "cut at {n}");
+            assert_eq!(lines.iter().filter(|s| s.as_str() == "after").count(), 1);
+        }
+        std::fs::remove_dir_all(dir).unwrap();
+    }
+
+    #[test]
+    fn append_failure_preserves_old_members_and_retries_without_duplicates() {
+        let dir = tmpdir("gzip-rollback");
+        std::fs::create_dir_all(&dir).unwrap();
+        let path = dir.join("history.gz");
+        append_gz(&path, |w| w.write_all(b"old\n")).unwrap();
+        let before = std::fs::read(&path).unwrap();
+        assert!(append_gz(&path, |w| {
+            w.write_all(b"retry\n")?;
+            Err(std::io::Error::other("injected write failure"))
+        }).is_err());
+        assert_eq!(std::fs::read(&path).unwrap(), before);
+        append_gz(&path, |w| w.write_all(b"retry\n")).unwrap();
+        let mut lines = Vec::new();
+        read_lines(&path, |line| lines.push(line.to_owned())).unwrap();
+        assert_eq!(lines, ["old", "retry"]);
+        std::fs::remove_dir_all(dir).unwrap();
+    }
+
+    #[test]
+    fn inactive_series_closes_only_elapsed_buckets_and_preserves_roster() {
+        let dir = tmpdir("inactive-series");
+        let mut st = Store::new(Some(dir.clone()));
+        let mac = "02:00:00:00:00:01";
+        let key = format!("c:{mac}");
+        st.touch_seen(mac, 1, NOW - 60);
+        st.push(&key, NOW - 60, &[1.0; 6], NOW - 60);
+        st.sample_started = Some(NOW - 10);
+        st.maintain(NOW);
+        assert!(st.series[&key].rows[3].is_empty());
+        st.push(&key, NOW - 10, &[3.0; 6], NOW - 10);
+        st.sample_started = None;
+        st.maintain(NOW);
+        st.flush(NOW).unwrap();
+
+        let mut replay = Store::new(Some(dir.clone()));
+        replay.load(NOW + TIERS[0].keep + 1);
+        assert_eq!(replay.series[&key].rows[3].len(), 1);
+        assert_eq!(replay.series[&key].rows[3].row(0), (NOW - 3600, vec![2.0, 1.0, 2.0, 2.0, 2.0, 3.0]));
+        st.event(Event { t: NOW, kind: "test".into(), band: None, mac: None, msg: String::new(), kts: None });
+        st.maintain(NOW + EVENT_KEEP + 1);
+        assert!(st.events.is_empty());
+        assert!(!st.series.contains_key(&key));
+        assert!(st.seen.contains_key(mac));
+        std::fs::remove_dir_all(dir).unwrap();
+    }
+
+    #[test]
     fn bucket_modes_and_tier_choice() {
         let rows = vec![(0, vec![1.0, 5.0, f32::NAN]), (10, vec![3.0, 2.0, 4.0]), (300, vec![9.0, 9.0, 9.0])];
         let b = bucketize(&rows, 300, &[Mean, Min, Sum]);
@@ -874,7 +1094,7 @@ mod tests {
         let mut s = Store::new(Some(d.clone()));
         // 名册上线前就有的终端：只有序列
         for t in [NOW - 5 * 86400, NOW - 3600] {
-            s.push("c:02:00:00:00:00:01", t, vec![-50.0, -55.0, 100.0, 100.0, 0.0, 1.0], NOW);
+            s.push("c:02:00:00:00:00:01", t, &[-50.0, -55.0, 100.0, 100.0, 0.0, 1.0], NOW);
         }
         s.touch_seen("02:00:00:00:00:02", 0, NOW - 600);
         s.touch_seen("02:00:00:00:00:02", 1, NOW);
@@ -894,7 +1114,7 @@ mod tests {
     fn fill(s: &mut Store, from: i64, to: i64) {
         let mut t = from;
         while t <= to {
-            s.push("ap", t, vec![(t % 600) as f32 / 10.0, 50.0, 1.0], NOW);
+            s.push("ap", t, &[(t % 600) as f32 / 10.0, 50.0, 1.0], NOW);
             t += 30;
         }
     }
@@ -966,19 +1186,16 @@ mod tests {
         // 按实时采集推进（now 随样本走），20 小时不写盘
         let mut t = NOW - 20 * 3600;
         while t <= NOW {
-            s.push("ap", t, vec![(t % 600) as f32 / 10.0, 50.0, 1.0], t);
+            s.push("ap", t, &[(t % 600) as f32 / 10.0, 50.0, 1.0], t);
             t += 30;
         }
         assert!(!s.pending[0].is_empty(), "超过 6 小时没写盘，最老的原始样本应已转进待写区");
         assert!(s.series["ap"].unflushed[0] <= s.series["ap"].rows[0].len());
         s.flush(NOW).unwrap();
-        let t0: Vec<i64> = read_lines(&dir.join(format!("t0-{}.jsonl.gz", ymd(NOW))))
-            .iter()
-            .filter_map(|l| match serde_json::from_str::<Rec>(l) {
-                Ok(Rec::S { t, .. }) => Some(t),
-                _ => None,
-            })
-            .collect();
+        let mut t0 = Vec::new();
+        read_lines(&dir.join(format!("t0-{}.jsonl.gz", ymd(NOW))), |l| {
+            t0.push(serde_json::from_str::<SIn>(l).unwrap().t);
+        }).unwrap();
         let want: Vec<i64> = (0..).map(|i| NOW - 20 * 3600 + i * 30).take_while(|t| *t <= NOW).collect();
         assert_eq!(t0, want, "每个原始样本恰好写一次、按时间顺序");
         let mut s2 = Store::new(Some(dir.clone()));
@@ -1017,7 +1234,7 @@ mod tests {
             let mut v = vec![f32::NAN; RADIO.names.len()];
             v[0] = busy;
             v[14] = busy;
-            s.push("radio1", t, v, NOW);
+            s.push("radio1", t, &v, NOW);
             t += 30;
         }
         let q = s.series["radio1"].query(NOW - 7 * 86400, NOW, 1000, RADIO.aggs);
@@ -1033,7 +1250,7 @@ mod tests {
         let mut lines = Vec::new();
         let mut t = NOW - 2 * 86400;
         while t <= NOW {
-            lines.push(serde_json::to_string(&Rec::S { s: "ap".into(), t, v: vec![Some(10.0), Some(50.0), Some(1.0)] }).unwrap());
+            lines.push(line(0, "ap", t, vec![Some(10.0), Some(50.0), Some(1.0)]).unwrap());
             t += 30;
         }
         lines.push(r#"{"e":{"t":1799999000,"kind":"radar","band":1,"msg":"x"}}"#.into());

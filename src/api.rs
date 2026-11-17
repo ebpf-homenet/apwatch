@@ -19,13 +19,14 @@ use std::sync::Arc;
 use serde::{Deserialize, Serialize};
 use serde_json::{json, Value};
 use std::collections::HashMap;
-use tokio::sync::{mpsc, oneshot};
+use tokio::sync::{mpsc, oneshot, watch};
 
 #[derive(Clone)]
 pub struct App {
     pub store: Shared<Store>,
     pub live: Shared<Live>,
     pub tx: mpsc::Sender<Req>,
+    pub reload: watch::Sender<()>,
     pub settings: Shared<Settings>,
     pub ctl: Arc<Ctl>,
     pub auth: Arc<Auth>,
@@ -72,17 +73,53 @@ pub fn range_secs(r: Option<&str>) -> i64 {
     }
 }
 
-fn columns(key: &str, rows: &[(i64, Vec<f32>)]) -> Value {
-    let sc = schema(key);
-    let mut cols = serde_json::Map::new();
-    for (i, n) in sc.names.iter().enumerate() {
-        let v: Vec<Value> = rows
-            .iter()
-            .map(|(_, r)| r.get(i).filter(|x| x.is_finite()).map(|x| json!((*x * 100.0).round() / 100.0)).unwrap_or(Value::Null))
-            .collect();
-        cols.insert(n.to_string(), Value::Array(v));
+struct Columns<'a> {
+    key: &'a str,
+    rows: &'a [(i64, Vec<f32>)],
+}
+
+impl Serialize for Columns<'_> {
+    fn serialize<S: serde::Serializer>(&self, serializer: S) -> Result<S::Ok, S::Error> {
+        use serde::ser::SerializeStruct;
+        let mut out = serializer.serialize_struct("Columns", 2)?;
+        let times: Vec<_> = self.rows.iter().map(|r| r.0).collect();
+        out.serialize_field("t", &times)?;
+        out.serialize_field("v", &Values { columns: self })?;
+        out.end()
     }
-    json!({ "t": rows.iter().map(|r| r.0).collect::<Vec<_>>(), "v": cols })
+}
+
+struct Values<'a> {
+    columns: &'a Columns<'a>,
+}
+
+impl Serialize for Values<'_> {
+    fn serialize<S: serde::Serializer>(&self, serializer: S) -> Result<S::Ok, S::Error> {
+        use serde::ser::SerializeMap;
+        let names = schema(self.columns.key).names;
+        let mut out = serializer.serialize_map(Some(names.len()))?;
+        let mut values = Vec::with_capacity(self.columns.rows.len());
+        for (i, name) in names.iter().enumerate() {
+            values.extend(self.columns.rows.iter().map(|(_, r)| {
+                r.get(i).filter(|x| x.is_finite()).map(|x| {
+                    // 放大和舍入沿用原来的 f32 精度，除回小数时用 f64，避免把 f32 尾数放进 JSON。
+                    let cents = (*x * 100.0).round();
+                    if cents.is_finite() { f64::from(cents) / 100.0 } else { f64::from(*x) }
+                })
+            }));
+            out.serialize_entry(name, &values)?;
+            values.clear();
+        }
+        out.end()
+    }
+}
+
+#[derive(Serialize)]
+struct SeriesResponse<'a> {
+    key: &'a str,
+    from: i64,
+    to: i64,
+    data: Columns<'a>,
 }
 
 #[derive(Deserialize)]
@@ -92,17 +129,14 @@ struct SeriesQ {
     points: Option<usize>,
 }
 
-async fn series(State(app): State<App>, Query(q): Query<SeriesQ>) -> Json<Value> {
+async fn series(State(app): State<App>, Query(q): Query<SeriesQ>) -> Response {
     let t = now();
     let from = t - range_secs(q.range.as_deref());
     let pts = q.points.unwrap_or(720).clamp(10, 3000);
-    let st = app.store.read().unwrap();
-    let rows = st
-        .series
-        .get(&q.key)
+    let rows = app.store.read().unwrap().series.get(&q.key)
         .map(|s| s.query(from, t, pts, schema(&q.key).aggs))
         .unwrap_or_default();
-    Json(json!({ "key": q.key, "from": from, "to": t, "data": columns(&q.key, &rows) }))
+    Json(SeriesResponse { key: &q.key, from, to: t, data: Columns { key: &q.key, rows: &rows } }).into_response()
 }
 
 #[derive(Deserialize)]
@@ -118,15 +152,15 @@ async fn events(State(app): State<App>, Query(q): Query<EventsQ>) -> Json<Value>
     let from = now() - range_secs(q.range.as_deref().or(Some("7d")));
     let kinds: Option<Vec<&str>> = q.kind.as_deref().filter(|k| !k.is_empty()).map(|k| k.split(',').collect());
     let st = app.store.read().unwrap();
-    let mut counts: HashMap<String, usize> = HashMap::new();
+    let mut counts: HashMap<&str, usize> = HashMap::new();
     let list: Vec<&Event> = st
         .events
         .iter()
         .rev()
-        .filter(|e| e.t >= from)
+        .take_while(|e| e.t >= from)
         .filter(|e| q.mac.as_deref().is_none_or(|m| e.mac.as_deref() == Some(m)))
         .filter(|e| q.band.is_none_or(|b| e.band == Some(b)))
-        .inspect(|e| *counts.entry(e.kind.clone()).or_default() += 1)
+        .inspect(|e| *counts.entry(&e.kind).or_default() += 1)
         .filter(|e| kinds.as_ref().is_none_or(|k| k.contains(&e.kind.as_str())))
         .collect();
     let limit = q.limit.unwrap_or(500).min(5000);
@@ -153,12 +187,12 @@ fn recent(st: &Store, key: &str, field: usize, secs: i64, t: i64) -> Vec<f32> {
     st.recent(key, field, secs, t)
 }
 
-fn assoc_counts(st: &Store, since: i64) -> HashMap<String, usize> {
+fn assoc_counts(st: &Store, since: i64) -> HashMap<&str, usize> {
     let mut m = HashMap::new();
     for e in st.events.iter().rev().take_while(|e| e.t >= since) {
         if e.kind == "assoc" {
             if let Some(mac) = &e.mac {
-                *m.entry(mac.clone()).or_default() += 1;
+                *m.entry(mac.as_str()).or_default() += 1;
             }
         }
     }
@@ -180,22 +214,28 @@ fn display_name(st: &Store, mac: &str) -> String {
 }
 
 /// 雷达事件及其持续时间：雷达 → 下一次 PreCAC 完成（恢复原信道）视为恢复。
-fn radar_spans(st: &Store, since: i64) -> Vec<(i64, Option<i64>, String)> {
-    let ev: Vec<&Event> = st.events.iter().filter(|e| e.t >= since).collect();
+fn radar_spans(st: &Store, since: i64) -> Vec<(i64, Option<i64>, &str)> {
+    let mut end = None;
+    let mut at = None;
+    let mut next = None;
     let mut out = Vec::new();
-    for (i, e) in ev.iter().enumerate() {
-        if e.kind == "radar" {
-            let end = ev[i + 1..]
-                .iter()
-                .find(|x| (x.kind == "precac" || x.kind == "width") && x.t > e.t && x.t - e.t < 4 * 3600)
-                .map(|x| x.t);
-            out.push((e.t, end, e.msg.clone()));
+    for e in st.events.iter().rev().take_while(|e| e.t >= since) {
+        // 同一秒的恢复事件不用于这一秒的雷达事件。
+        if at != Some(e.t) {
+            end = next;
+            at = Some(e.t);
+        }
+        match e.kind.as_str() {
+            "radar" => out.push((e.t, end.filter(|t| t - e.t < 4 * 3600), e.msg.as_str())),
+            "precac" | "width" => next = Some(e.t),
+            _ => {}
         }
     }
+    out.reverse();
     out
 }
 
-fn findings(st: &Store, live: &Live, t: i64) -> (Vec<Finding>, u32) {
+fn findings(st: &Store, live: &Live, t: i64, assoc: &HashMap<&str, usize>, spans: &[(i64, Option<i64>, &str)]) -> (Vec<Finding>, u32) {
     let mut f = Vec::new();
     let mut score: i32 = 100;
     // 信号偏弱
@@ -222,15 +262,15 @@ fn findings(st: &Store, live: &Live, t: i64) -> (Vec<Finding>, u32) {
     score -= (weak * 4).min(20);
     // 频繁重连
     let mut rc = 0;
-    let mut ac: Vec<(String, usize)> = assoc_counts(st, t - 86400).into_iter().filter(|(_, n)| *n > 12).collect();
+    let mut ac: Vec<(&str, usize)> = assoc.iter().filter_map(|(&mac, &n)| (n > 12).then_some((mac, n))).collect();
     ac.sort_by_key(|x| std::cmp::Reverse(x.1));
     for (mac, n) in ac {
         rc += 1;
         f.push(Finding {
             level: "warn",
-            title: format!("{} 频繁重连", display_name(st, &mac)),
+            title: format!("{} 频繁重连", display_name(st, mac)),
             detail: format!("24 小时内关联握手 {n} 次。常见原因：信号边缘、设备省电策略、或密钥更新"),
-            mac: Some(mac),
+            mac: Some(mac.to_owned()),
         });
     }
     score -= (rc * 3).min(15);
@@ -254,7 +294,6 @@ fn findings(st: &Store, live: &Live, t: i64) -> (Vec<Finding>, u32) {
         }
     }
     // 雷达
-    let spans = radar_spans(st, t - 7 * 86400);
     if !spans.is_empty() {
         score -= 5;
         let total: i64 = spans.iter().filter_map(|(a, b, _)| b.map(|b| b - a)).sum();
@@ -305,7 +344,9 @@ async fn overview(State(app): State<App>) -> Json<Value> {
     let t = now();
     let st = app.store.read().unwrap();
     let live = app.live.read().unwrap();
-    let (f, score) = findings(&st, &live, t);
+    let assoc = assoc_counts(&st, t - 86400);
+    let spans = radar_spans(&st, t - 7 * 86400);
+    let (f, score) = findings(&st, &live, t, &assoc, &spans);
     let important = ["radar", "dfs", "radio_restart", "width", "chan", "ap_reboot", "collector", "thermal", "roam", "gap", "control"];
     let ev: Vec<Value> = st
         .events
@@ -315,8 +356,8 @@ async fn overview(State(app): State<App>) -> Json<Value> {
         .take(12)
         .map(|e| event_json(e, &st))
         .collect();
-    let assoc24: usize = assoc_counts(&st, t - 86400).values().sum();
-    let radar = radar_spans(&st, t - 7 * 86400)
+    let assoc24: usize = assoc.values().sum();
+    let radar = spans
         .into_iter()
         .map(|(a, b, m)| json!({ "t": a, "end": b, "msg": m }))
         .collect::<Vec<_>>();
@@ -387,7 +428,7 @@ async fn clients(State(app): State<App>) -> Json<Value> {
                 "online": c.online,
                 "first_seen": c.first_seen,
                 "last_seen": c.last_seen,
-                "assoc24": ac.get(&c.st.mac).copied().unwrap_or(0),
+                "assoc24": ac.get(c.st.mac.as_str()).copied().unwrap_or(0),
                 "spark": spark.iter().step_by(step).map(|x| x.round() as i32).collect::<Vec<_>>(),
             })
         })
@@ -429,7 +470,7 @@ async fn devices(State(app): State<App>) -> Json<Value> {
 }
 
 pub fn is_random(mac: &str) -> bool {
-    u8::from_str_radix(&mac[..2], 16).map(|b| b & 0x02 != 0).unwrap_or(false)
+    mac.get(..2).and_then(|s| u8::from_str_radix(s, 16).ok()).is_some_and(|b| b & 0x02 != 0)
 }
 
 #[derive(Deserialize)]
@@ -458,20 +499,34 @@ async fn client(State(app): State<App>, Query(q): Query<ClientQ>) -> Response {
         .map(|e| event_json(e, &st))
         .collect();
     let n = st.resolve(&mac);
-    Json(json!({
-        "mac": mac,
-        "name": n.name,
-        "name_src": n.name_src,
-        "hostname": n.hostname,
-        "alias": n.alias,
-        "ip": n.ip,
-        "random_mac": is_random(&mac),
-        "live": live.clients.get(&mac),
-        "nf": live.clients.get(&mac).and_then(|c| live.radios[c.st.band as usize].nf),
-        "series": columns(&key, &rows),
-        "events": ev,
-    }))
-    .into_response()
+    #[derive(Serialize)]
+    struct ClientResponse<'a> {
+        mac: &'a str,
+        name: Option<String>,
+        name_src: &'static str,
+        hostname: Option<String>,
+        alias: Option<String>,
+        ip: Option<String>,
+        random_mac: bool,
+        live: Option<&'a crate::collector::ClientNow>,
+        nf: Option<i32>,
+        series: Columns<'a>,
+        events: Vec<Value>,
+    }
+    let current = live.clients.get(&mac);
+    Json(ClientResponse {
+        mac: &mac,
+        name: n.name,
+        name_src: n.name_src,
+        hostname: n.hostname,
+        alias: n.alias,
+        ip: n.ip,
+        random_mac: is_random(&mac),
+        live: current,
+        nf: current.and_then(|c| live.radios[c.st.band as usize].nf),
+        series: Columns { key: &key, rows: &rows },
+        events: ev,
+    }).into_response()
 }
 
 #[derive(Deserialize)]
@@ -499,8 +554,8 @@ async fn sta(State(app): State<App>, Query(q): Query<StaQ>) -> Response {
 }
 
 async fn collector(State(app): State<App>) -> Json<Value> {
-    let live = app.live.read().unwrap();
     let st = app.store.read().unwrap();
+    let live = app.live.read().unwrap();
     let samples: usize = st.series.values().map(|s| s.rows.iter().map(|r| r.len()).sum::<usize>()).sum();
     Json(json!({
         "connected": live.connected,
@@ -534,17 +589,17 @@ mod tests {
         // 低流量：每 5 分钟 100 个包、重传 20%，不应判定
         let mut st = Store::new(None);
         for i in 0..12 {
-            st.push("vap1", t - 3600 + i * 300, vap_row(80.0, 20.0), t);
+            st.push("vap1", t - 3600 + i * 300, &vap_row(80.0, 20.0), t);
         }
-        let (f, score) = findings(&st, &live, t);
+        let (f, score) = findings(&st, &live, t, &HashMap::new(), &[]);
         assert!(!f.iter().any(|x| x.title.contains("重传")));
         assert_eq!(score, 100);
         // 高流量：每 5 分钟 1 万个包、重传 15%，应判定
         let mut st = Store::new(None);
         for i in 0..12 {
-            st.push("vap1", t - 3600 + i * 300, vap_row(8500.0, 1500.0), t);
+            st.push("vap1", t - 3600 + i * 300, &vap_row(8500.0, 1500.0), t);
         }
-        let (f, score) = findings(&st, &live, t);
+        let (f, score) = findings(&st, &live, t, &HashMap::new(), &[]);
         assert!(f.iter().any(|x| x.title == "5G 重传偏高" && x.detail.contains("15.0%")), "{:?}", f.iter().map(|x| &x.detail).collect::<Vec<_>>());
         assert_eq!(score, 90);
     }
@@ -553,6 +608,18 @@ mod tests {
     fn random_mac_bit() {
         assert!(is_random("7e:00:00:00:00:01"));
         assert!(!is_random("04:cf:8c:00:00:01"));
+        for mac in ["", "2", "。", "a站"] {
+            assert!(!is_random(mac));
+        }
+    }
+
+    #[test]
+    fn chart_numbers_are_short_and_keep_nulls() {
+        let rows = [(100, vec![1.44, f32::NAN, -2.345]), (200, vec![f32::INFINITY, 7.0])];
+        let json = serde_json::to_string(&Columns { key: "ap", rows: &rows }).unwrap();
+        assert!(json.contains("[1.44,null]"), "{json}");
+        let v: Value = serde_json::from_str(&json).unwrap();
+        assert_eq!(v, json!({"t": [100, 200], "v": {"cpu": [1.44, null], "mem_pct": [null, 7.0], "load": [-2.35, null]}}));
     }
 }
 
@@ -591,6 +658,7 @@ async fn login(State(app): State<App>, h: HeaderMap, Json(q): Json<LoginQ>) -> R
         Login::Ok(t) => ([(header::SET_COOKIE, auth::set_cookie(&t))], Json(json!({ "ok": true }))).into_response(),
         Login::Wrong => deny(StatusCode::UNAUTHORIZED, "密码不对"),
         Login::Locked(s) => deny(StatusCode::TOO_MANY_REQUESTS, &format!("输错次数太多，{s} 秒后再试")),
+        Login::Unavailable => deny(StatusCode::SERVICE_UNAVAILABLE, "暂时无法建立会话"),
     }
 }
 
@@ -621,7 +689,7 @@ async fn settings_set(State(app): State<App>, h: HeaderMap, Json(patch): Json<Va
     }
     *app.settings.write().unwrap() = next.clone();
     if reconnect {
-        let _ = app.tx.try_send(Req::Reload);
+        app.reload.send_replace(());
     }
     Json(json!({ "ok": true, "reconnect": reconnect, "settings": next.public() })).into_response()
 }
@@ -649,7 +717,7 @@ async fn collector_pause(State(app): State<App>, ConnectInfo(peer): ConnectInfo<
     *app.settings.write().unwrap() = next.clone();
     let msg = format!("{}采集（{}）", if q.paused { "暂停" } else { "恢复" }, peer.ip());
     app.store.write().unwrap().event(crate::store::Event { t: now(), kind: "control".into(), band: None, mac: None, msg, kts: None });
-    if app.tx.send(Req::Reload).await.is_err() {
+    if app.reload.send(()).is_err() {
         return deny(StatusCode::INTERNAL_SERVER_ERROR, "采集任务没有响应");
     }
     Json(json!({ "ok": true, "paused_since": next.paused_since })).into_response()
@@ -691,6 +759,7 @@ fn ctl_json(app: &App, s: &crate::web::CtlState) -> Value {
             json!({ "mac": b.mac, "name": r.name.or(Some(b.name.clone()).filter(|x| !x.is_empty())), "ip": r.ip, "random_mac": is_random(&b.mac) })
         })
         .collect();
+    drop(st);
     let plans: Vec<Value> = app.ctl.plans().iter().map(|p| json!({ "id": p.id, "at": p.at, "desc": p.desc, "op": p.op })).collect();
     json!({ "radio": s.radio, "blocked": blocked, "plans": plans })
 }
@@ -727,10 +796,7 @@ async fn ctl_radio(State(app): State<App>, ConnectInfo(peer): ConnectInfo<Socket
         return deny(StatusCode::BAD_REQUEST, "参数不对");
     }
     let mins = if q.enable { 0 } else { q.restore_mins.unwrap_or(0) };
-    match app.ctl.run(Op::Radio { band: q.band, enable: q.enable }, mins, &peer.ip().to_string()).await {
-        Ok(s) => Json(ctl_json(&app, &s)).into_response(),
-        Err(e) => deny(StatusCode::BAD_GATEWAY, &format!("{e:#}")),
-    }
+    submit_control(&app, Op::Radio { band: q.band, enable: q.enable }, mins, peer).await
 }
 
 #[derive(Deserialize)]
@@ -749,9 +815,17 @@ async fn ctl_block(State(app): State<App>, ConnectInfo(peer): ConnectInfo<Socket
         return deny(StatusCode::BAD_REQUEST, "参数不对");
     }
     let mins = if q.block { q.restore_mins.unwrap_or(0) } else { 0 };
-    match app.ctl.run(Op::Block { mac, block: q.block }, mins, &peer.ip().to_string()).await {
-        Ok(s) => Json(ctl_json(&app, &s)).into_response(),
-        Err(e) => deny(StatusCode::BAD_GATEWAY, &format!("{e:#}")),
+    submit_control(&app, Op::Block { mac, block: q.block }, mins, peer).await
+}
+
+async fn submit_control(app: &App, op: Op, mins: u64, peer: SocketAddr) -> Response {
+    let Some(result) = app.ctl.submit(op, mins, peer.ip().to_string()).await else {
+        return deny(StatusCode::SERVICE_UNAVAILABLE, "服务正在停止");
+    };
+    match result.await {
+        Ok(Ok(s)) => Json(ctl_json(app, &s)).into_response(),
+        Ok(Err(e)) => deny(StatusCode::BAD_GATEWAY, &format!("{e:#}")),
+        Err(_) => deny(StatusCode::SERVICE_UNAVAILABLE, "控制任务已结束"),
     }
 }
 
@@ -764,5 +838,8 @@ async fn ctl_cancel(State(app): State<App>, h: HeaderMap, Json(q): Json<CancelQ>
     if let Some(r) = gate(&app, &h, false) {
         return r;
     }
-    Json(json!({ "ok": app.ctl.cancel(q.id), "plans": app.ctl.plans() })).into_response()
+    match app.ctl.cancel(q.id).await {
+        Ok(changed) => Json(json!({ "ok": changed, "plans": app.ctl.plans() })).into_response(),
+        Err(e) => deny(StatusCode::INTERNAL_SERVER_ERROR, &format!("{e:#}")),
+    }
 }

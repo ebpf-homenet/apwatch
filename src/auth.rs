@@ -21,16 +21,17 @@ fn same(a: &str, b: &str) -> bool {
     a.len() == b.len() && a.iter().zip(b).fold(0u8, |acc, (x, y)| acc | (x ^ y)) == 0
 }
 
-fn token() -> String {
+fn token() -> std::io::Result<String> {
     let mut b = [0u8; 16];
-    let _ = std::fs::File::open("/dev/urandom").and_then(|mut f| std::io::Read::read_exact(&mut f, &mut b));
-    b.iter().map(|x| format!("{x:02x}")).collect()
+    std::fs::File::open("/dev/urandom").and_then(|mut f| std::io::Read::read_exact(&mut f, &mut b))?;
+    Ok(b.iter().map(|x| format!("{x:02x}")).collect())
 }
 
 pub enum Login {
     Ok(String),
     Wrong,
     Locked(u64),
+    Unavailable,
 }
 
 impl Auth {
@@ -50,7 +51,13 @@ impl Auth {
             return Login::Wrong;
         }
         *f = (0, None);
-        let t = token();
+        let t = match token() {
+            Ok(t) => t,
+            Err(e) => {
+                tracing::warn!("生成会话令牌失败：{e}");
+                return Login::Unavailable;
+            }
+        };
         let mut s = self.sessions.lock().unwrap();
         s.retain(|_, at| at.elapsed() < TTL);
         s.insert(t.clone(), Instant::now());

@@ -16,7 +16,7 @@ use serde::Serialize;
 use std::collections::{BTreeMap, HashMap};
 use std::sync::{Arc, RwLock};
 use std::time::{Duration, Instant};
-use tokio::sync::{mpsc, oneshot};
+use tokio::sync::{mpsc, oneshot, watch};
 
 
 #[derive(Clone, Default, Serialize)]
@@ -86,8 +86,6 @@ pub type Shared<T> = Arc<RwLock<T>>;
 
 pub enum Req {
     Sta(String, oneshot::Sender<Result<StaDetail, String>>),
-    /// 设置变了：断开并按新设置立即重连
-    Reload,
 }
 
 enum Exit {
@@ -134,7 +132,7 @@ impl Prev {
     }
 }
 
-pub async fn run(settings: Shared<Settings>, store: Shared<Store>, live: Shared<Live>, mut rx: mpsc::Receiver<Req>) {
+pub async fn run(settings: Shared<Settings>, store: Shared<Store>, live: Shared<Live>, mut rx: mpsc::Receiver<Req>, mut reload: watch::Receiver<()>) {
     let mut backoff = 60u64;
     let mut prev = Prev::new();
     let mut wait_first = false;
@@ -144,19 +142,20 @@ pub async fn run(settings: Shared<Settings>, store: Shared<Store>, live: Shared<
             // 连不上时，按需请求直接回错误，不排队；改了设置则立即重试
             let wait = tokio::time::sleep(Duration::from_secs(backoff));
             tokio::pin!(wait);
-            let mut reload = false;
+            let mut reloaded = false;
             loop {
                 tokio::select! {
                     _ = &mut wait => break,
+                    _ = reload.changed() => { reloaded = true; break; }
                     Some(req) = rx.recv() => match req {
                         Req::Sta(_, tx) => { let _ = tx.send(Err("AP 未连接".into())); }
-                        Req::Reload => { reload = true; break; }
                     }
                 }
             }
-            backoff = if reload { 60 } else { (backoff * 2).min(600) };
+            backoff = if reloaded { 60 } else { (backoff * 2).min(600) };
         }
         wait_first = true;
+        reload.borrow_and_update();
         let cfg = settings.read().unwrap().clone();
         if let Some(since) = cfg.paused_since {
             {
@@ -168,12 +167,12 @@ pub async fn run(settings: Shared<Settings>, store: Shared<Store>, live: Shared<
             // 恢复后不拿暂停前的计数算差值，也不把暂停期间的上下线补报成事件
             prev = Prev::new();
             loop {
-                match rx.recv().await {
-                    Some(Req::Sta(_, tx)) => {
-                        let _ = tx.send(Err("采集已暂停".into()));
+                tokio::select! {
+                    _ = reload.changed() => break,
+                    req = rx.recv() => match req {
+                        Some(Req::Sta(_, tx)) => { let _ = tx.send(Err("采集已暂停".into())); }
+                        None => return,
                     }
-                    Some(Req::Reload) => break,
-                    None => return,
                 }
             }
             wait_first = false;
@@ -185,24 +184,38 @@ pub async fn run(settings: Shared<Settings>, store: Shared<Store>, live: Shared<
             continue;
         }
         let addr = format!("{}:23", cfg.ap_host);
-        let mut sess = match Session::connect(&addr, &cfg.password, &cfg.unlock).await {
+        let session = tokio::select! {
+            biased;
+            _ = reload.changed() => {
+                wait_first = false;
+                continue;
+            }
+            result = Session::connect(&addr, &cfg.password, &cfg.unlock) => result,
+        };
+        let mut sess = match session {
             Ok(s) => s,
             Err(e) => {
                 fail(&live, &store, format!("登录失败：{e:#}"));
                 continue;
             }
         };
-        {
+        let reconnecting = {
             let mut l = live.write().unwrap();
             l.connected = true;
             l.connected_since = Some(now());
             l.last_error = None;
-            if l.reconnects > 0 {
-                store.write().unwrap().event(ev("collector", None, None, "采集已重新连接 AP".into()));
-            }
             l.reconnects += 1;
+            l.reconnects > 1
+        };
+        if reconnecting {
+            store.write().unwrap().event(ev("collector", None, None, "采集已重新连接 AP".into()));
         }
-        match session_loop(&mut sess, &cfg, &store, &live, &mut prev, &mut rx, &mut sta_cache, &mut backoff).await {
+        let exit = tokio::select! {
+            biased;
+            _ = reload.changed() => Exit::Reload,
+            exit = session_loop(&mut sess, &cfg, &store, &live, &mut prev, &mut rx, &mut sta_cache, &mut backoff) => exit,
+        };
+        match exit {
             Exit::Reload => {
                 live.write().unwrap().connected = false;
                 // 暂停由接口记事件，这里只记设置变化
@@ -272,7 +285,10 @@ async fn session_loop(
     loop {
         tokio::select! {
             _ = tick.tick() => {
-                if let Err(e) = fast(sess, store, live, prev, &lab).await { return Exit::Err(e); }
+                match fast(sess, store, live, prev, &lab).await {
+                    Ok(rebooted) => need_full_dmesg |= rebooted,
+                    Err(e) => return Exit::Err(e),
+                }
                 *backoff = 60;
                 if due(last_slow, cfg.slow_secs) {
                     last_slow = Some(Instant::now());
@@ -282,14 +298,20 @@ async fn session_loop(
                 if due(last_dmesg, cfg.dmesg_secs) || need_full_dmesg {
                     last_dmesg = Some(Instant::now());
                     match kernel(sess, store, live, prev, need_full_dmesg, &lab).await {
-                        Ok(gap) => need_full_dmesg = gap,
+                        Ok(true) if !need_full_dmesg && prev.boot.is_some() => {
+                            if let Err(e) = kernel(sess, store, live, prev, true, &lab).await {
+                                return Exit::Err(e);
+                            }
+                            need_full_dmesg = false;
+                        }
+                        Ok(wait_for_boot) => need_full_dmesg = wait_for_boot,
                         Err(e) => return Exit::Err(e),
                     }
                 }
             }
             Some(req) = rx.recv() => match req {
-                Req::Reload => return Exit::Reload,
                 Req::Sta(mac, tx) => {
+                    if tx.is_closed() { continue; }
                     if let Some((t, d)) = sta_cache.get(&mac) {
                         if t.elapsed() < Duration::from_secs(10) { let _ = tx.send(Ok(d.clone())); continue; }
                     }
@@ -313,9 +335,25 @@ fn f(x: Option<f32>) -> f32 {
     x.unwrap_or(f32::NAN)
 }
 
+struct Sample<'a>(&'a Shared<Store>);
+
+impl<'a> Sample<'a> {
+    fn start(store: &'a Shared<Store>, t: i64) -> Self {
+        store.write().unwrap().sample_started = Some(t);
+        Self(store)
+    }
+}
+
+impl Drop for Sample<'_> {
+    fn drop(&mut self) {
+        self.0.write().unwrap().sample_started = None;
+    }
+}
+
 #[allow(clippy::needless_range_loop)]
-async fn fast(sess: &mut Session, store: &Shared<Store>, live: &Shared<Live>, prev: &mut Prev, lab: &Labels) -> anyhow::Result<()> {
+async fn fast(sess: &mut Session, store: &Shared<Store>, live: &Shared<Live>, prev: &mut Prev, lab: &Labels) -> anyhow::Result<bool> {
     let t = now();
+    let _sample = Sample::start(store, t);
     let sys_text = exec(sess, live, "sys", cmds::SYS, &lab.fast, 15).await?;
     let sys_at = Instant::now();
     let iw_text = exec(sess, live, "iw", cmds::IW, &lab.fast, 15).await?;
@@ -340,15 +378,22 @@ async fn fast(sess: &mut Session, store: &Shared<Store>, live: &Shared<Live>, pr
 
     // AP 系统状态与重启检测
     let mut if_rate: [(Option<f32>, Option<f32>); 2] = [(None, None); 2];
+    let mut rebooted = false;
     if let Some(s) = &sys {
         let boot = s.date - s.uptime as i64;
-        if let Some(pb) = prev.boot {
-            if (boot - pb).abs() > 120 {
-                st.event(ev("ap_reboot", None, None, format!("AP 重启过（此前运行到 {}）", pb)));
-                prev.seen = None;
-            }
+        rebooted = prev.sys.as_ref().is_some_and(|p| ap_rebooted(p.uptime, s.uptime, sys_at.duration_since(prev.sys_t)));
+        if rebooted {
+            let since = crate::store::wall_time(l.ap_boot.unwrap_or(boot));
+            st.event(ev("ap_reboot", None, None, format!("AP 已重启（上次开机 {since}）")));
+            st.reset_kts();
+            prev.seen = None;
+            prev.sys = None;
+            prev.radio = [None, None];
+            prev.radio_t = [None, None];
+            prev.vap = [None, None];
         }
-        prev.boot = Some(boot);
+        // 用 uptime 判断重启，系统校时不能把同一次开机的日志再计一遍。
+        prev.boot = Some(if rebooted { boot } else { prev.boot.unwrap_or(boot) });
         l.ap_boot = Some(boot);
         l.ap_uptime = Some(s.uptime);
         l.ap_mem_total = Some(s.mem_total);
@@ -377,7 +422,7 @@ async fn fast(sess: &mut Session, store: &Shared<Store>, live: &Shared<Live>, pr
         }
         l.ap_cpu = cpu;
         let mem_pct = if s.mem_total > 0 { (1.0 - s.mem_avail as f64 / s.mem_total as f64) as f32 * 100.0 } else { f32::NAN };
-        st.push("ap", t, vec![f(cpu), mem_pct, s.load1], t);
+        st.push("ap", t, &[f(cpu), mem_pct, s.load1], t);
         prev.sys = Some(s.clone());
         prev.sys_t = sys_at;
     }
@@ -423,33 +468,34 @@ async fn fast(sess: &mut Session, store: &Shared<Store>, live: &Shared<Live>, pr
             }
         }
     }
-    prev.seen = Some(now_seen.clone());
     for c in l.clients.values_mut() {
         c.online = now_seen.contains_key(&c.st.mac);
     }
+    prev.seen = Some(now_seen);
     let mut counts = [0usize; 2];
-    for s in &stas {
+    for s in stas {
         counts[s.band as usize] += 1;
         let nf = prev.radio[s.band as usize].map(|r| r.nf).or(radios[s.band as usize].map(|r| r.nf));
         let snr = nf.map(|n| s.rssi - n);
         st.push(
             &format!("c:{}", s.mac),
             t,
-            vec![s.rssi as f32, s.rssi_min as f32, s.tx_rate, s.rx_rate, s.idle as f32, s.band as f32],
+            &[s.rssi as f32, s.rssi_min as f32, s.tx_rate, s.rx_rate, s.idle as f32, s.band as f32],
             t,
         );
-        let e = l.clients.entry(s.mac.clone()).or_insert_with(|| ClientNow {
-            st: s.clone(),
-            online: true,
-            first_seen: t,
-            last_seen: t,
-            snr,
-        });
-        e.st = s.clone();
-        e.online = true;
-        e.last_seen = t;
-        e.snr = snr;
         st.touch_seen(&s.mac, s.band, t);
+        match l.clients.entry(s.mac.clone()) {
+            std::collections::btree_map::Entry::Occupied(mut entry) => {
+                let c = entry.get_mut();
+                c.st = s;
+                c.online = true;
+                c.last_seen = t;
+                c.snr = snr;
+            }
+            std::collections::btree_map::Entry::Vacant(entry) => {
+                entry.insert(ClientNow { st: s, online: true, first_seen: t, last_seen: t, snr });
+            }
+        }
     }
     // 24 小时没见过的客户端从实时列表移除，历史数据仍在 store
     l.clients.retain(|_, c| c.online || c.last_seen > t - 86400);
@@ -461,8 +507,9 @@ async fn fast(sess: &mut Session, store: &Shared<Store>, live: &Shared<Live>, pr
         let mut phy_ps = None;
         let mut tx_fail = None;
         if let (Some(p), Some(pt), Some(nt)) = (prev.radio[b], prev.radio_t[b], radio_at[b]) {
-            busy = parse::busy(&p, &r);
-            let secs = nt.duration_since(pt).as_secs_f64();
+            let elapsed = nt.duration_since(pt);
+            busy = radio_busy(&p, &r, elapsed);
+            let secs = elapsed.as_secs_f64();
             if secs > 1.0 && r.phy_err >= p.phy_err {
                 phy_ps = Some(((r.phy_err - p.phy_err) as f64 / secs) as f32);
             }
@@ -477,17 +524,15 @@ async fn fast(sess: &mut Session, store: &Shared<Store>, live: &Shared<Live>, pr
         rn.clients = counts[b];
         rn.tx_mbps = if_rate[b].0;
         rn.rx_mbps = if_rate[b].1;
-        if let Some(x) = busy {
-            rn.busy = Some(x.busy);
-            rn.tx = Some(x.tx);
-            rn.rx = Some(x.rx);
-        }
+        rn.busy = busy.map(|x| x.busy);
+        rn.tx = busy.map(|x| x.tx);
+        rn.rx = busy.map(|x| x.rx);
         let other = busy.map(|x| (x.busy - x.tx - x.rx).max(0.0));
         let ifc = &ifs[b];
         st.push(
             &format!("radio{b}"),
             t,
-            vec![
+            &[
                 f(busy.map(|x| x.busy)),
                 f(busy.map(|x| x.tx)),
                 f(busy.map(|x| x.rx)),
@@ -509,11 +554,22 @@ async fn fast(sess: &mut Session, store: &Shared<Store>, live: &Shared<Live>, pr
         prev.radio[b] = Some(r);
         prev.radio_t[b] = radio_at[b];
     }
-    Ok(())
+    Ok(rebooted)
+}
+
+fn ap_rebooted(previous_uptime: f64, uptime: f64, elapsed: Duration) -> bool {
+    // 允许采集和两端时钟有几秒误差，仍能识别断线期间重启、uptime 已涨回上次读数的情况。
+    uptime + 1.0 < previous_uptime || uptime + 30.0 < previous_uptime + elapsed.as_secs_f64()
+}
+
+fn radio_busy(previous: &RadioRaw, current: &RadioRaw, elapsed: Duration) -> Option<parse::Busy> {
+    // 计数约每微秒加一，超过一个 32 位周期时无法由端点唯一还原增量。
+    (elapsed.as_micros() < u32::MAX as u128).then(|| parse::busy(previous, current)).flatten()
 }
 
 async fn slow(sess: &mut Session, store: &Shared<Store>, live: &Shared<Live>, prev: &mut Prev, lab: &Labels) -> anyhow::Result<()> {
     let t = now();
+    let _sample = Sample::start(store, t);
     let mut vaps = [None, None];
     let mut temps = [None, None];
     for b in 0..2 {
@@ -539,7 +595,7 @@ async fn slow(sess: &mut Session, store: &Shared<Store>, live: &Shared<Live>, pr
             prev.temp[b] = Some((tc, lv));
         }
         let Some(v) = vaps[b] else { continue };
-        let mut row = vec![f32::NAN; 6];
+        let mut row = [f32::NAN; 10];
         if let Some(p) = prev.vap[b] {
             let d = |a: u64, b: u64| if b >= a { Some((b - a) as f32) } else { None };
             let dtx = d(p.tx_pkts, v.tx_pkts);
@@ -554,35 +610,42 @@ async fn slow(sess: &mut Session, store: &Shared<Store>, live: &Shared<Live>, pr
             row[4] = f(d(p.probe_drop, v.probe_drop));
             row[5] = f(d(p.tx_fail, v.tx_fail));
         }
-        row.push(temps[b].map(|x| x.0 as f32).unwrap_or(f32::NAN));
-        row.push(temps[b].map(|x| x.1 as f32).unwrap_or(f32::NAN));
-        let (mut tx, mut re) = (f32::NAN, f32::NAN);
+        row[6] = temps[b].map(|x| x.0 as f32).unwrap_or(f32::NAN);
+        row[7] = temps[b].map(|x| x.1 as f32).unwrap_or(f32::NAN);
         if let Some(p) = prev.vap[b] {
             if v.tx_pkts >= p.tx_pkts && v.retries >= p.retries {
-                tx = (v.tx_pkts - p.tx_pkts) as f32;
-                re = (v.retries - p.retries) as f32;
+                row[8] = (v.tx_pkts - p.tx_pkts) as f32;
+                row[9] = (v.retries - p.retries) as f32;
             }
         }
-        row.push(tx);
-        row.push(re);
-        st.push(&format!("vap{b}"), t, row, t);
+        st.push(&format!("vap{b}"), t, &row, t);
         prev.vap[b] = Some(v);
     }
     Ok(())
 }
 
-/// 读内核日志增量。返回 true 表示可能有缺口，下一轮补拉全量。
+/// 读内核日志。返回 true 表示需要全量，或尚无开机时间以计算日志时刻。
 async fn kernel(sess: &mut Session, store: &Shared<Store>, live: &Shared<Live>, prev: &Prev, full: bool, lab: &Labels) -> anyhow::Result<bool> {
     let Some(boot) = prev.boot else { return Ok(true) };
     let (key, cmd, every) = if full { ("dmesg_full", cmds::DMESG_FULL, "连上时一次") } else { ("dmesg", cmds::DMESG_TAIL, lab.dmesg.as_str()) };
     let text = exec(sess, live, key, cmd, every, 30).await?;
-    let lines = parse::dmesg(&text);
-    let mut st = store.write().unwrap();
+    let wall_boot = prev.sys.as_ref().map_or(boot, |s| s.date - s.uptime as i64);
+    Ok(record_kernel(&mut store.write().unwrap(), boot, wall_boot, full, &text))
+}
+
+fn record_kernel(st: &mut Store, boot: i64, wall_boot: i64, full: bool, text: &str) -> bool {
     let kmax = st.max_kts(boot);
-    let fresh: Vec<(f64, String)> = lines.iter().filter(|(ts, _)| *ts > kmax).cloned().collect();
-    let gap = !full && kmax > 0.0 && lines.len() >= 40 && fresh.len() == lines.len();
-    for (ts, k) in parse::kevents(&fresh) {
-        let t = boot + ts as i64;
+    let mut lines = parse::dmesg(text);
+    let gap = !full && kmax > 0.0 && text.lines().count() >= 40 && !lines.is_empty()
+        && lines.iter().all(|(ts, _)| *ts > kmax);
+    if gap {
+        // 保留缺口之前的游标。全量补拉会一次解析缺口和这批尾部，避免重复。
+        st.event(ev("gap", None, None, "内核日志尾部全是新内容，补拉全量".into()));
+        return true;
+    }
+    lines.retain(|(ts, _)| *ts > kmax);
+    for (ts, k) in parse::kevents(&lines) {
+        let t = wall_boot + ts as i64;
         let (kind, band, mac, msg) = match k {
             KEvent::Assoc { mac, band } => ("assoc", band, Some(mac), "完成关联握手".to_string()),
             KEvent::Radar { freq } => ("radar", Some(1), None, format!("检测到雷达（{freq} MHz），按规定避让")),
@@ -593,13 +656,10 @@ async fn kernel(sess: &mut Session, store: &Shared<Store>, live: &Shared<Live>, 
         st.event(Event { t, kind: kind.into(), band, mac, msg, kts: Some(ts) });
     }
     // 推进游标：即使本批没有可识别事件也要记下，避免重复处理
-    if let Some(mx) = fresh.iter().map(|x| x.0).reduce(f64::max) {
+    if let Some(mx) = lines.iter().map(|x| x.0).reduce(f64::max) {
         st.set_kts(boot, mx);
     }
-    if gap {
-        st.event(ev("gap", None, None, "内核日志一分钟内超过 40 行，补拉全量".into()));
-    }
-    Ok(gap)
+    false
 }
 
 fn names(cfg: &Settings, store: &Shared<Store>) {
@@ -631,5 +691,38 @@ pub fn dur(s: u64) -> String {
         format!("{} 小时 {} 分", s / 3600, s % 3600 / 60)
     } else {
         format!("{} 分 {} 秒", s / 60, s % 60)
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn full_dmesg_fills_gap_without_duplicates() {
+        let boot = now() - 100;
+        let mut st = Store::new(None);
+        st.set_kts(boot, 10.0);
+        let tail = (12..52).map(|t| format!("[{t}] tail\n")).collect::<String>();
+        assert!(record_kernel(&mut st, boot, boot, false, &tail));
+        assert_eq!(st.max_kts(boot), 10.0);
+
+        let full = format!("[9] Radar found\n[11] Radarfound Freq=5500\n{tail}[52] Radar found\n");
+        assert!(!record_kernel(&mut st, boot, boot, true, &full));
+        assert_eq!(st.max_kts(boot), 52.0);
+        assert!(!record_kernel(&mut st, boot, boot, true, &full));
+        let radar: Vec<_> = st.events.iter().filter(|e| e.kind == "radar").map(|e| e.kts).collect();
+        assert_eq!(radar, [Some(11.0), Some(52.0)]);
+    }
+
+    #[test]
+    fn reboot_and_long_counter_gap_are_distinguished_from_normal_wrap() {
+        assert!(ap_rebooted(400.0, 12.0, Duration::from_secs(30)));
+        assert!(ap_rebooted(400.0, 410.0, Duration::from_secs(300)));
+        assert!(!ap_rebooted(400.0, 702.0, Duration::from_secs(300)));
+        let prev = RadioRaw { cycle: u32::MAX - 50, ..Default::default() };
+        let next = RadioRaw { cycle: 30_000_000, rx_clear: 12_000_000, ..Default::default() };
+        assert!(radio_busy(&prev, &next, Duration::from_secs(30)).is_some());
+        assert!(radio_busy(&prev, &next, Duration::from_secs(4300)).is_none());
     }
 }

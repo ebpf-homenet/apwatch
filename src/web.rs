@@ -123,11 +123,13 @@ pub async fn state(host: &str, pw: &str) -> Result<CtlState> {
 }
 
 /// 开关频段并读回确认。
-pub async fn set_radio(host: &str, pw: &str, band: usize, enable: bool) -> Result<CtlState> {
+pub async fn set_radio(host: &str, pw: &str, band: usize, enable: bool, applied: impl FnOnce() -> Result<()>) -> Result<CtlState> {
     let s = Session::login(host, pw).await?;
     let r = async {
         s.ds("set", json!({"wireless": {SEC[band]: {"enable": if enable { "1" } else { "0" }}}})).await?;
+        let saved = applied();
         let st = read_state(&s).await?;
+        saved?;
         if st.radio[band] != enable {
             bail!("写入后读回不一致");
         }
@@ -139,7 +141,7 @@ pub async fn set_radio(host: &str, pw: &str, band: usize, enable: bool) -> Resul
 }
 
 /// 禁用 / 解禁设备并读回确认。官方动作需要带上名称与限速（取自终端表，离线设备取禁用名单）。
-pub async fn set_block(host: &str, pw: &str, mac: &str, block: bool) -> Result<CtlState> {
+pub async fn set_block(host: &str, pw: &str, mac: &str, block: bool, applied: impl FnOnce() -> Result<()>) -> Result<CtlState> {
     let s = Session::login(host, pw).await?;
     let r = async {
         let h = s.ds("get", json!({"hosts_info": {"table": ["host_info", "blocked_host"]}})).await?;
@@ -152,7 +154,9 @@ pub async fn set_block(host: &str, pw: &str, mac: &str, block: bool) -> Result<C
             "name": g("hostname", ""), "down_limit": g("down_limit", "0"), "up_limit": g("up_limit", "0"),
         }}});
         s.ds("do", body).await?;
+        let saved = applied();
         let st = read_state(&s).await?;
+        saved?;
         let listed = st.blocked.iter().any(|b| b.mac == colon_mac(mac));
         if listed != block {
             bail!("写入后读回不一致");

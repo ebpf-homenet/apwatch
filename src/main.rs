@@ -22,6 +22,8 @@ use settings::Settings;
 use std::net::SocketAddr;
 use std::path::PathBuf;
 use std::sync::{Arc, RwLock};
+use std::time::Duration;
+use tokio::sync::{mpsc, watch};
 use store::{now, Store};
 
 #[derive(Parser)]
@@ -101,29 +103,33 @@ async fn main() -> Result<()> {
     tracing::info!("回放历史记录 {n} 条");
     let store = Arc::new(RwLock::new(st));
     let live = Arc::new(RwLock::new(Live { started: t, ..Default::default() }));
-    let (tx, rx) = tokio::sync::mpsc::channel(8);
-    tokio::spawn(collector::run(settings.clone(), store.clone(), live.clone(), rx));
+    let (tx, rx) = mpsc::channel(8);
+    let (reload, reload_rx) = watch::channel(());
+    let collector = tokio::spawn(collector::run(settings.clone(), store.clone(), live.clone(), rx, reload_rx));
     let ctl = ctl::Ctl::new(settings.clone(), store.clone(), a.data_dir.clone());
-    tokio::spawn(ctl.clone().scheduler());
+    let (stop, stop_rx) = watch::channel(false);
+    let mut scheduler = tokio::spawn(ctl.clone().scheduler(stop_rx));
 
     // 按设置的保存间隔追加写盘；每天清理一次过期文件
     let (fs, fset) = (store.clone(), settings.clone());
-    tokio::spawn(async move {
-        let mut tick = tokio::time::interval(std::time::Duration::from_secs(60));
+    let maintenance = tokio::spawn(async move {
+        let mut tick = tokio::time::interval(Duration::from_secs(60));
         let (mut last_save, mut last_prune) = (now(), now());
         loop {
             tick.tick().await;
             let t = now();
             let every = fset.read().unwrap().save_mins as i64 * 60;
+            let mut st = fs.write().unwrap();
+            st.maintain(t);
             if t - last_save >= every {
                 last_save = t;
-                if let Err(e) = fs.write().unwrap().flush(t) {
+                if let Err(e) = st.flush(t) {
                     tracing::warn!("写盘失败：{e}");
                 }
             }
             if t - last_prune >= 86400 {
                 last_prune = t;
-                fs.read().unwrap().prune_files(t);
+                st.prune_files(t);
             }
         }
     });
@@ -132,18 +138,63 @@ async fn main() -> Result<()> {
         store: store.clone(),
         live,
         tx,
+        reload,
         settings,
-        ctl,
+        ctl: ctl.clone(),
         auth: Arc::new(auth::Auth::default()),
         data_dir: a.data_dir.clone(),
     });
     let listener = tokio::net::TcpListener::bind(&a.listen).await.with_context(|| format!("监听 {}", a.listen))?;
     tracing::info!("页面 http://{}/", a.listen);
-    axum::serve(listener, app.into_make_service_with_connect_info::<SocketAddr>())
-        .with_graceful_shutdown(shutdown())
-        .await?;
+    let (close_http, wait_http) = tokio::sync::oneshot::channel();
+    let mut server = tokio::spawn(async move {
+        axum::serve(listener, app.into_make_service_with_connect_info::<SocketAddr>())
+            .with_graceful_shutdown(async { let _ = wait_http.await; })
+            .await
+    });
+    tokio::select! {
+        _ = shutdown() => {}
+        r = &mut server => {
+            r??;
+            return Ok(());
+        }
+    }
+    let deadline = tokio::time::Instant::now() + Duration::from_secs(12);
+    let _ = close_http.send(());
+    stop.send_replace(true);
+    let mut jobs = ctl.stop_accepting();
+    maintenance.abort();
+    collector.abort();
+    let _ = collector.await;
+    let _ = maintenance.await;
+    // myapps 在停止超时后强杀。先持久化已经到手的采样，不等 HTTP 慢连接。
+    let flushed = {
+        let t = now();
+        let mut st = store.write().unwrap();
+        st.maintain(t);
+        st.flush(t)
+    };
+    match flushed {
+        Ok(n) => tracing::info!("退出前写盘 {n} 条"),
+        Err(e) => tracing::warn!("退出前写盘失败，退出时重试：{e}"),
+    }
+    let drain = tokio::time::timeout_at(deadline, async {
+        tokio::join!(
+            &mut server,
+            &mut scheduler,
+            async { while jobs.join_next().await.is_some() {} },
+        )
+    }).await;
+    if drain.is_err() {
+        server.abort();
+        scheduler.abort();
+        jobs.shutdown().await;
+        tracing::warn!("停止等待未完成的连接与控制操作");
+    }
     let n = store.write().unwrap().flush(now())?;
-    tracing::info!("退出前写盘 {n} 条");
+    if n > 0 {
+        tracing::info!("退出前补写控制事件 {n} 条");
+    }
     Ok(())
 }
 

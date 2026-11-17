@@ -4,17 +4,17 @@ use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 
 /// `Key = value` 形式的行，键去掉首尾空白。
-fn kv(text: &str) -> HashMap<String, String> {
+fn kv(text: &str) -> HashMap<&str, &str> {
     let mut m = HashMap::new();
     for line in text.lines() {
         if let Some((k, v)) = line.rsplit_once(" = ").or_else(|| line.split_once(" =")) {
-            m.insert(k.trim().to_string(), v.trim().to_string());
+            m.insert(k.trim(), v.trim());
         }
     }
     m
 }
 
-fn num<T: std::str::FromStr>(m: &HashMap<String, String>, k: &str) -> Option<T> {
+fn num<T: std::str::FromStr>(m: &HashMap<&str, &str>, k: &str) -> Option<T> {
     m.get(k)?.parse().ok()
 }
 
@@ -37,12 +37,12 @@ pub struct RadioRaw {
 
 pub fn radio(text: &str) -> Option<RadioRaw> {
     let m = kv(text);
-    let c = |k: &str| num::<u64>(&m, &format!("lithium_cycle_cnt: {k}")).map(|v| v as u32);
+    let c = |k| num::<u64>(&m, k).map(|v| v as u32);
     Some(RadioRaw {
-        cycle: c("Cycle Cnt")?,
-        rx_clear: c("Rx Clear Cnt")?,
-        tx_frame: c("Tx Frame Cnt")?,
-        rx_frame: c("Rx Frame Cnt")?,
+        cycle: c("lithium_cycle_cnt: Cycle Cnt")?,
+        rx_clear: c("lithium_cycle_cnt: Rx Clear Cnt")?,
+        tx_frame: c("lithium_cycle_cnt: Tx Frame Cnt")?,
+        rx_frame: c("lithium_cycle_cnt: Rx Frame Cnt")?,
         phy_err: num(&m, "Rx PHY errors").unwrap_or(0),
         nf: num(&m, "lithium_cycle_cnt: Chan NF (BDF averaged NF_dBm)").unwrap_or(-95),
         tx_fail: num(&m, "Tx failures").unwrap_or(0),
@@ -255,8 +255,11 @@ fn rate(s: &str) -> Option<f32> {
 }
 
 fn hms(s: &str) -> Option<u64> {
-    let p: Vec<u64> = s.split(':').map(|x| x.parse().ok()).collect::<Option<_>>()?;
-    (p.len() == 3).then(|| p[0] * 3600 + p[1] * 60 + p[2])
+    let (h, rest) = s.split_once(':')?;
+    let (m, sec) = rest.split_once(':')?;
+    let h = h.parse::<u64>().ok()?.checked_mul(3600)?;
+    let m = m.parse::<u64>().ok()?.checked_mul(60)?;
+    h.checked_add(m)?.checked_add(sec.parse().ok()?)
 }
 
 pub fn stations(text: &str, band: u8) -> Vec<Station> {
@@ -269,7 +272,7 @@ fn station(line: &str, band: u8) -> Option<Station> {
     if !crate::cmds::valid_mac(mac) || w.len() < 16 {
         return None;
     }
-    let ai = w.iter().position(|x| x.matches(':').count() == 2 && hms(x).is_some())?;
+    let (ai, assoc_secs) = w.iter().enumerate().skip(11).find_map(|(i, x)| hms(x).map(|secs| (i, secs)))?;
     let mi = w.iter().position(|x| x.starts_with("IEEE80211_MODE_"))?;
     let max_rate = w[11..ai].iter().filter_map(|x| x.parse::<u32>().ok()).find(|v| *v >= 1000).unwrap_or(0);
     Some(Station {
@@ -283,7 +286,7 @@ fn station(line: &str, band: u8) -> Option<Station> {
         rssi_max: w[7].parse().ok()?,
         idle: w[8].parse().ok()?,
         max_rate,
-        assoc_secs: hms(w[ai])?,
+        assoc_secs,
         mode: w[mi].trim_start_matches("IEEE80211_MODE_").to_string(),
         nss: w.get(mi + 1).and_then(|x| x.parse().ok()).unwrap_or(1),
         ps: w.get(mi + 3).map(|x| *x == "1").unwrap_or(false),
@@ -355,13 +358,14 @@ pub fn sta_detail(text: &str) -> StaDetail {
 }
 
 /// 内核日志行：(开机后秒数, 文本)。续行（同一时间戳的空白行）保留，供按时间戳归组。
-pub fn dmesg(text: &str) -> Vec<(f64, String)> {
+pub fn dmesg(text: &str) -> Vec<(f64, &str)> {
     text.lines()
         .filter_map(|l| {
             let l = l.trim_end_matches('\r');
             let r = l.strip_prefix('[')?;
             let (ts, rest) = r.split_once(']')?;
-            Some((ts.trim().parse().ok()?, rest.trim().to_string()))
+            let ts: f64 = ts.trim().parse().ok()?;
+            ts.is_finite().then(|| (ts, rest.trim()))
         })
         .collect()
 }
@@ -393,7 +397,7 @@ fn first_num_after(s: &str, key: &str) -> Option<u32> {
 }
 
 /// 把同一时间戳的行归为一组后识别事件。
-pub fn kevents(lines: &[(f64, String)]) -> Vec<(f64, KEvent)> {
+pub fn kevents(lines: &[(f64, &str)]) -> Vec<(f64, KEvent)> {
     let mut out = Vec::new();
     let mut i = 0;
     while i < lines.len() {
@@ -528,7 +532,8 @@ mod tests {
 
     #[test]
     fn parses_kernel_events() {
-        let l = dmesg(&fx("dmesg_raw.txt"));
+        let text = fx("dmesg_raw.txt");
+        let l = dmesg(&text);
         assert!(l.len() > 2000);
         let ev = kevents(&l);
         let assoc = ev.iter().filter(|(_, e)| matches!(e, KEvent::Assoc { .. })).count();

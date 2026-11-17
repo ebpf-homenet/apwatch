@@ -1,7 +1,7 @@
 //! 与 AP 的 telnet 长连接：标准 login → TP-Link 保护 shell(psh) → goash 解锁 → ash。
 //!
-//! 每条命令用起止哨兵包裹：`echo __S7$(printf B)__;CMD;echo __E7$(printf E)__`。
-//! 回显里是 `$(printf B)` 字面量，完整哨兵只会出现在真实输出中；tty 对长命令回显的折行不影响判断。
+//! 每条命令用起止哨兵包裹：`echo __S7'B'__;CMD;echo __E7'E'__`。
+//! 引号让完整哨兵只出现在 ash 的实际输出中，回显和 tty 折行不会伪造边界。
 
 use anyhow::{bail, Context, Result};
 use std::time::{Duration, Instant};
@@ -13,6 +13,7 @@ pub struct Session {
     s: TcpStream,
     buf: Vec<u8>,
     seq: u64,
+    iac: Iac,
 }
 
 pub struct Output {
@@ -27,7 +28,7 @@ impl Session {
             .await
             .context("连接超时")??;
         s.set_nodelay(true).ok();
-        let mut me = Session { s, buf: Vec::new(), seq: 0 };
+        let mut me = Session { s, buf: Vec::new(), seq: 0, iac: Iac::Data };
         me.expect(&["login:"], 10).await.context("等待 login 提示")?;
         me.send("root").await?;
         me.expect(&["assword:"], 8).await.context("等待口令提示")?;
@@ -61,32 +62,8 @@ impl Session {
         if n == 0 {
             bail!("AP 关闭了连接");
         }
-        let mut i = 0;
         let before = self.buf.len();
-        let mut replies = Vec::new();
-        while i < n {
-            let b = tmp[i];
-            if b == 255 && i + 1 < n {
-                let c = tmp[i + 1];
-                if (251..=254).contains(&c) && i + 2 < n {
-                    let o = tmp[i + 2];
-                    match c {
-                        253 => replies.extend_from_slice(&[255, 252, o]), // DO → WONT
-                        251 => replies.extend_from_slice(&[255, 254, o]), // WILL → DONT
-                        _ => {}
-                    }
-                    i += 3;
-                    continue;
-                }
-                if c == 255 {
-                    self.buf.push(255);
-                }
-                i += 2;
-                continue;
-            }
-            self.buf.push(b);
-            i += 1;
-        }
+        let replies = self.iac.decode(&tmp[..n], &mut self.buf);
         if !replies.is_empty() {
             self.s.write_all(&replies).await?;
         }
@@ -123,19 +100,19 @@ impl Session {
         let (sb, se) = (format!("__S{}B__", self.seq), format!("__E{}E__", self.seq));
         self.buf.clear();
         let t0 = Instant::now();
-        self.send(&format!("echo __S{}$(printf B)__;{};echo __E{}$(printf E)__", self.seq, cmd, self.seq))
+        self.send(&format!("echo __S{}'B'__;{};echo __E{}'E'__", self.seq, cmd, self.seq))
             .await?;
         let end = t0 + Duration::from_secs(secs);
+        let mut scan_from = 0;
         loop {
-            // 只在新数据的尾部附近找结束哨兵，避免大输出时反复扫描整个缓冲
-            let tail_from = self.buf.len().saturating_sub(64 * 1024);
-            if find(&self.buf[tail_from..], se.as_bytes()).is_some() {
+            if find(&self.buf[scan_from..], se.as_bytes()).is_some() {
                 break;
             }
             let now = Instant::now();
             if now >= end {
                 bail!("命令超时: {cmd}");
             }
+            scan_from = self.buf.len().saturating_sub(se.len() - 1);
             self.read_some(end - now).await?;
         }
         let text = String::from_utf8_lossy(&self.buf).replace('\r', "");
@@ -148,6 +125,73 @@ impl Session {
     }
 }
 
+#[derive(Clone, Copy)]
+enum Iac {
+    Data,
+    Command,
+    Option(u8),
+    Subnegotiation,
+    SubnegotiationEnd,
+}
+
+impl Iac {
+    fn decode(&mut self, mut input: &[u8], out: &mut Vec<u8>) -> Vec<u8> {
+        let mut replies = Vec::new();
+        while !input.is_empty() {
+            if matches!(self, Self::Data) {
+                let data = input.iter().position(|&b| b == 255).unwrap_or(input.len());
+                out.extend_from_slice(&input[..data]);
+                input = &input[data..];
+                if input.is_empty() {
+                    break;
+                }
+            }
+            let (&b, rest) = input.split_first().unwrap();
+            input = rest;
+            *self = match (*self, b) {
+                (Self::Data, _) => Self::Command,
+                (Self::Command, 250) => Self::Subnegotiation,
+                (Self::Command, 251..=254) => Self::Option(b),
+                (Self::Command, 255) => {
+                    out.push(b);
+                    Self::Data
+                }
+                (Self::Command, _) => Self::Data,
+                (Self::Option(cmd), _) => {
+                    match cmd {
+                        253 => replies.extend_from_slice(&[255, 252, b]), // DO → WONT
+                        251 => replies.extend_from_slice(&[255, 254, b]), // WILL → DONT
+                        _ => {}
+                    }
+                    Self::Data
+                }
+                (Self::Subnegotiation, 255) => Self::SubnegotiationEnd,
+                (Self::SubnegotiationEnd, 240) => Self::Data,
+                (Self::Subnegotiation | Self::SubnegotiationEnd, _) => Self::Subnegotiation,
+            };
+        }
+        replies
+    }
+}
+
 fn find(h: &[u8], n: &[u8]) -> Option<usize> {
     h.windows(n.len()).position(|w| w == n)
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn iac_handles_every_split_point() {
+        let data = [b'A', 255, 253, 1, 255, 251, 2, 255, 250, 3, 255, 255, 240, 255, 240, 255, 255, b'B'];
+        for n in 0..=data.len() {
+            let mut iac = Iac::Data;
+            let mut out = Vec::new();
+            let mut replies = iac.decode(&data[..n], &mut out);
+            replies.extend(iac.decode(&data[n..], &mut out));
+            assert_eq!(out, [b'A', 255, b'B']);
+            assert_eq!(replies, [255, 252, 1, 255, 254, 2]);
+        }
+    }
 }

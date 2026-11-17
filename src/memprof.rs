@@ -160,19 +160,19 @@ mod tests {
         while t <= NOW {
             for k in ["ap", "radio0", "radio1"] {
                 let v = sample(k, &mut r);
-                s.push(k, t, v, t);
+                s.push(k, t, &v, t);
             }
             if t % 300 == 0 {
                 for k in ["vap0", "vap1"] {
                     let v = sample(k, &mut r);
-                    s.push(k, t, v, t);
+                    s.push(k, t, &v, t);
                 }
             }
             let day = (t - start) / 86400;
             for (i, c) in clients.iter().enumerate() {
                 if i < 22 || day % (i as i64 - 19) == 0 {
                     let v = sample(c, &mut r);
-                    s.push(c, t, v, t);
+                    s.push(c, t, &v, t);
                 }
             }
             if t % 3600 == 0 {
@@ -184,6 +184,9 @@ mod tests {
                     msg: "上线".into(),
                     kts: None,
                 });
+            }
+            if t % 60 == 0 {
+                s.maintain(t);
             }
             if t - last_save >= save {
                 last_save = t;
@@ -224,13 +227,15 @@ mod tests {
         let mem_views = views_of(&s);
         drop(s);
         let b2 = live();
+        PEAK.store(b2, Ordering::Relaxed);
         let t1 = Instant::now();
         let mut s2 = Store::new(Some(dir.clone()));
         let n = s2.load(NOW);
         println!(
-            "重启回放 {n} 条，耗时 {:.2?}，存活 {}",
+            "重启回放 {n} 条，耗时 {:.2?}，存活 {}，峰值 {}",
             t1.elapsed(),
-            mib(live() - b2)
+            mib(live() - b2),
+            mib(PEAK.load(Ordering::Relaxed) - b2)
         );
         let disk_views = views_of(&s2);
         if let Ok(p) = std::env::var("AP_DUMP") {
@@ -241,18 +246,7 @@ mod tests {
             .unwrap();
             std::fs::write(&p, serde_json::to_vec(&mem_views).unwrap()).unwrap();
         }
-        // 已下线终端最后那个未关闭的桶从未写盘，重启后会少一格（旧版就如此，不在本次改动范围），比较时排除它
-        let keep = |v: &Vec<serde_json::Value>| -> Vec<serde_json::Value> {
-            v.iter()
-                .filter(|x| x["k"] != "c:02:00:00:00:00:1f")
-                .cloned()
-                .collect()
-        };
-        assert_eq!(
-            keep(&mem_views),
-            keep(&disk_views),
-            "重启回放后的视图应与内存里的一致"
-        );
+        assert_eq!(mem_views, disk_views, "所有视图重启回放后应与内存一致");
         assert_eq!(s2.events.len(), 30 * 24 + 1);
         if keep_dir.is_none() {
             let _ = std::fs::remove_dir_all(&dir);
